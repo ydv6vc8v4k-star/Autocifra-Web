@@ -273,7 +273,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
    <div class="eyebrow">Cuida tu vehículo</div>
    <h2>Que no se te pase ninguna revisión</h2>
    <p>Estamos preparando el historial de servicios, avisos por kilómetros y fechas, y registro de gastos.</p>
-   <a class="btn primary" href="#garaje">Ir a Mi garaje →</a>
+   <a class="btn primary" href="#garaje.html">Ir a Mi garaje →</a>
   </div>
  </div>
 </section>
