@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#061321">
+<title>AutoCifra | Tu coche, tus cuentas claras</title>
+<style>
+:root {
+  --bg:#061321;
+  --panel:#0c2032;
+  --line:#244158;
+  --text:#f5f8fc;
+  --muted:#b2c3d3;
+  --green:#00e5b0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;line-height:1.5
+}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit}
+button,.btn{
+  padding:12px 17px;border:0;border-radius:12px;
+  font-weight:bold;cursor:pointer
+}
+.primary{background:var(--green);color:#042018}
+.secondary{background:#10273a;color:white;border:1px solid var(--line)}
+.wrap{width:min(1180px,calc(100% - 32px));margin:auto}
+header{
+  position:sticky;top:0;z-index:10;
+  background:#061321f2;border-bottom:1px solid var(--line)
+}
+nav{min-height:70px;display:flex;align-items:center;
+  justify-content:space-between;gap:15px}
+.logo{font-size:25px;font-weight:900}
+.logo span{color:var(--green)}
+.links{display:flex;gap:20px;color:var(--muted);font-size:14px}
+.actions{display:flex;gap:8px}
+.hero{
+  padding:65px 0;background:
+  linear-gradient(90deg,#061321f5 0%,#061321c9 45%,#06132145 100%),
+  url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1800&q=85')
+  center/cover
+}
+.hero-grid{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:center}
+.eyebrow{color:var(--green);font-size:13px;font-weight:bold;text-transform:uppercase}
+h1{font-size:clamp(40px,6vw,70px);line-height:1.02;letter-spacing:-2px;margin:15px 0}
+h1 span{color:var(--green)}
+.hero p{max-width:570px;color:#e0e8f1;font-size:17px}
+.buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:25px}
+.quick,.card{background:#0b1d2ded;border:1px solid var(--line);border-radius:17px;padding:20px}
+.quick h2{margin-top:0;font-size:21px}
+.field{display:grid;gap:6px;margin:12px 0}
+label{font-size:13px;color:var(--muted)}
+input,select{
+  width:100%;padding:12px;background:#071625;color:white;
+  border:1px solid #31506a;border-radius:9px;min-width:0
+}
+.quick .primary{width:100%;margin-top:5px}
+.results{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:14px}
+.result{background:#061625;padding:10px 5px;border-radius:9px;text-align:center}
+.result strong{display:block;color:var(--green);font-size:16px}
+.result small{font-size:11px;color:var(--muted)}
+.shortcuts{display:flex;gap:22px;flex-wrap:wrap;margin-top:28px;color:#dce8f3;font-size:13px}
+.shortcuts span:first-letter{color:var(--green)}
+section{padding:45px 0}
+.heading{margin-bottom:22px}
+.heading h2{font-size:30px;margin:5px 0}
+.heading p{color:var(--muted);margin:0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feature{padding:0;overflow:hidden}
+.feature img{width:100%;height:155px;object-fit:cover;display:block}
+.feature-body{padding:18px}
+.feature h3{margin:0 0 8px}
+.feature p{color:var(--muted);font-size:14px;margin:0}
+.more{display:inline-block;color:var(--green);font-weight:bold;margin-top:15px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.vehicle-list{display:grid;gap:10px;margin-top:15px}
+.vehicle{padding:13px;background:#071625;border:1px solid var(--line);border-radius:10px}
+.vehicle small{display:block;color:var(--muted)}
+.vehicle button{padding:6px 9px;margin-top:8px}
+.fuel-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.fuel-row strong{color:var(--green)}
+.notice{font-size:12px;color:var(--muted);margin-top:12px}
+.banner{
+  padding:35px;border-radius:18px;background:
+  linear-gradient(90deg,#061321ed,#06132165),
+  url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80')
+  center/cover
+}
+footer{padding:28px 0;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(max-width:850px){
+ .links{display:none}
+ .hero-grid{grid-template-columns:1fr}
+ .quick{max-width:520px}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .hero{padding:45px 0}
+}
+@media(max-width:540px){
+ .wrap{width:calc(100% - 24px)}
+ nav{min-height:60px}
+ .logo{font-size:21px}
+ .actions button{padding:10px;font-size:12px}
+ .hero{padding:38px 0;background-position:58% center}
+ h1{font-size:43px;letter-spacing:-1.5px}
+ .hero p{font-size:15px}
+ .shortcuts{gap:12px}
+ section{padding:32px 0}
+ .heading h2{font-size:25px}
+ .grid,.two{grid-template-columns:1fr}
+ .feature img{height:190px}
+ .banner{padding:24px}
+}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="wrap">
+  <nav>
+   <a class="logo" href="#inicio">◉ Auto<span>Cifra</span></a>
+   <div class="links">
+    <a href="#inicio">Inicio</a>
+    <a href="#garaje">Mi garaje</a>
+    <a href="#calculadora">Calculadoras</a>
+    <a href="#gasolineras">Gasolineras</a>
+    <a href="#rutas">Rutas</a>
+   </div>
+   <div class="actions">
+    <button class="secondary" onclick="cuenta()">Entrar</button>
+    <button class="primary" onclick="cuenta()">Crear cuenta</button>
+   </div>
+  </nav>
+ </div>
+</header>
+
+<main>
+<section class="hero" id="inicio">
+ <div class="wrap hero-grid">
+  <div>
+   <div class="eyebrow">Tu coche, tus números</div>
+   <h1>Calcula, planifica,<br><span>ahorra.</span></h1>
+   <p>Todo lo que necesitas para tu coche o moto en un solo lugar. Guarda tus vehículos, calcula tus viajes, controla tus gastos y organiza el mantenimiento.</p>
+   <div class="buttons">
+    <a class="btn primary" href="#garaje">Mi garaje →</a>
+    <a class="btn secondary" href="#herramientas">Ver herramientas</a>
+   </div>
+   <div class="shortcuts">
+    <span>🚘 Tu garaje</span>
+    <span>⛽ Gasolina</span>
+    <span>🧮 Calculadoras</span>
+    <span>🛠️ Revisiones</span>
+   </div>
+  </div>
+
+  <div class="quick" id="calculadora">
+   <div class="eyebrow">Calculadora interactiva</div>
+   <h2>¿Cuánto te cuesta el viaje?</h2>
+   <div class="field">
+    <label for="distancia">Distancia (km)</label>
+    <input id="distancia" type="number" value="200" min="1">
+   </div>
+   <div class="field">
+    <label for="consumo">Consumo (L/100 km)</label>
+    <input id="consumo" type="number" value="6.5" min="0.1" step="0.1">
+   </div>
+   <div class="field">
+    <label for="precio">Precio combustible (€/L)</label>
+    <input id="precio" type="number" value="1.60" min="0.01" step="0.01">
+   </div>
+   <div class="field">
+    <label for="personas">Personas en el viaje</label>
+    <input id="personas" type="number" value="1" min="1" step="1">
+   </div>
+   <button class="primary" onclick="calcular()">Calcular viaje →</button>
+   <div class="results">
+    <div class="result"><strong id="litros">13 L</strong><small>Combustible</small></div>
+    <div class="result"><strong id="coste">20,80 €</strong><small>Coste total</small></div>
+    <div class="result"><strong id="persona">20,80 €</strong><small>Por persona</small></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section id="herramientas">
+ <div class="wrap">
+  <div class="heading">
+   <div class="eyebrow">Todo lo que necesitas</div>
+   <h2>Herramientas para conductores</h2>
+   <p>Gestiona, calcula y disfruta de la carretera.</p>
+  </div>
+  <div class="grid">
+   <a class="card feature" href="#garaje">
+    <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=900&q=80" alt="Coche deportivo">
+    <div class="feature-body"><h3>Mi garaje</h3><p>Guarda tus coches y motos y consulta sus datos.</p><span class="more">Entrar →</span></div>
+   </a>
+   <a class="card feature" href="#gasolineras">
+    <img src="https://images.unsplash.com/photo-1545262810-77515befe149?auto=format&fit=crop&w=900&q=80" alt="Surtidor de combustible">
+    <div class="feature-body"><h3>Gasolineras</h3><p>Consulta precios y encuentra opciones económicas.</p><span class="more">Ver precios →</span></div>
+   </a>
+   <a class="card feature" href="#rutas">
+    <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80" alt="Carretera entre montañas">
+    <div class="feature-body"><h3>Rutas</h3><p>Descubre carreteras, escapadas y miradores.</p><span class="more">Explorar →</span></div>
+   </a>
+   <a class="card feature" href="#mantenimiento">
+    <img src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=900&q=80" alt="Mecánico trabajando en un vehículo">
+    <div class="feature-body"><h3>Mantenimiento</h3><p>Organiza revisiones y futuras operaciones.</p><span class="more">Ver revisiones →</span></div>
+   </a>
+   <a class="card feature" href="#calculadora">
+    <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=900&q=80" alt="Coche deportivo en carretera">
+    <div class="feature-body"><h3>Calculadoras</h3><p>Calcula consumo, viajes y coste por kilómetro.</p><span class="more">Calcular →</span></div>
+   </a>
+   <a class="card feature" href="#rutas">
+    <img src="https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=900&q=80" alt="Coche en carretera">
+    <div class="feature-body"><h3>Guías y averías</h3><p>Información útil sobre vehículos y diagnóstico.</p><span class="more">Consultar →</span></div>
+   </a>
+  </div>
+ </div>
+</section>
+
+<section id="garaje">
+ <div class="wrap">
+  <div class="heading">
+   <div class="eyebrow">Tu espacio personal</div>
+   <h2>Mi garaje</h2>
+   <p>Añade tus vehículos y reutiliza sus datos en las calculadoras.</p>
+  </div>
+  <div class="two">
+   <div class="card">
+    <h3>Añadir vehículo</h3>
+    <div class="field"><label for="marca">Marca</label><input id="marca" placeholder="Ej. Audi"></div>
+    <div class="field"><label for="modelo">Modelo</label><input id="modelo" placeholder="Ej. A3"></div>
+    <div class="field"><label for="anio">Año</label><input id="anio" type="number" placeholder="2019"></div>
+    <div class="field"><label for="motor">Motor / versión</label><input id="motor" placeholder="Ej. 1.5 TFSI"></div>
+    <button class="primary" onclick="guardarVehiculo()">＋ Guardar vehículo</button>
+   </div>
+   <div class="card">
+    <h3>Vehículos guardados</h3>
+    <div id="vehiculos" class="vehicle-list">Todavía no has añadido vehículos.</div>
+    <p class="notice">Esta versión guarda los vehículos en el navegador de este dispositivo. Las cuentas y la sincronización entre dispositivos se configurarán después.</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section id="gasolineras">
+ <div class="wrap two">
+  <div class="banner">
+   <div class="eyebrow">Reposta con cabeza</div>
+   <h2>Precios de gasolina</h2>
+   <p>Encuentra estaciones y compara los precios de los carburantes.</p>
+   <a class="btn primary" href="https://geoportalgasolineras.es/geoportal-instalaciones/Inicio" target="_blank" rel="noopener">Abrir mapa oficial →</a>
+  </div>
+  <div class="card">
+   <h3>Consulta de precios</h3>
+   <p>Abre el mapa oficial para consultar los precios publicados de las gasolineras.</p>
+   <div class="fuel-row"><span>Gasolina 95 / 98</span><strong>Consultar ↗</strong></div>
+   <div class="fuel-row"><span>Diésel</span><strong>Consultar ↗</strong></div>
+   <div class="fuel-row"><span>GLP y otros</span><strong>Consultar ↗</strong></div>
+   <p class="notice">Los precios en directo dentro de AutoCifra se conectarán a la fuente oficial en una siguiente fase.</p>
+  </div>
+ </div>
+</section>
+
+<section id="mantenimiento">
+ <div class="wrap">
+  <div class="banner">
+   <div class="eyebrow">Cuida tu vehículo</div>
+   <h2>Que no se te pase ninguna revisión</h2>
+   <p>Estamos preparando el historial de servicios, avisos por kilómetros y fechas, y registro de gastos.</p>
+   <a class="btn primary" href="#garaje">Ir a Mi garaje →</a>
+  </div>
+ </div>
+</section>
+
+<section id="rutas">
+ <div class="wrap">
+  <div class="heading">
+   <div class="eyebrow">Más carretera</div>
+   <h2>Tu próximo destino te espera</h2>
+   <p>AutoCifra reunirá rutas para coche y moto, comparativas y guías prácticas.</p>
+  </div>
+  <div class="grid">
+   <div class="card"><h3>🏍️ Rutas en moto</h3><p>Carreteras panorámicas y escapadas.</p></div>
+   <div class="card"><h3>⚖️ Comparador</h3><p>Compara consumo, potencia y costes.</p></div>
+   <div class="card"><h3>🔧 Guías de averías</h3><p>Información para entender síntomas y códigos OBD.</p></div>
+  </div>
+ </div>
+</section>
+</main>
+
+<footer>
+ <div class="wrap">
+  <div><strong class="logo">Auto<span>Cifra</span></strong><br>Tu coche, las cuentas claras.</div>
+  <div><a href="#inicio">Inicio</a> · <a href="#garaje">Mi garaje</a> · <a href="#gasolineras">Gasolineras</a> · <a href="mailto:hola@autocifra.es">Contacto</a></div>
+ </div>
+</footer>
+
+<script>
+const formato = n => new Intl.NumberFormat('es-ES',{
+ style:'currency',currency:'EUR'
+}).format(n);
+
+function calcular(){
+ const d=Number(document.getElementById('distancia').value);
+ const c=Number(document.getElementById('consumo').value);
+ const p=Number(document.getElementById('precio').value);
+ const personas=Number(document.getElementById('personas').value);
+ if(d<=0||c<=0||p<=0||personas<1){
+  alert('Introduce valores válidos para calcular el viaje.');
+  return;
+ }
+ const litros=d*c/100;
+ const coste=litros*p;
+ document.getElementById('litros').textContent=
+  new Intl.NumberFormat('es-ES',{maximumFractionDigits:2}).format(litros)+' L';
+ document.getElementById('coste').textContent=formato(coste);
+ document.getElementById('persona').textContent=formato(coste/personas);
+}
+
+['distancia','consumo','precio','personas'].forEach(id=>{
+ document.getElementById(id).addEventListener('input',calcular);
+});
+calcular();
+
+let vehiculos=[];
+try{vehiculos=JSON.parse(localStorage.getItem('autocifra_vehiculos')||'[]')}catch(e){}
+
+function escapar(texto){
+ return String(texto).replace(/[&<>"']/g,c=>({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+ }[c]));
+}
+
+function pintarVehiculos(){
+ const zona=document.getElementById('vehiculos');
+ if(!vehiculos.length){
+  zona.textContent='Todavía no has añadido vehículos.';
+  return;
+ }
+ zona.innerHTML=vehiculos.map((v,i)=>`
+  <div class="vehicle">
+   <strong>${escapar(v.marca)} ${escapar(v.modelo)}</strong>
+   <small>${escapar(v.anio||'Año no indicado')} · ${escapar(v.motor||'Motor no indicado')}</small>
+   <button class="secondary" onclick="borrarVehiculo(${i})">Eliminar</button>
+  </div>`).join('');
+}
+
+function guardarVehiculo(){
+ const marca=document.getElementById('marca').value.trim();
+ const modelo=document.getElementById('modelo').value.trim();
+ const anio=document.getElementById('anio').value;
+ const motor=document.getElementById('motor').value.trim();
+ if(!marca||!modelo){
+  alert('Introduce la marca y el modelo.');
+  return;
+ }
+ vehiculos.push({marca,modelo,anio,motor});
+ localStorage.setItem('autocifra_vehiculos',JSON.stringify(vehiculos));
+ pintarVehiculos();
+ document.getElementById('marca').value='';
+ document.getElementById('modelo').value='';
+ document.getElementById('anio').value='';
+ document.getElementById('motor').value='';
+}
+
+function borrarVehiculo(i){
+ vehiculos.splice(i,1);
+ localStorage.setItem('autocifra_vehiculos',JSON.stringify(vehiculos));
+ pintarVehiculos();
+}
+
+function cuenta(){
+ alert('El registro real de usuarios se activará al conectar el sistema de cuentas.');
+}
+pintarVehiculos();
+</script>
+</body>
+</html>
