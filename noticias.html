@@ -1,0 +1,964 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090a0c">
+  <meta name="description" content="Últimas noticias del motor: coches, motos, tecnología y competición. Actualidad del mundo del motor en AutoCifra.">
+  <title>Noticias del motor | AutoCifra</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #090a0c;
+      --panel: #111317;
+      --panel-hover: #171a20;
+      --border: #262930;
+      --orange: #ff6b25;
+      --orange-light: #ff945d;
+      --text: #f4f5f7;
+      --muted: #9a9da6;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 85% 0%, rgba(255,107,37,.08), transparent 34%),
+        var(--bg);
+      color: var(--text);
+      font-family: "DM Sans", sans-serif;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    button { font: inherit; }
+
+    .container {
+      width: min(1180px, calc(100% - 40px));
+      margin: auto;
+    }
+
+    /* Navegación */
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(9,10,12,.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+
+    .nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 25px;
+      font-weight: 700;
+      letter-spacing: -1.2px;
+      white-space: nowrap;
+    }
+
+    .brand span { color: var(--orange); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 25px;
+      font-size: 13px;
+      color: #c1c3c9;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--orange-light); }
+
+    .nav-links a.active {
+      font-weight: 700;
+    }
+
+    /* Cabecera editorial */
+
+    .intro {
+      padding: 62px 0 34px;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--orange-light);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 24px;
+      height: 2px;
+      background: var(--orange);
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin: 12px 0;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(36px, 6vw, 65px);
+      line-height: 1.03;
+      letter-spacing: -2.7px;
+    }
+
+    h1 span { color: var(--orange); }
+
+    .intro p {
+      max-width: 620px;
+      color: var(--muted);
+      font-size: 15px;
+      margin-bottom: 0;
+    }
+
+    .section-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 15px;
+      margin-bottom: 22px;
+    }
+
+    .section-line h2 {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 19px;
+      margin: 0;
+      letter-spacing: -.5px;
+    }
+
+    .section-line small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* Noticia principal */
+
+    .featured {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      min-height: 350px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      background: var(--panel);
+      margin-bottom: 48px;
+      transition: border-color .2s, transform .2s;
+    }
+
+    .featured:hover {
+      border-color: rgba(255,107,37,.6);
+      transform: translateY(-2px);
+    }
+
+    .featured-image {
+      position: relative;
+      min-height: 320px;
+      background: #181a1f;
+    }
+
+    .featured-image img,
+    .news-image img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      transition: transform .5s;
+    }
+
+    .featured:hover .featured-image img,
+    .news-card:hover .news-image img {
+      transform: scale(1.045);
+    }
+
+    .featured-image::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 60%, rgba(17,19,23,.35));
+      pointer-events: none;
+    }
+
+    .featured-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: clamp(24px, 4vw, 44px);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--orange-light);
+      background: rgba(255,107,37,.10);
+      border: 1px solid rgba(255,107,37,.2);
+      border-radius: 5px;
+      padding: 5px 9px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .featured h2 {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(25px, 3vw, 37px);
+      line-height: 1.15;
+      letter-spacing: -1.2px;
+      margin: 18px 0 14px;
+    }
+
+    .featured p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 22px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .meta .dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--orange);
+    }
+
+    .read-link {
+      margin-top: 25px;
+      color: var(--orange-light);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .read-link span {
+      display: inline-block;
+      margin-left: 5px;
+      transition: transform .2s;
+    }
+
+    .read-link:hover span { transform: translateX(4px); }
+
+    /* Filtros */
+
+    .filters {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+
+    .filter {
+      cursor: pointer;
+      padding: 9px 16px;
+      color: #b6b8c0;
+      background: #111317;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      transition: .2s;
+    }
+
+    .filter:hover,
+    .filter.active {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #111;
+    }
+
+    /* Rejilla de noticias */
+
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .news-card {
+      min-width: 0;
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: transform .2s, border-color .2s;
+    }
+
+    .news-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255,107,37,.55);
+    }
+
+    .news-image {
+      height: 205px;
+      overflow: hidden;
+      position: relative;
+      background: #1b1d22;
+    }
+
+    .news-image .image-label {
+      position: absolute;
+      left: 14px;
+      bottom: 13px;
+      background: rgba(9,10,12,.85);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 4px;
+      padding: 4px 8px;
+      color: white;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+    }
+
+    .news-body { padding: 19px; }
+
+    .news-body h3 {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 18px;
+      line-height: 1.35;
+      letter-spacing: -.4px;
+      margin: 13px 0 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .news-body h3 a:hover { color: var(--orange-light); }
+
+    .news-body .meta { margin-top: 13px; }
+
+    .news-description {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 0;
+    }
+
+    .card-footer {
+      border-top: 1px solid var(--border);
+      padding: 14px 19px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .card-footer a {
+      color: var(--orange-light);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .card-footer small {
+      color: var(--muted);
+      font-size: 10px;
+      text-align: right;
+    }
+
+    /* Estados */
+
+    .status {
+      padding: 35px 20px;
+      border: 1px dashed #343740;
+      border-radius: var(--radius);
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255,255,255,.015);
+      grid-column: 1 / -1;
+    }
+
+    .status strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 7px;
+    }
+
+    .status button {
+      margin-top: 15px;
+      background: var(--orange);
+      border: 0;
+      border-radius: 7px;
+      padding: 9px 15px;
+      color: #111;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .count-line {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 20px 0 0;
+    }
+
+    /* Pie */
+
+    .footer {
+      border-top: 1px solid var(--border);
+      margin-top: 80px;
+      padding: 30px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .footer p {
+      color: var(--muted);
+      font-size: 11px;
+      margin: 0;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      color: #b9bbc2;
+      font-size: 12px;
+    }
+
+    .footer-links a:hover { color: var(--orange-light); }
+
+    @media (max-width: 850px) {
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 15px 0;
+        gap: 12px;
+      }
+
+      .nav-links {
+        width: 100%;
+        gap: 16px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 3px;
+      }
+
+      .nav-links a { white-space: nowrap; }
+
+      .featured { grid-template-columns: 1fr; }
+
+      .featured-image { min-height: 280px; }
+
+      .featured-image::after {
+        background: linear-gradient(0deg, rgba(17,19,23,.25), transparent 60%);
+      }
+
+      .news-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      .container { width: calc(100% - 28px); }
+
+      .intro { padding: 42px 0 28px; }
+
+      h1 {
+        font-size: 41px;
+        letter-spacing: -1.8px;
+      }
+
+      .featured { margin-bottom: 38px; }
+
+      .featured-image { min-height: 225px; }
+
+      .featured-content { padding: 23px; }
+
+      .news-grid { grid-template-columns: 1fr; gap: 16px; }
+
+      .news-image { height: 220px; }
+
+      .news-body h3 { font-size: 19px; }
+
+      .section-line { align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a class="brand" href="/">Auto<span>Cifra</span></a>
+      <nav class="nav-links" aria-label="Navegación principal">
+        <a href="/">Inicio</a>
+        <a href="/calculadora.html">Calculadora</a>
+        <a href="/rutas.html">Rutas</a>
+        <a href="/Garaje.html">Mi garaje</a>
+        <a href="/noticias.html" class="active">Noticias</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="intro">
+      <div class="eyebrow">Actualidad del motor</div>
+      <h1>El motor<br>no se detiene<span>.</span></h1>
+      <p>
+        Lanzamientos, tecnología, novedades de coches y motos y toda
+        la actualidad de la competición, en un solo lugar.
+      </p>
+    </section>
+
+    <section aria-labelledby="featured-heading">
+      <div class="section-line">
+        <h2 id="featured-heading">En portada</h2>
+        <small>Selección AutoCifra</small>
+      </div>
+
+      <article class="featured" id="featured">
+        <a class="featured-image" id="featured-image-link"
+           href="#actualidad" aria-label="Ver noticias">
+          <img
+            id="featured-image"
+            src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1200&q=85"
+            alt="Detalle de un automóvil moderno"
+            fetchpriority="high">
+        </a>
+        <div class="featured-content">
+          <span class="tag" id="featured-tag">Especial motor</span>
+          <h2 id="featured-title">Toda la actualidad del mundo del motor</h2>
+          <p id="featured-description">
+            Descubre las últimas noticias sobre coches, motos,
+            tecnología y competición.
+          </p>
+          <div class="meta">
+            <span id="featured-source">AutoCifra</span>
+            <span class="dot"></span>
+            <span id="featured-date">Actualidad</span>
+          </div>
+          <a class="read-link" id="featured-link" href="#actualidad">
+            Explorar noticias <span>→</span>
+          </a>
+        </div>
+      </article>
+    </section>
+
+    <section id="actualidad" aria-labelledby="news-heading">
+      <div class="section-line">
+        <h2 id="news-heading">Últimas noticias</h2>
+        <small id="updated-label">Actualización automática</small>
+      </div>
+
+      <div class="filters" aria-label="Filtrar noticias">
+        <button class="filter active" data-filter="todas" aria-pressed="true">Todas</button>
+        <button class="filter" data-filter="coches" aria-pressed="false">Coches</button>
+        <button class="filter" data-filter="motos" aria-pressed="false">Motos</button>
+        <button class="filter" data-filter="competicion" aria-pressed="false">Competición</button>
+        <button class="filter" data-filter="tecnologia" aria-pressed="false">Tecnología</button>
+      </div>
+
+      <div class="news-grid" id="news-grid" aria-live="polite">
+        <div class="status">
+          <strong>Cargando actualidad…</strong>
+          Estamos buscando las últimas noticias del motor.
+        </div>
+      </div>
+
+      <p class="count-line" id="count-line"></p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <a class="brand" href="/">Auto<span>Cifra</span></a>
+      <p>Actualidad del motor, tecnología y conducción.</p>
+      <div class="footer-links">
+        <a href="/">Inicio</a>
+        <a href="/calculadora.html">Calculadora</a>
+        <a href="/rutas.html">Rutas</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const grid = document.getElementById("news-grid");
+    const countLine = document.getElementById("count-line");
+    const updatedLabel = document.getElementById("updated-label");
+
+    let allNews = [];
+    let activeFilter = "todas";
+
+    // Imágenes editoriales nuevas para esta página.
+    // Se eligen por temática, no por el titular de la noticia.
+    const images = {
+      coches: [
+        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1507136566006-cfc505b114fc?auto=format&fit=crop&w=900&q=80"
+      ],
+      motos: [
+        "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=900&q=80"
+      ],
+      competicion: [
+        "https://images.unsplash.com/photo-1532906619279-a4b7267faa66?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=900&q=80"
+      ],
+      tecnologia: [
+        "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1507136566006-cfc505b114fc?auto=format&fit=crop&w=900&q=80"
+      ],
+      general: [
+        "https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=900&q=80"
+      ]
+    };
+
+    function safeText(value, fallback = "") {
+      return typeof value === "string" ? value.trim() : fallback;
+    }
+
+    function validUrl(value) {
+      try {
+        const url = new URL(value);
+        return url.protocol === "https:" || url.protocol === "http:";
+      } catch {
+        return false;
+      }
+    }
+
+    function getCategory(item) {
+      const text = (
+        safeText(item.title) + " " +
+        safeText(item.source) + " " +
+        safeText(item.category)
+      ).toLowerCase();
+
+      if (/motogp|fórmula 1|formula 1|f1\b|rally|ral.li|wrc|circuito|gran premio|motorsport|competici|carrera|piloto|podio|24 horas de le mans/.test(text)) {
+        return "competicion";
+      }
+
+      if (/motocicl|moto\b|scooter|suzuki|ducati|yamaha|kawasaki|honda cbr|bmw motorrad|ktm\b|aprilia|triumph motorcycles/.test(text)) {
+        return "motos";
+      }
+
+      if (/eléctric|electrific|batería|bateria|carga rápida|carga rapida|software|autónom|autonom|asistente de conducci|inteligencia artificial|tecnolog|híbrido|hibrido/.test(text)) {
+        return "tecnologia";
+      }
+
+      return "coches";
+    }
+
+    function categoryLabel(category) {
+      return {
+        coches: "Coches",
+        motos: "Motos",
+        competicion: "Competición",
+        tecnologia: "Tecnología"
+      }[category] || "Motor";
+    }
+
+    function imageFor(item, index) {
+      const category = getCategory(item);
+      const collection = images[category] || images.general;
+      return collection[index % collection.length];
+    }
+
+    function formatDate(value) {
+      if (!value) return "Actualidad";
+
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "Actualidad";
+
+      return new Intl.DateTimeFormat("es-ES", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      }).format(date);
+    }
+
+    function descriptionFor(item) {
+      // El RSS aporta titulares y enlaces, no siempre un resumen.
+      // No inventamos una descripción de la noticia.
+      return safeText(item.description, "Consulta la información completa en la publicación original.");
+    }
+
+    function makeCard(item, index) {
+      const category = getCategory(item);
+      const title = safeText(item.title, "Noticia del motor");
+      const source = safeText(item.source, "Fuente original");
+      const date = formatDate(item.pubDate || item.date);
+      const url = validUrl(item.link) ? item.link : "#";
+      const imageUrl = imageFor(item, index);
+
+      const article = document.createElement("article");
+      article.className = "news-card";
+      article.dataset.category = category;
+
+      const imageLink = document.createElement("a");
+      imageLink.className = "news-image";
+      imageLink.href = url;
+      imageLink.target = "_blank";
+      imageLink.rel = "noopener noreferrer";
+      imageLink.setAttribute("aria-label", "Leer: " + title);
+
+      const image = document.createElement("img");
+      image.src = imageUrl;
+      image.alt = "Fotografía ilustrativa: " + categoryLabel(category).toLowerCase();
+      image.loading = "lazy";
+      image.decoding = "async";
+
+      image.onerror = () => {
+        image.onerror = null;
+        image.src = images.general[0];
+      };
+
+      const imageLabel = document.createElement("span");
+      imageLabel.className = "image-label";
+      imageLabel.textContent = categoryLabel(category);
+
+      imageLink.append(image, imageLabel);
+
+      const body = document.createElement("div");
+      body.className = "news-body";
+
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = categoryLabel(category);
+
+      const heading = document.createElement("h3");
+      const headingLink = document.createElement("a");
+      headingLink.href = url;
+      headingLink.target = "_blank";
+      headingLink.rel = "noopener noreferrer";
+      headingLink.textContent = title;
+      heading.appendChild(headingLink);
+
+      const description = document.createElement("p");
+      description.className = "news-description";
+      description.textContent = descriptionFor(item);
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+
+      const sourceText = document.createElement("span");
+      sourceText.textContent = source;
+
+      const dot = document.createElement("span");
+      dot.className = "dot";
+
+      const dateText = document.createElement("span");
+      dateText.textContent = date;
+
+      meta.append(sourceText, dot, dateText);
+      body.append(tag, heading, description, meta);
+
+      const footer = document.createElement("div");
+      footer.className = "card-footer";
+
+      const readLink = document.createElement("a");
+      readLink.href = url;
+      readLink.target = "_blank";
+      readLink.rel = "noopener noreferrer";
+      readLink.textContent = "Leer noticia →";
+
+      const sourceSmall = document.createElement("small");
+      sourceSmall.textContent = "Enlace a la fuente";
+
+      footer.append(readLink, sourceSmall);
+      article.append(imageLink, body, footer);
+
+      return article;
+    }
+
+    function renderNews() {
+      const filtered = allNews.filter(item => {
+        return activeFilter === "todas" ||
+          getCategory(item) === activeFilter;
+      });
+
+      grid.replaceChildren();
+
+      if (!filtered.length) {
+        const status = document.createElement("div");
+        status.className = "status";
+
+        const title = document.createElement("strong");
+        title.textContent = allNews.length
+          ? "No hay noticias en esta categoría"
+          : "Todavía no hay noticias disponibles";
+
+        const message = document.createElement("p");
+        message.textContent = allNews.length
+          ? "Prueba con otro filtro para ver más actualidad."
+          : "Comprueba que noticias.json exista y que el sistema RSS haya terminado correctamente.";
+
+        status.append(title, message);
+        grid.appendChild(status);
+        countLine.textContent = "";
+        return;
+      }
+
+      filtered.forEach((item, index) => {
+        grid.appendChild(makeCard(item, index));
+      });
+
+      countLine.textContent =
+        "Mostrando " + filtered.length +
+        (filtered.length === 1 ? " noticia" : " noticias") +
+        (activeFilter === "todas" ? " del motor." : " de " + categoryLabel(activeFilter).toLowerCase() + ".");
+    }
+
+    function renderFeatured(item) {
+      if (!item) return;
+
+      const category = getCategory(item);
+      const title = safeText(item.title, "Última actualidad del motor");
+      const source = safeText(item.source, "Fuente original");
+      const date = formatDate(item.pubDate || item.date);
+      const url = validUrl(item.link) ? item.link : "#";
+
+      document.getElementById("featured-title").textContent = title;
+      document.getElementById("featured-description").textContent =
+        descriptionFor(item);
+      document.getElementById("featured-tag").textContent =
+        categoryLabel(category);
+      document.getElementById("featured-source").textContent = source;
+      document.getElementById("featured-date").textContent = date;
+
+      const image = document.getElementById("featured-image");
+      image.src = imageFor(item, 0);
+      image.alt = "Fotografía ilustrativa de " + categoryLabel(category).toLowerCase();
+      image.onerror = () => {
+        image.onerror = null;
+        image.src = images.general[0];
+      };
+
+      document.getElementById("featured-link").href = url;
+      document.getElementById("featured-image-link").href = url;
+      document.getElementById("featured-image-link").target = "_blank";
+      document.getElementById("featured-image-link").rel = "noopener noreferrer";
+      document.getElementById("featured-link").target = "_blank";
+      document.getElementById("featured-link").rel = "noopener noreferrer";
+      document.getElementById("featured-link").innerHTML =
+        'Leer noticia completa <span>→</span>';
+    }
+
+    async function loadNews() {
+      grid.innerHTML = `
+        <div class="status">
+          <strong>Cargando actualidad…</strong>
+          Estamos consultando las noticias disponibles.
+        </div>`;
+
+      try {
+        const response = await fetch("/noticias.json?v=" + Date.now(), {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error("No se ha podido cargar noticias.json");
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data.news)) {
+          throw new Error("El archivo JSON no contiene una lista de noticias válida");
+        }
+
+        // Evitar duplicados visibles por título o enlace.
+        const seen = new Set();
+
+        allNews = data.news.filter(item => {
+          const title = safeText(item.title).toLowerCase();
+          const link = safeText(item.link).toLowerCase();
+          const key = link || title;
+
+          if (!title || !key || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+
+        renderFeatured(allNews[0]);
+
+        if (data.updated) {
+          const date = new Date(data.updated);
+          updatedLabel.textContent = Number.isNaN(date.getTime())
+            ? "Actualización automática"
+            : "Actualizado: " + new Intl.DateTimeFormat("es-ES", {
+                day: "2-digit",
+                month: "short",
+                hour: "2-digit",
+                minute: "2-digit"
+              }).format(date);
+        }
+
+        renderNews();
+      } catch (error) {
+        console.error("Error cargando noticias:", error);
+
+        grid.innerHTML = `
+          <div class="status">
+            <strong>No se han podido cargar las noticias</strong>
+            Comprueba que noticias.json esté publicado en la raíz de la web
+            y que el flujo de GitHub Actions haya finalizado correctamente.
+            <br>
+            <button type="button" id="retry-news">Reintentar</button>
+          </div>`;
+
+        document.getElementById("retry-news").addEventListener("click", loadNews);
+        countLine.textContent = "";
+      }
+    }
+
+    document.querySelectorAll(".filter").forEach(button => {
+      button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter;
+
+        document.querySelectorAll(".filter").forEach(other => {
+          const selected = other === button;
+          other.classList.toggle("active", selected);
+          other.setAttribute("aria-pressed", String(selected));
+        });
+
+        renderNews();
+      });
+    });
+
+    loadNews();
+  </script>
+</body>
+</html>
