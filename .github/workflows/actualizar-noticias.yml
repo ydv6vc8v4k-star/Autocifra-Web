@@ -37,7 +37,6 @@ jobs:
 
       - name: Consultar RSS y generar JSON
         run: python scripts/actualizar_noticias.py
-      - 
 
       - name: Guardar noticias actualizadas
         run: |
