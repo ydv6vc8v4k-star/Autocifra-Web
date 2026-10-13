@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090b10">
+<title>Control de gastos | AutoCifra</title>
+<style>
+:root{--bg:#090b10;--panel:#141821;--panel2:#1d232d;--orange:#ff6b2c;--white:#f5f7fa;--muted:#a3adbb;--border:#2b323e;--green:#9ce6a7;--red:#ff8b8b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:#ff9a6a;text-decoration:none}
+.container{max-width:1100px;margin:auto;padding:20px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:25px}
+.logo{font-size:21px;font-weight:900;color:white;letter-spacing:1px}
+.logo span{color:var(--orange)}
+.logo small{display:block;font-size:10px;color:var(--muted);letter-spacing:3px;margin-top:3px}
+.btn{border:1px solid transparent;border-radius:10px;padding:12px 15px;background:var(--orange);color:#111;font-weight:800}
+.btn.secondary{background:var(--panel2);color:white;border-color:var(--border)}
+.btn.danger{background:#32191b;color:#ffb1b1;border-color:#633033}
+.btn:disabled{opacity:.5}
+.hero{padding:28px;border:1px solid var(--border);border-radius:20px;background:linear-gradient(120deg,#24170f,#141821 70%);margin-bottom:18px}
+.eyebrow{color:var(--orange);font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(30px,6vw,48px);line-height:1.05;margin:12px 0}
+p{line-height:1.6}
+.muted,.notice{color:var(--muted);font-size:13px;line-height:1.7}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+.stat,.panel,.expense{background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:17px;min-width:0}
+.stat span{font-size:12px;color:var(--muted)}
+.stat strong{display:block;font-size:clamp(20px,4vw,29px);margin-top:10px;overflow-wrap:anywhere}
+.panel{margin:18px 0}
+.panel h2{font-size:20px;margin:0 0 16px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.field{display:flex;flex-direction:column;gap:7px;min-width:0}
+.field.full{grid-column:1/-1}
+label{font-size:12px;color:#c5cbd5}
+input,select,textarea{width:100%;min-width:0;background:#090b10;color:white;border:1px solid var(--border);border-radius:9px;padding:12px}
+textarea{min-height:80px;resize:vertical}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.list{display:grid;gap:10px}
+.expense{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.expense h3{font-size:15px;margin:0 0 6px;overflow-wrap:anywhere}
+.expense .amount{font-weight:900;font-size:18px;white-space:nowrap}
+.pill{display:inline-block;background:var(--panel2);border-radius:20px;padding:5px 8px;color:#d5dbe4;font-size:11px;margin:3px 4px 0 0}
+.status{font-size:11px;color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:8px 10px}
+.feedback{font-size:13px;line-height:1.6;margin-top:12px;overflow-wrap:anywhere}
+.empty{padding:25px;border:1px dashed #444c59;border-radius:14px;text-align:center;color:var(--muted);line-height:1.7}
+[hidden]{display:none!important}
+footer{text-align:center;color:#798392;font-size:12px;padding:30px 0}
+@media(max-width:600px){.container{padding:13px}.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:1/-1}.form-grid,.filters{grid-template-columns:1fr}.field.full{grid-column:auto}.expense{flex-direction:column}.expense .amount{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <a class="logo" href="index.html">AUTO<span>CIFRA</span><small>CONTROL DE GASTOS</small></a>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <span class="status" id="status">Conectando…</span>
+    <button class="btn secondary" id="accountBtn">Iniciar sesión</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Tus números bajo control</div>
+  <h1>¿Cuánto te cuesta tu vehículo?</h1>
+  <p class="muted">Registra combustible, mantenimiento, seguro, ITV, impuestos, neumáticos y cualquier otro gasto. Consulta tus costes por periodo y por vehículo.</p>
+  <div class="actions">
+    <button class="btn" id="newBtn">+ Registrar gasto</button>
+    <a class="btn secondary" href="Garaje.html">Mi Garaje</a>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat"><span>Gasto del mes</span><strong id="monthTotal">0 €</strong></div>
+  <div class="stat"><span>Gasto del año</span><strong id="yearTotal">0 €</strong></div>
+  <div class="stat"><span>Total registrado</span><strong id="allTotal">0 €</strong></div>
+</section>
+
+<section class="panel" id="authPanel" hidden>
+  <h2>Tu cuenta AutoCifra</h2>
+  <p class="notice">Inicia sesión o crea una cuenta para guardar tus gastos privados y asociarlos a tus vehículos.</p>
+  <form id="authForm">
+    <div class="form-grid">
+      <div class="field full"><label for="email">Correo electrónico</label><input id="email" type="email" autocomplete="email" required></div>
+      <div class="field full"><label for="password">Contraseña (mínimo 6 caracteres)</label><input id="password" type="password" minlength="6" autocomplete="current-password" required></div>
+    </div>
+    <div class="actions">
+      <button class="btn" type="submit">Iniciar sesión</button>
+      <button class="btn secondary" type="button" id="registerBtn">Crear cuenta</button>
+      <button class="btn secondary" type="button" id="cancelAuth">Cancelar</button>
+    </div>
+  </form>
+  <div class="feedback" id="authFeedback" role="status"></div>
+</section>
+
+<section class="panel" id="formPanel" hidden>
+  <h2 id="formTitle">Registrar gasto</h2>
+  <form id="expenseForm">
+    <div class="form-grid">
+      <div class="field"><label for="vehicle">Vehículo *</label><select id="vehicle" required></select></div>
+      <div class="field"><label for="category">Categoría *</label>
+        <select id="category" required>
+          <option>Combustible</option><option>Mantenimiento</option><option>Seguro</option>
+          <option>ITV</option><option>Impuestos</option><option>Neumáticos</option>
+          <option>Reparaciones</option><option>Modificaciones</option><option>Parking y peajes</option><option>Otros</option>
+        </select>
+      </div>
+      <div class="field full"><label for="description">Concepto *</label><input id="description" maxlength="160" required placeholder="Ej. Cambio de aceite y filtro"></div>
+      <div class="field"><label for="amount">Importe (€) *</label><input id="amount" type="number" min="0.01" step="0.01" required placeholder="85.50"></div>
+      <div class="field"><label for="date">Fecha *</label><input id="date" type="date" required></div>
+      <div class="field full"><label for="notes">Notas (opcional)</label><textarea id="notes" maxlength="1000" placeholder="Taller, kilometraje, observaciones…"></textarea></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="saveBtn" type="submit">Guardar gasto</button>
+      <button class="btn secondary" id="cancelForm" type="button">Cancelar</button>
+    </div>
+  </form>
+  <div class="feedback" id="formFeedback" role="status"></div>
+</section>
+
+<section class="panel">
+  <h2>Historial de gastos</h2>
+  <div class="filters">
+    <div class="field"><label for="vehicleFilter">Vehículo</label><select id="vehicleFilter"><option value="">Todos los vehículos</option></select></div>
+    <div class="field"><label for="periodFilter">Periodo</label>
+      <select id="periodFilter"><option value="all">Todo el historial</option><option value="month">Este mes</option><option value="year">Este año</option></select>
+    </div>
+  </div>
+  <div class="notice" id="listSummary">Inicia sesión para consultar tus gastos privados.</div>
+  <div class="list" id="expenseList"></div>
+  <div class="feedback" id="pageFeedback" role="status"></div>
+</section>
+
+<footer>AutoCifra · Control de gastos · Tus vehículos, tus datos.</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+"use strict";
+
+/* Usa la URL y la clave PUBLICABLE/anon actuales de tu proyecto Supabase. */
+const SUPABASE_URL = "https://fcwriuxqiywkjyjpkfvp.supabase.co";
+const SUPABASE_ANON_KEY = "PEGA_AQUI_TU_CLAVE_PUBLICA_DE_SUPABASE";
+
+const $ = id => document.getElementById(id);
+let db = null;
+let user = null;
+let vehicles = [];
+let expenses = [];
+
+function money(n){
+  return (Number(n)||0).toLocaleString("es-ES",{style:"currency",currency:"EUR"});
+}
+function safe(value){
+  return String(value ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function today(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function setFeedback(id,text,error=false){
+  $(id).textContent=text;
+  $(id).style.color=error?"var(--red)":"var(--green)";
+}
+function vehicleName(id){
+  const v=vehicles.find(x=>String(x.id)===String(id));
+  return v?`${v.make} ${v.model}`:"Vehículo";
+}
+function showAuth(){
+  $("authPanel").hidden=false;
+  $("authPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function populateVehicles(){
+  const owned=vehicles.filter(v=>v.user_id===user?.id);
+  $("vehicle").innerHTML=owned.map(v=>`<option value="${safe(v.id)}">${safe(v.make)} ${safe(v.model)}</option>`).join("");
+  $("vehicleFilter").innerHTML='<option value="">Todos los vehículos</option>'+
+    owned.map(v=>`<option value="${safe(v.id)}">${safe(v.make)} ${safe(v.model)}</option>`).join("");
+}
+function filteredExpenses(){
+  const vehicle=$("vehicleFilter").value;
+  const period=$("periodFilter").value;
+  const now=today();
+  const month=now.slice(0,7);
+  const year=now.slice(0,4);
+  return expenses.filter(e=>{
+    if(vehicle && String(e.vehicle_id)!==vehicle)return false;
+    const date=String(e.expense_date||"");
+    if(period==="month" && !date.startsWith(month))return false;
+    if(period==="year" && !date.startsWith(year))return false;
+    return true;
+  }).sort((a,b)=>String(b.expense_date||"").localeCompare(String(a.expense_date||"")));
+}
+function render(){
+  const now=today(), month=now.slice(0,7), year=now.slice(0,4);
+  $("monthTotal").textContent=money(expenses.filter(e=>String(e.expense_date||"").startsWith(month)).reduce((s,e)=>s+Number(e.amount||0),0));
+  $("yearTotal").textContent=money(expenses.filter(e=>String(e.expense_date||"").startsWith(year)).reduce((s,e)=>s+Number(e.amount||0),0));
+  $("allTotal").textContent=money(expenses.reduce((s,e)=>s+Number(e.amount||0),0));
+
+  const list=filteredExpenses();
+  $("listSummary").textContent=`${list.length} gasto${list.length===1?"":"s"} · Total filtrado: ${money(list.reduce((s,e)=>s+Number(e.amount||0),0))}`;
+  $("expenseList").innerHTML=list.map(e=>`
+    <article class="expense">
+      <div>
+        <h3>${safe(e.description||e.category||"Gasto")}</h3>
+        <div class="muted">${safe(vehicleName(e.vehicle_id))} · ${safe(e.expense_date||"Sin fecha")}</div>
+        <span class="pill">${safe(e.category||"Otros")}</span>
+        ${e.notes?`<p class="muted">${safe(e.notes)}</p>`:""}
+      </div>
+      <div>
+        <div class="amount">${money(e.amount)}</div>
+        <button class="btn danger" style="margin-top:10px" data-delete="${safe(e.id)}">Eliminar</button>
+      </div>
+    </article>`).join("");
+  if(!list.length){
+    $("expenseList").innerHTML='<div class="empty">No hay gastos para este filtro. Pulsa «Registrar gasto» para añadir el primero.</div>';
+  }
+}
+async function loadData(){
+  if(!db||!user){
+    vehicles=[];expenses=[];
+    $("status").textContent="INICIA SESIÓN";
+    render();
+    return;
+  }
+  $("status").textContent="CARGANDO…";
+  try{
+    const [vRes,eRes]=await Promise.all([
+      db.from("vehicles").select("*").eq("user_id",user.id).order("created_at",{ascending:false}),
+      db.from("expenses").select("*").eq("user_id",user.id).order("expense_date",{ascending:false})
+    ]);
+    if(vRes.error)throw vRes.error;
+    if(eRes.error)throw eRes.error;
+    vehicles=vRes.data||[];
+    expenses=eRes.data||[];
+    populateVehicles();
+    $("status").textContent="SESIÓN ACTIVA";
+    render();
+    if(!vehicles.length)setFeedback("pageFeedback","Primero añade un coche o una moto en Garaje.");
+    else setFeedback("pageFeedback","");
+  }catch(err){
+    console.error(err);
+    $("status").textContent="ERROR DE DATOS";
+    setFeedback("pageFeedback","No se pudieron cargar los datos: "+err.message,true);
+  }
+}
+async function refreshSession(){
+  if(!db)return;
+  const {data,error}=await db.auth.getSession();
+  if(error){setFeedback("pageFeedback",error.message,true);return;}
+  user=data.session?.user||null;
+  $("accountBtn").textContent=user?"Mi cuenta":"Iniciar sesión";
+  $("authPanel").hidden=!!user;
+  await loadData();
+}
+async function register(){
+  const email=$("email").value.trim(),password=$("password").value;
+  if(!email||password.length<6)return setFeedback("authFeedback","Introduce un correo válido y una contraseña de al menos 6 caracteres.",true);
+  try{
+    const {data,error}=await db.auth.signUp({email,password});
+    if(error)throw error;
+    setFeedback("authFeedback",data.session?"Cuenta creada correctamente.":"Cuenta creada. Revisa tu correo para confirmar el registro.");
+    if(data.session)await refreshSession();
+  }catch(err){setFeedback("authFeedback",err.message,true);}
+}
+async function saveExpense(event){
+  event.preventDefault();
+  if(!user)return showAuth();
+  const vehicleId=$("vehicle").value;
+  if(!vehicles.some(v=>String(v.id)===vehicleId&&v.user_id===user.id))
+    return setFeedback("formFeedback","Selecciona uno de tus vehículos.",true);
+  const amount=Number($("amount").value);
+  if(!Number.isFinite(amount)||amount<=0)
+    return setFeedback("formFeedback","Introduce un importe superior a cero.",true);
+
+  $("saveBtn").disabled=true;
+  try{
+    const record={
+      user_id:user.id,
+      vehicle_id:vehicleId,
+      category:$("category").value,
+      description:$("description").value.trim(),
+      amount,
+      expense_date:$("date").value,
+      notes:$("notes").value.trim()||null
+    };
+    const {error}=await db.from("expenses").insert(record);
+    if(error)throw error;
+    $("expenseForm").reset();
+    $("date").value=today();
+    $("formPanel").hidden=true;
+    await loadData();
+    setFeedback("pageFeedback","Gasto guardado correctamente.");
+  }catch(err){
+    setFeedback("formFeedback","No se pudo guardar el gasto: "+err.message,true);
+  }finally{$("saveBtn").disabled=false;}
+}
+async function deleteExpense(id){
+  if(!user||!confirm("¿Quieres eliminar este gasto?"))return;
+  try{
+    const {error}=await db.from("expenses").delete().eq("id",id).eq("user_id",user.id);
+    if(error)throw error;
+    await loadData();
+    setFeedback("pageFeedback","Gasto eliminado.");
+  }catch(err){setFeedback("pageFeedback","No se pudo eliminar: "+err.message,true);}
+}
+$("accountBtn").addEventListener("click",()=>user?alert("Sesión iniciada: "+user.email):showAuth());
+$("newBtn").addEventListener("click",()=>{
+  if(!user)return showAuth();
+  if(!vehicles.length){setFeedback("pageFeedback","Primero añade un vehículo en Garaje.",true);return;}
+  $("date").value=today();
+  $("formPanel").hidden=false;
+  $("formPanel").scrollIntoView({behavior:"smooth",block:"start"});
+});
+$("cancelForm").addEventListener("click",()=>$("formPanel").hidden=true);
+$("cancelAuth").addEventListener("click",()=>$("authPanel").hidden=true);
+$("registerBtn").addEventListener("click",register);
+$("authForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  try{
+    const {error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+    if(error)throw error;
+    await refreshSession();
+  }catch(err){setFeedback("authFeedback",err.message,true);}
+});
+$("expenseForm").addEventListener("submit",saveExpense);
+$("vehicleFilter").addEventListener("change",render);
+$("periodFilter").addEventListener("change",render);
+$("expenseList").addEventListener("click",event=>{
+  const button=event.target.closest("[data-delete]");
+  if(button)deleteExpense(button.dataset.delete);
+});
+
+async function init(){
+  if(!window.supabase){
+    $("status").textContent="ERROR DE LIBRERÍA";
+    setFeedback("pageFeedback","No se ha podido cargar Supabase. Comprueba tu conexión.",true);
+    return;
+  }
+  if(!SUPABASE_ANON_KEY||SUPABASE_ANON_KEY.includes("PEGA_AQUI")){
+    $("status").textContent="FALTA LA CLAVE";
+    setFeedback("pageFeedback","Antes de usar la página, configura la clave pública actual de Supabase en el código.",true);
+    return;
+  }
+  try{
+    db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+    db.auth.onAuthStateChange(()=>setTimeout(refreshSession,0));
+    $("date").value=today();
+    await refreshSession();
+  }catch(err){
+    $("status").textContent="ERROR";
+    setFeedback("pageFeedback",err.message,true);
+  }
+}
+init();
+</script>
+</body>
+</html>
