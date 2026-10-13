@@ -26,9 +26,18 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Comprobar archivos del repositorio
+        run: |
+          pwd
+          git branch --show-current
+          git rev-parse --short HEAD
+          ls -la
+          ls -la scripts
+          test -f scripts/actualizar_noticias.py
 
       - name: Consultar RSS y generar JSON
         run: python scripts/actualizar_noticias.py
+      - 
 
       - name: Guardar noticias actualizadas
         run: |
