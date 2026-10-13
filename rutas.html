@@ -1,0 +1,550 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101010">
+<title>Rutas en coche y moto | AutoCifra</title>
+<meta name="description" content="Descubre carreteras espectaculares de España, rutas en moto, curvas de montaña y escapadas en coche con AutoCifra.">
+
+<style>
+:root{
+  --bg:#101010;
+  --panel:#191919;
+  --panel2:#202020;
+  --orange:#ff6a00;
+  --orange2:#ff8a32;
+  --text:#f5f5f5;
+  --muted:#a5a5a5;
+  --line:#303030;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.6;
+}
+a{color:inherit;text-decoration:none}
+img{display:block;width:100%;object-fit:cover}
+button,input,select{font:inherit}
+.container{width:min(1120px,92%);margin:auto}
+
+/* CABECERA */
+header{
+  height:72px;
+  display:flex;
+  align-items:center;
+  border-bottom:1px solid #292929;
+  background:rgba(16,16,16,.96);
+}
+.nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+.logo{
+  font-size:24px;
+  font-weight:900;
+  letter-spacing:-1px;
+}
+.logo span{color:var(--orange)}
+.navlinks{display:flex;gap:24px;font-size:14px;color:#d1d1d1}
+.navlinks a:hover{color:var(--orange)}
+.nav-cta{
+  border:1px solid var(--orange);
+  padding:9px 15px;
+  border-radius:7px;
+  color:var(--orange);
+  font-size:13px;
+  font-weight:800;
+}
+
+/* HERO */
+.hero{
+  position:relative;
+  min-height:520px;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  background:#202020;
+}
+.hero-bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center 56%;
+}
+.hero:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,rgba(10,10,10,.94) 0%,rgba(10,10,10,.70) 45%,rgba(10,10,10,.10) 100%),
+             linear-gradient(0deg,rgba(10,10,10,.5),transparent 55%);
+}
+.hero-content{position:relative;z-index:1;padding:70px 0;max-width:700px}
+.eyebrow{
+  color:var(--orange);
+  text-transform:uppercase;
+  letter-spacing:3px;
+  font-size:12px;
+  font-weight:900;
+}
+h1{
+  font-size:clamp(39px,7vw,76px);
+  line-height:1.02;
+  letter-spacing:-2.5px;
+  margin:18px 0;
+  text-transform:uppercase;
+}
+h1 span{color:var(--orange)}
+.hero p{font-size:17px;color:#d0d0d0;max-width:540px}
+.button{
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  gap:9px;
+  border:0;
+  border-radius:7px;
+  background:var(--orange);
+  color:white;
+  padding:14px 20px;
+  font-weight:850;
+  cursor:pointer;
+  transition:.2s;
+}
+.button:hover{background:var(--orange2);transform:translateY(-1px)}
+.button-outline{
+  background:transparent;
+  border:1px solid #777;
+  color:white;
+}
+.button-outline:hover{border-color:var(--orange);background:#242424}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+
+/* FRANJA */
+.stats{
+  background:#171717;
+  border-bottom:1px solid var(--line);
+}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr)}
+.stat{padding:20px 14px;text-align:center;border-right:1px solid var(--line)}
+.stat:last-child{border:0}
+.stat strong{display:block;color:var(--orange);font-size:17px}
+.stat span{font-size:12px;color:var(--muted)}
+
+/* SECCIONES */
+section.content-section{padding:68px 0}
+.section-heading{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:20px;
+  margin-bottom:26px;
+}
+.section-heading h2{
+  font-size:clamp(26px,4vw,38px);
+  line-height:1.15;
+  letter-spacing:-1px;
+  margin:8px 0 0;
+}
+.section-heading p{max-width:470px;color:var(--muted);font-size:14px;margin:0}
+.orange{color:var(--orange)}
+/* TARJETAS FOTOGRÁFICAS */
+.photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.photo-card{
+  min-height:360px;
+  position:relative;
+  overflow:hidden;
+  border:1px solid #353535;
+  border-radius:12px;
+  background:#242424;
+}
+.photo-card img{
+  position:absolute;
+  inset:0;
+  height:100%;
+  transition:transform .45s;
+}
+.photo-card:hover img{transform:scale(1.045)}
+.photo-card:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(0deg,rgba(0,0,0,.94),rgba(0,0,0,.05) 80%);
+}
+.photo-info{position:absolute;z-index:1;bottom:0;left:0;right:0;padding:25px}
+.photo-info .tag{
+  display:inline-block;
+  background:var(--orange);
+  color:white;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:1.2px;
+  padding:5px 9px;
+  border-radius:4px;
+  font-weight:900;
+}
+.photo-info h3{font-size:28px;margin:12px 0 5px}
+.photo-info p{font-size:14px;color:#d0d0d0;margin:0 0 15px}
+.text-link{font-size:13px;color:var(--orange);font-weight:900}
+
+/* CREADOR DE RUTAS */
+.planner{
+  background:linear-gradient(135deg,#1c1c1c,#151515);
+  border:1px solid #353535;
+  border-radius:14px;
+  padding:clamp(20px,4vw,36px);
+}
+.planner h2{font-size:30px;margin:7px 0}
+.planner-intro{color:var(--muted);margin-top:0}
+form{margin-top:24px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+.field label{display:block;font-size:13px;font-weight:750;margin-bottom:8px}
+.field input,.field select{
+  width:100%;
+  background:#101010;
+  border:1px solid #3c3c3c;
+  color:white;
+  padding:13px 12px;
+  border-radius:7px;
+  outline:none;
+}
+.field input:focus,.field select:focus{border-color:var(--orange)}
+.full{grid-column:1/-1}
+form .button{width:100%;margin-top:20px}
+.hint{font-size:12px;color:var(--muted);margin-top:12px}
+
+/* RESULTADO */
+.result{
+  display:none;
+  margin-top:22px;
+  padding:23px;
+  border:1px solid #56351f;
+  border-radius:10px;
+  background:#211a15;
+}
+.result h3{margin:7px 0}
+.result p{color:#d0c8c2;font-size:14px}
+.result-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:17px}
+.result-actions .button{flex:1}
+
+/* PAISAJES */
+.landscape-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.landscape{
+  border:1px solid #303030;
+  background:var(--panel);
+  border-radius:10px;
+  overflow:hidden;
+}
+.landscape img{height:190px}
+.landscape-body{padding:17px}
+.landscape-body small{color:var(--orange);font-weight:800;text-transform:uppercase;font-size:10px;letter-spacing:1px}
+.landscape-body h3{margin:7px 0;font-size:19px}
+.landscape-body p{color:var(--muted);font-size:13px;margin:0}
+
+/* CTA */
+.cta{
+  border:1px solid #55301a;
+  background:linear-gradient(110deg,#24170f,#171717 75%);
+  border-radius:13px;
+  padding:30px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+.cta h2{margin:0 0 6px;font-size:27px}
+.cta p{color:var(--muted);margin:0}
+footer{border-top:1px solid var(--line);padding:27px 0;color:var(--muted);font-size:12px}
+.footer-inner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+
+@media(max-width:700px){
+  header{height:64px}
+  .navlinks{display:none}
+  .nav-cta{font-size:11px;padding:8px 10px}
+  .hero{min-height:490px}
+  .hero-content{padding:58px 0}
+  h1{letter-spacing:-1.5px}
+  .hero p{font-size:15px}
+  .stats-grid{grid-template-columns:1fr}
+  .stat{border-right:0;border-bottom:1px solid var(--line);padding:12px}
+  .stat:last-child{border-bottom:0}
+  section.content-section{padding:47px 0}
+  .section-heading{display:block}
+  .section-heading p{margin-top:12px}
+  .photo-grid,.landscape-grid,.form-grid{grid-template-columns:1fr}
+  .photo-card{min-height:310px}
+  .landscape img{height:210px}
+  .full{grid-column:auto}
+  .cta{align-items:flex-start;flex-direction:column;padding:24px}
+  .cta .button{width:100%}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="container nav">
+    <a class="logo" href="/">AUTO<span>CIFRA</span></a>
+    <nav class="navlinks">
+      <a href="/">Inicio</a>
+      <a href="#tipos">Tipos de ruta</a>
+      <a href="#crear">Crear ruta</a>
+      <a href="#destinos">Destinos</a>
+    </nav>
+    <a class="nav-cta" href="#crear">ENCUENTRA TU RUTA ↗</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <img class="hero-bg"
+      src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2000&q=85"
+      alt="Montañas imponentes bajo un cielo dramático"
+      fetchpriority="high">
+    <div class="container">
+      <div class="hero-content">
+        <div class="eyebrow">Carretera · Libertad · Aventura</div>
+        <h1>España se vive<br>mejor entre <span>curvas.</span></h1>
+        <p>Puertos de montaña, carreteras inolvidables y paisajes que merecen cada kilómetro. Prepara tu próxima aventura en coche o moto.</p>
+        <div class="hero-actions">
+          <a class="button" href="#crear">⌁ Diseñar mi ruta</a>
+          <a class="button button-outline" href="#tipos">Explorar rutas</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="container stats-grid">
+      <div class="stat"><strong>🏍️ MODO MOTO</strong><span>Curvas y carreteras panorámicas</span></div>
+      <div class="stat"><strong>🚗 MODO COCHE</strong><span>Escapadas y viajes por carretera</span></div>
+      <div class="stat"><strong>🇪🇸 DESTINO ESPAÑA</strong><span>Montañas, costa y pueblos</span></div>
+    </div>
+  </div>
+
+  <section class="content-section" id="tipos">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">Elige tu máquina</div>
+          <h2>Dos formas de vivir<br>la carretera<span class="orange">.</span></h2>
+        </div>
+        <p>Da igual si buscas enlazar curvas en un puerto de montaña o disfrutar de una escapada con vistas. El viaje empieza eligiendo tu estilo.</p>
+      </div>
+
+      <div class="photo-grid">
+        <article class="photo-card">
+          <img src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1100&q=85"
+            alt="Motocicleta en una carretera de montaña" loading="lazy">
+          <div class="photo-info">
+            <span class="tag">Modo moto</span>
+            <h3>Busca la siguiente curva.</h3>
+            <p>Puertos, asfalto y carreteras panorámicas para disfrutar del viaje.</p>
+            <a class="text-link" href="#crear" data-mode="moto">PREPARAR RUTA EN MOTO ↗</a>
+          </div>
+        </article>
+
+        <article class="photo-card">
+          <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1100&q=85"
+            alt="Coche deportivo en un entorno de carretera" loading="lazy">
+          <div class="photo-info">
+            <span class="tag">Modo coche</span>
+            <h3>El destino es el camino.</h3>
+            <p>Escapadas, paisajes y carreteras para disfrutar al volante.</p>
+            <a class="text-link" href="#crear" data-mode="coche">PREPARAR RUTA EN COCHE ↗</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section" id="crear">
+    <div class="container">
+      <div class="planner">
+        <div class="eyebrow">Tu aventura empieza aquí</div>
+        <h2>Diseña tu próxima ruta<span class="orange">.</span></h2>
+        <p class="planner-intro">Configura el viaje y abre una búsqueda adaptada a tus preferencias.</p>
+
+        <form id="routeForm">
+          <div class="form-grid">
+            <div class="field full">
+              <label for="origin">Punto de salida</label>
+              <input id="origin" placeholder="Ej. Madrid, Valencia, Paterna..." required>
+            </div>
+
+            <div class="field">
+              <label for="vehicle">¿Con qué vas?</label>
+              <select id="vehicle">
+                <option value="moto">🏍️ Moto</option>
+                <option value="coche">🚗 Coche</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="distance">Distancia deseada</label>
+              <select id="distance">
+                <option value="50">Hasta 50 km</option>
+                <option value="100" selected>Hasta 100 km</option>
+                <option value="150">Hasta 150 km</option>
+                <option value="200">Hasta 200 km</option>
+                <option value="300">Hasta 300 km</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="style">Estilo de ruta</label>
+              <select id="style">
+                <option value="carreteras de curvas y montaña">Curvas y montaña</option>
+                <option value="rutas panorámicas y miradores">Miradores y paisajes</option>
+                <option value="pueblos bonitos para visitar">Pueblos con encanto</option>
+                <option value="carreteras costeras panorámicas">Carreteras de costa</option>
+                <option value="paradas y gasolineras">Paradas y gasolineras</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="journey">Tipo de recorrido</label>
+              <select id="journey">
+                <option value="ida y vuelta">Ida y vuelta</option>
+                <option value="solo ida">Solo ida</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="button" type="submit">BUSCAR MI AVENTURA ↗</button>
+          <p class="hint">La búsqueda se abrirá en Google Maps. La distancia indicada es orientativa; revisa el recorrido antes de salir.</p>
+        </form>
+
+        <div class="result" id="result" aria-live="polite">
+          <div class="eyebrow">Búsqueda preparada</div>
+          <h3 id="resultTitle">Tu próxima aventura</h3>
+          <p id="resultText"></p>
+          <div class="result-actions">
+            <a id="mapsLink" class="button" href="#" target="_blank" rel="noopener">ABRIR GOOGLE MAPS ↗</a>
+            <button type="button" class="button button-outline" id="editButton">Editar búsqueda</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section" id="destinos">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">Kilómetros con vistas</div>
+          <h2>España, de curva<br>en curva<span class="orange">.</span></h2>
+        </div>
+        <p>Algunas ideas para inspirar tu próxima salida. Comprueba siempre el trazado, el estado de la carretera y las condiciones antes de viajar.</p>
+      </div>
+
+      <div class="landscape-grid">
+        <article class="landscape">
+          <img src="https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=800&q=80"
+            alt="Paisaje natural de montaña" loading="lazy">
+          <div class="landscape-body">
+            <small>Montaña</small>
+            <h3>Picos de Europa</h3>
+            <p>Montañas verdes, desniveles y paisajes espectaculares en el norte peninsular.</p>
+          </div>
+        </article>
+
+        <article class="landscape">
+          <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80"
+            alt="Cordillera con grandes cumbres" loading="lazy">
+          <div class="landscape-body">
+            <small>Altas cumbres</small>
+            <h3>Sierra Nevada</h3>
+            <p>Un entorno de montaña imponente para planear una escapada por Andalucía.</p>
+          </div>
+        </article>
+
+        <article class="landscape">
+          <img src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&fit=crop&w=800&q=80"
+            alt="Costa y mar azul" loading="lazy">
+          <div class="landscape-body">
+            <small>Costa</small>
+            <h3>Carreteras del Mediterráneo</h3>
+            <p>Mar, curvas y pueblos costeros para disfrutar de una salida junto al litoral.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="container">
+      <div class="cta">
+        <div>
+          <div class="eyebrow">Antes de arrancar</div>
+          <h2>Calcula cuánto te costará.</h2>
+          <p>Estima el combustible de tu próxima escapada con AutoCifra.</p>
+        </div>
+        <a class="button" href="/calculadora.html">CALCULAR COMBUSTIBLE ↗</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <span>© AutoCifra · Tu pasión, tu carretera.</span>
+    <a href="/">Volver al inicio ↑</a>
+  </div>
+</footer>
+
+<script>
+const form = document.getElementById('routeForm');
+const result = document.getElementById('result');
+
+document.querySelectorAll('[data-mode]').forEach(link => {
+  link.addEventListener('click', () => {
+    document.getElementById('vehicle').value = link.dataset.mode;
+  });
+});
+
+form.addEventListener('submit', event => {
+  event.preventDefault();
+
+  const origin = document.getElementById('origin').value.trim();
+  const vehicle = document.getElementById('vehicle').value;
+  const distance = document.getElementById('distance').value;
+  const style = document.getElementById('style').value;
+  const journey = document.getElementById('journey').value;
+
+  if (!origin) return;
+
+  const vehicleName = vehicle === 'moto' ? 'moto' : 'coche';
+  document.getElementById('resultTitle').textContent =
+    'Ruta preparada para tu ' + vehicleName;
+
+  document.getElementById('resultText').textContent =
+    'Salida: ' + origin + '. Preferencias: ' + style +
+    '. Distancia orientativa: ' + distance + ' km. Recorrido: ' + journey + '.';
+
+  const query = style + ' cerca de ' + origin +
+    ' para ruta en ' + vehicleName + ' aproximadamente ' + distance + ' km';
+
+  document.getElementById('mapsLink').href =
+    'https://www.google.com/maps/search/?api=1&query=' +
+    encodeURIComponent(query);
+
+  result.style.display = 'block';
+  result.scrollIntoView({behavior:'smooth', block:'center'});
+});
+
+document.getElementById('editButton').addEventListener('click', () => {
+  result.style.display = 'none';
+  form.scrollIntoView({behavior:'smooth', block:'start'});
+});
+</script>
+</body>
+</html>
