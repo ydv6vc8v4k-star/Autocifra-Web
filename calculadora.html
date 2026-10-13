@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090b10">
+<meta name="description" content="Calcula el combustible, los litros y el coste de tus viajes en coche o moto con AutoCifra.">
+<title>Calculadora de combustible y viajes | AutoCifra</title>
+<style>
+:root{color-scheme:dark;--bg:#090b10;--panel:#141821;--panel2:#1d232d;--orange:#ff6b2c;--white:#f5f7fa;--muted:#a3adbb;--border:#2b323e}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:#ff9a6a}
+button,input,select{font:inherit}
+.container{width:min(100% - 28px,1000px);margin:auto}
+header{padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.logo{font-weight:950;font-size:21px;letter-spacing:1px;color:white;text-decoration:none}
+.logo span{color:var(--orange)}
+.nav{color:var(--muted);font-size:13px;text-decoration:none}
+.hero{padding:34px 0 24px}
+.eyebrow{color:var(--orange);font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(34px,7vw,58px);line-height:1.03;letter-spacing:-1.8px;margin:12px 0}
+h2{font-size:23px;margin:0 0 10px}
+p{line-height:1.7;color:var(--muted)}
+.hero p{max-width:650px}
+.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:7px;min-width:0}
+.field.full{grid-column:1/-1}
+label{font-size:12px;color:#c5cbd5}
+input,select{width:100%;min-width:0;padding:13px;background:#090b10;color:white;border:1px solid var(--border);border-radius:10px}
+input:focus,select:focus{outline:2px solid var(--orange);outline-offset:1px}
+.btn{width:100%;padding:14px;border:0;border-radius:11px;background:var(--orange);color:#111;font-weight:900;cursor:pointer}
+.results{position:sticky;top:12px}
+.result-main{padding:18px;background:#26170f;border:1px solid #61341e;border-radius:14px;margin:15px 0}
+.result-main span{display:block;color:#ffb18d;font-size:12px}
+.result-main strong{display:block;font-size:clamp(32px,6vw,45px);margin-top:7px;overflow-wrap:anywhere}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric{padding:14px;border-radius:12px;background:var(--panel2)}
+.metric span{font-size:11px;color:var(--muted);display:block}
+.metric strong{display:block;font-size:19px;margin-top:8px;overflow-wrap:anywhere}
+.note{font-size:12px}
+.section{margin-top:25px}
+.examples{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.example{background:var(--panel);border:1px solid var(--border);padding:15px;border-radius:14px}
+.example strong{display:block;margin:7px 0}
+footer{border-top:1px solid var(--border);margin-top:35px;padding:22px 0;color:var(--muted);font-size:12px}
+@media(max-width:720px){.layout{grid-template-columns:1fr}.results{position:static}.panel{padding:17px}.hero{padding-top:20px}.examples{grid-template-columns:1fr}.fields{gap:12px}}
+@media(max-width:380px){.fields{grid-template-columns:1fr}.field.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<a class="logo" href="index.html">AUTO<span>CIFRA</span></a>
+<a class="nav" href="index.html">← Volver al inicio</a>
+</header>
+
+<section class="hero">
+<div class="eyebrow">Herramientas AutoCifra</div>
+<h1>¿Cuánto te cuesta<br>cada viaje?</h1>
+<p>Calcula cuánto combustible necesitas, cuánto vas a gastar y el coste por kilómetro de tu coche o moto. Sin registros ni aplicaciones adicionales.</p>
+</section>
+
+<main class="layout">
+<section class="panel">
+<h2>Datos del viaje</h2>
+<p class="note">Introduce tus datos para obtener una estimación.</p>
+<div class="fields">
+<div class="field full">
+<label for="distance">Distancia de ida (km)</label>
+<input id="distance" type="number" min="0" step="any" value="100" inputmode="decimal">
+</div>
+<div class="field">
+<label for="consumption">Consumo medio (L/100 km)</label>
+<input id="consumption" type="number" min="0" step="any" value="6.5" inputmode="decimal">
+</div>
+<div class="field">
+<label for="fuelPrice">Precio del combustible (€/L)</label>
+<input id="fuelPrice" type="number" min="0" step="any" value="1.60" inputmode="decimal">
+</div>
+<div class="field full">
+<label for="journey">Tipo de viaje</label>
+<select id="journey">
+<option value="1">Solo ida</option>
+<option value="2" selected>Ida y vuelta</option>
+</select>
+</div>
+<div class="field full">
+<label for="occupants">Personas que comparten el gasto</label>
+<input id="occupants" type="number" min="1" max="100" step="1" value="1" inputmode="numeric">
+</div>
+<div class="field full">
+<button class="btn" id="calculate" type="button">Calcular mi viaje</button>
+</div>
+</div>
+<p class="note">El resultado es una estimación basada en el consumo y el precio que introduces. No incluye peajes, aparcamiento ni otros gastos.</p>
+</section>
+
+<aside class="panel results" aria-live="polite">
+<div class="eyebrow">Tu presupuesto</div>
+<div class="result-main">
+<span>Coste total de combustible</span>
+<strong id="totalCost">16,00 €</strong>
+</div>
+<div class="metrics">
+<div class="metric"><span>Distancia total</span><strong id="totalDistance">200 km</strong></div>
+<div class="metric"><span>Combustible necesario</span><strong id="litres">13 L</strong></div>
+<div class="metric"><span>Coste por km</span><strong id="perKm">0,08 €/km</strong></div>
+<div class="metric"><span>Por persona</span><strong id="perPerson">16,00 €</strong></div>
+</div>
+<p class="note" id="resultMessage">Estimación calculada con los datos introducidos.</p>
+</aside>
+</main>
+
+<section class="section">
+<div class="eyebrow">Ejemplos orientativos</div>
+<h2>¿Cómo cambia el coste?</h2>
+<p>Compara consumos hipotéticos para un viaje de 200 km con combustible a 1,60 €/L.</p>
+<div class="examples">
+<div class="example"><span class="note">Moto eficiente</span><strong>3,5 L/100 km</strong><span id="example1">11,20 € por 200 km</span></div>
+<div class="example"><span class="note">Coche compacto</span><strong>6 L/100 km</strong><span id="example2">19,20 € por 200 km</span></div>
+<div class="example"><span class="note">Coche de consumo alto</span><strong>9 L/100 km</strong><span id="example3">28,80 € por 200 km</span></div>
+</div>
+</section>
+
+<section class="section panel">
+<h2>Cómo se calcula</h2>
+<p>La herramienta multiplica la distancia total por el consumo medio y lo divide entre 100 para estimar los litros. Después multiplica esos litros por el precio por litro. Si compartís el gasto, divide el coste entre el número de personas.</p>
+<p class="note">Fórmula: litros = distancia total × consumo ÷ 100. Coste = litros × precio por litro.</p>
+</section>
+
+<footer>AutoCifra · Calculadora de combustible · <a href="index.html">Inicio</a></footer>
+</div>
+<script>
+"use strict";
+const ids=["distance","consumption","fuelPrice","journey","occupants"];
+const el=id=>document.getElementById(id);
+const euro=n=>n.toLocaleString("es-ES",{style:"currency",currency:"EUR"});
+const number=n=>n.toLocaleString("es-ES",{maximumFractionDigits:2});
+function calculate(){
+  const distance=Number(el("distance").value);
+  const consumption=Number(el("consumption").value);
+  const price=Number(el("fuelPrice").value);
+  const journeys=Number(el("journey").value);
+  const occupants=Number(el("occupants").value);
+  if(!Number.isFinite(distance)||distance<=0||!Number.isFinite(consumption)||consumption<0||!Number.isFinite(price)||price<0||!Number.isInteger(occupants)||occupants<1){
+    el("resultMessage").textContent="Revisa los datos: la distancia debe ser mayor que cero y las demás cantidades deben ser válidas.";
+    return;
+  }
+  const totalDistance=distance*journeys;
+  const litres=totalDistance*consumption/100;
+  const cost=litres*price;
+  el("totalCost").textContent=euro(cost);
+  el("totalDistance").textContent=number(totalDistance)+" km";
+  el("litres").textContent=number(litres)+" L";
+  el("perKm").textContent=euro(totalDistance?cost/totalDistance:0)+"/km";
+  el("perPerson").textContent=euro(cost/occupants);
+  el("resultMessage").textContent="Estimación para "+(journeys===2?"ida y vuelta":"solo ida")+". No incluye peajes ni otros gastos.";
+}
+el("calculate").addEventListener("click",calculate);
+ids.forEach(id=>el(id).addEventListener("input",calculate));
+function example(id,consumption){el(id).textContent=euro(200*consumption/100*1.6)+" por 200 km";}
+example("example1",3.5);example("example2",6);example("example3",9);calculate();
+</script>
+</body>
+</html>
