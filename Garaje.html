@@ -217,7 +217,7 @@ footer{text-align:center;padding:30px 0 10px;color:#798392;font-size:12px}
 
 /* CONFIGURACIÓN: utiliza la clave pública anon/publishable, nunca service_role. */
 const SUPABASE_URL = "https://fcwriuxqiywkjyjpkfvp.supabase.co";
-const SUPABASE_ANON_KEY = "PEGA_AQUI_TU_CLAVE_PUBLICA_ANON";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjd3JpdXhxaXl3a2p5anBrZnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4NDI4NzgsImV4cCI6MjEwNzQxODg3OH0.aXtvy4Q3vci-iM-Jjhrm2vzqKRJuFFeux2uZlcV-I7Q";
 
 let db = null;
 let currentUser = null;
@@ -661,11 +661,15 @@ async function init() {
     showEmpty("No se ha cargado la librería de Supabase. Comprueba tu conexión a internet.");
     return;
   }
-  if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjd3JpdXhxaXl3a2p5anBrZnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4NDI4NzgsImV4cCI6MjEwNzQxODg3OH0.aXtvy4Q3vci-iM-Jjhrm2vzqKRJuFFeux2uZlcV-I7Q") {
-    setStatus("FALTA LA CLAVE");
-    showEmpty("Pega la clave pública anon/publishable de Supabase en la constante SUPABASE_ANON_KEY del código.");
-    render();
-    return;
+  if (
+  !SUPABASE_ANON_KEY ||
+  SUPABASE_ANON_KEY.includes("PEGA_AQUI")
+) {
+  setStatus("FALTA LA CLAVE");
+  showEmpty("Pega la clave pública anon de Supabase en SUPABASE_ANON_KEY.");
+  render();
+  return;
+}
   }
   try {
     db = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
