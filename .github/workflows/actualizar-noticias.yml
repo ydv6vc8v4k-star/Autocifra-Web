@@ -2,9 +2,9 @@
 name: Actualizar noticias del motor
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "17 */6 * * *"
-  workflow_dispatch:
 
 permissions:
   contents: write
@@ -15,37 +15,72 @@ concurrency:
 
 jobs:
   actualizar:
+    name: Descargar noticias y actualizar JSON
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
+        with:
+          ref: main
 
-      - name: Preparar Python
+      - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - name: Comprobar archivos del repositorio
+          python-version: "3.x"
+
+      - name: Diagnosticar repositorio
         run: |
+          echo "Directorio actual:"
           pwd
+          echo "Rama:"
           git branch --show-current
+          echo "Commit:"
           git rev-parse --short HEAD
+          echo "Archivos de la raíz:"
           ls -la
-          ls -la scripts
-          test -f scripts/actualizar_noticias.py
+          echo "Contenido de scripts:"
+          ls -la scripts || true
+
+      - name: Comprobar que existe el script
+        run: |
+          if [ ! -f "scripts/actualizar_noticias.py" ]; then
+            echo "::error::No existe scripts/actualizar_noticias.py en la copia descargada."
+            echo "Buscando scripts similares:"
+            find . -maxdepth 4 -type f -iname '*noticia*.py' -print
+            exit 1
+          fi
 
       - name: Consultar RSS y generar JSON
         run: python scripts/actualizar_noticias.py
 
-      - name: Guardar noticias actualizadas
+      - name: Comprobar JSON generado
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("noticias.json")
+          if not path.is_file():
+              raise SystemExit("No se ha generado noticias.json")
+
+          data = json.loads(path.read_text(encoding="utf-8"))
+          if not isinstance(data.get("noticias"), list):
+              raise SystemExit("El campo 'noticias' debe ser una lista")
+
+          print(f"Noticias encontradas: {len(data['noticias'])}")
+          print(f"Archivo válido: {path}")
+          PY
+
+      - name: Guardar cambios en GitHub
+        run: |
           git add noticias.json
           if git diff --cached --quiet; then
-            echo "No hay cambios nuevos."
+            echo "No hay cambios nuevos en noticias.json."
           else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git commit -m "Actualizar noticias del motor"
-            git push
+            git push origin HEAD:main
           fi
