@@ -474,6 +474,15 @@ function showEditor(mode, vehicleId) {
   feedback("editorFeedback","");
 
   const isVehicle = mode === "vehicle";
+  
+$("recordFields").querySelectorAll("input, select, textarea").forEach(el => {
+  el.disabled = isVehicle;
+});
+
+$("vehicleFields").querySelectorAll("input, select, textarea").forEach(el => {
+  el.disabled = !isVehicle;
+});
+
   $("vehicleFields").hidden = !isVehicle;
   $("recordFields").hidden = isVehicle;
   $("editorTitle").textContent = isVehicle ? "Añadir vehículo" :
