@@ -656,33 +656,39 @@ document.addEventListener("click",event=>{
 });
 
 async function init() {
-  if (!window.supabase) {
-    setStatus("ERROR DE LIBRERÍA");
-    showEmpty("No se ha cargado la librería de Supabase. Comprueba tu conexión a internet.");
-    return;
-  }
-  if (
-  !SUPABASE_ANON_KEY ||
-  SUPABASE_ANON_KEY.includes("PEGA_AQUI")
-) {
-  setStatus("FALTA LA CLAVE");
-  showEmpty("Pega la clave pública anon de Supabase en SUPABASE_ANON_KEY.");
-  render();
-  return;
+if (!window.supabase) {
+setStatus(“ERROR DE LIBRERÍA”);
+showEmpty(“No se ha cargado la librería de Supabase. Comprueba tu conexión a internet.”);
+return;
 }
-  }
-  try {
-    db = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-    db.auth.onAuthStateChange((event,session)=>{
-      currentUser = session ? session.user : null;
-      setTimeout(()=>refreshSession(),0);
-    });
-    await refreshSession();
-  } catch(err) {
-    console.error(err);
-    setStatus("ERROR DE CONEXIÓN");
-    showEmpty("No se ha podido iniciar Supabase: " + err.message);
-  }
+
+if (
+!SUPABASE_ANON_KEY ||
+SUPABASE_ANON_KEY.includes(“PEGA_AQUI”)
+) {
+setStatus(“FALTA LA CLAVE”);
+showEmpty(“Pega la clave pública anon de Supabase en SUPABASE_ANON_KEY.”);
+render();
+return;
+}
+
+try {
+db = window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_ANON_KEY
+);
+
+db.auth.onAuthStateChange((event, session) => {
+  currentUser = session ? session.user : null;
+  setTimeout(() => refreshSession(), 0);
+});
+await refreshSession();
+
+} catch (err) {
+console.error(err);
+setStatus(“ERROR DE CONEXIÓN”);
+showEmpty(“No se ha podido iniciar Supabase: “ + err.message);
+}
 }
 
 init();
