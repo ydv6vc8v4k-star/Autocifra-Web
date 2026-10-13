@@ -637,6 +637,7 @@ $("cancelEditorBtn").addEventListener("click",()=>$("editorPanel").hidden=true);
 $("authForm").addEventListener("submit",handleAuth);
 $("registerBtn").addEventListener("click",handleRegister);
 $("editorForm").addEventListener("submit",saveEditor);
+$("saveBtn").addEventListener("click", () => console.log("BOTÓN GUARDAR PULSADO"));
 
 $("logoutBtn").addEventListener("click",async()=>{
   if (!db) return;
