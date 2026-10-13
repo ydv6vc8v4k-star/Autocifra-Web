@@ -1,0 +1,373 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0d12">
+<meta name="description" content="Compara precios de gasolina y diésel en España con AutoCifra. Busca gasolineras por provincia y encuentra sus precios oficiales.">
+<title>Gasolineras y precios | AutoCifra</title>
+<style>
+:root{--bg:#0b0d12;--panel:#141821;--line:#272d39;--text:#f4f6fa;--muted:#a2aaba;--accent:#ff6b35;--green:#71e0a0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.5}
+a{color:inherit;text-decoration:none}
+header{border-bottom:1px solid var(--line);background:#10131a;position:sticky;top:0;z-index:5}
+.nav{max-width:1150px;margin:auto;padding:16px 22px;display:flex;justify-content:space-between;align-items:center;gap:18px}
+.logo{font-size:23px;font-weight:900;letter-spacing:-1px}
+.logo span{color:var(--accent)}
+.navlinks{display:flex;gap:17px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.navlinks a:hover{color:var(--accent)}
+main{max-width:1150px;margin:auto;padding:28px 22px 60px}
+.hero{padding:35px 30px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(120deg,#1c222e,#11141b);position:relative;overflow:hidden}
+.eyebrow{color:var(--accent);font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:2px}
+h1{font-size:clamp(32px,6vw,54px);line-height:1.06;letter-spacing:-1.8px;margin:13px 0}
+.hero p{color:var(--muted);max-width:650px;margin:0}
+.hero strong{color:white}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.pill{background:#252c38;border:1px solid #343d4c;border-radius:30px;padding:8px 12px;font-size:12px;color:#e3e7ee}
+.section-title{margin:30px 0 14px;font-size:22px;letter-spacing:-.5px}
+.searchbox{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}
+.filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}
+input,select{width:100%;padding:13px;background:#0d1016;color:var(--text);border:1px solid #343c49;border-radius:10px;font-size:14px;outline:none}
+input:focus,select:focus{border-color:var(--accent)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+button,.button{border:0;border-radius:10px;padding:12px 17px;font-size:13px;font-weight:bold;cursor:pointer;display:inline-block}
+.primary{background:var(--accent);color:#17100d}
+.secondary{background:#252c38;color:white;border:1px solid #394252}
+button:disabled{opacity:.6;cursor:wait}
+.notice{font-size:12px;color:var(--muted);margin-top:12px}
+.status{margin:18px 0;padding:13px 15px;border-radius:10px;background:#171c25;color:var(--muted);font-size:13px}
+.status.error{color:#ffb4a4;border:1px solid #673d36}
+.results-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.count{font-size:13px;color:var(--muted)}
+.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.station{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:18px;min-width:0}
+.station-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.brand{font-size:16px;font-weight:bold;overflow-wrap:anywhere}
+.price{font-size:23px;color:var(--green);font-weight:800;white-space:nowrap}
+.address{font-size:13px;color:var(--muted);margin:10px 0}
+.details{font-size:12px;color:#c2c9d4}
+.station .actions{margin-top:13px}
+.station .button{font-size:12px;padding:9px 12px}
+.empty{grid-column:1/-1;text-align:center;padding:35px 18px;border:1px dashed #343c49;border-radius:15px;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding:24px 20px;text-align:center;color:var(--muted);font-size:12px}
+footer a{color:var(--accent)}
+@media(max-width:720px){.nav{align-items:flex-start;flex-direction:column}.navlinks{gap:12px}.filters{grid-template-columns:1fr}.results{grid-template-columns:1fr}main{padding:18px 14px 45px}.hero{padding:27px 20px}.price{font-size:21px}}
+</style>
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <a class="logo" href="index.html">AUTO<span>CIFRA</span></a>
+    <div class="navlinks">
+      <a href="index.html">Inicio</a>
+      <a href="Garaje.html">Mi garaje</a>
+      <a href="rutas.html">Rutas</a>
+      <a href="calculadora.html">Calculadoras</a>
+      <a href="gasolineras.html">Gasolineras</a>
+      <a href="comunidad.html">Comunidad</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">AutoCifra · Combustible</div>
+    <h1>Reposta mejor.<br>Gasta menos.</h1>
+    <p>Compara precios publicados de combustible, encuentra estaciones y consulta su ubicación sin salir de AutoCifra.</p>
+    <div class="stats">
+      <span class="pill">Precios oficiales publicados</span>
+      <span class="pill">Búsqueda por provincia</span>
+      <span class="pill">Acceso a mapas</span>
+    </div>
+  </section>
+
+  <h2 class="section-title">Encuentra tu gasolinera</h2>
+  <section class="searchbox">
+    <div class="filters">
+      <div>
+        <label for="province">Provincia</label>
+        <select id="province">
+          <option value="">Todas las provincias</option>
+        </select>
+      </div>
+      <div>
+        <label for="fuel">Combustible</label>
+        <select id="fuel">
+          <option value="Precio_x0020_Gasolina_x0020_95_x0020_E5">Gasolina 95 E5</option>
+          <option value="Precio_x0020_Gasolina_x0020_98_x0020_E5">Gasolina 98 E5</option>
+          <option value="Precio_x0020_Gasoleo_x0020_A">Diésel A</option>
+          <option value="Precio_x0020_Gasoleo_x0020_Premium">Diésel prémium</option>
+          <option value="Precio_x0020_Gasolina_x0020_95_x0020_E10">Gasolina 95 E10</option>
+        </select>
+      </div>
+      <div>
+        <label for="search">Municipio, marca o dirección</label>
+        <input id="search" type="search" placeholder="Ej. Paterna, Repsol...">
+      </div>
+    </div>
+    <div class="actions">
+      <button class="primary" id="searchBtn">Buscar gasolineras</button>
+      <button class="secondary" id="resetBtn">Restablecer filtros</button>
+    </div>
+    <p class="notice">Los precios dependen de la información publicada por las estaciones. Comprueba el precio en el surtidor antes de repostar.</p>
+  </section>
+
+  <div id="status" class="status" role="status" aria-live="polite">Conectando con el servicio oficial de precios...</div>
+
+  <section>
+    <div class="results-head">
+      <h2 class="section-title">Precios disponibles</h2>
+      <span id="count" class="count"></span>
+    </div>
+    <div id="results" class="results">
+      <div class="empty">Cargando estaciones de servicio...</div>
+    </div>
+  </section>
+
+  <p class="notice">Fuente de datos: Ministerio para la Transición Ecológica y el Reto Demográfico. Los datos pueden tener retrasos o no incluir todas las estaciones.</p>
+</main>
+
+<footer>
+  <p>AutoCifra · Información para conductores</p>
+  <p><a href="https://energia.serviciosmin.gob.es/ServiciosRestCarburantes/PreciosCarburantes/help" target="_blank" rel="noopener noreferrer">Consultar el servicio oficial de precios</a></p>
+  <p>Los precios se muestran con fines informativos y pueden cambiar.</p>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  const API = "https://energia.serviciosmin.gob.es/ServiciosRestCarburantes/PreciosCarburantes/";
+  const provinceSelect = document.getElementById("province");
+  const fuelSelect = document.getElementById("fuel");
+  const searchInput = document.getElementById("search");
+  const results = document.getElementById("results");
+  const status = document.getElementById("status");
+  const count = document.getElementById("count");
+  const searchBtn = document.getElementById("searchBtn");
+  let stations = [];
+  let loaded = false;
+
+  const provinceKeys = ["Provincia", "provincia"];
+  const nameKeys = ["Rótulo", "Rotulo", "Nombre", "nombre"];
+  const addressKeys = ["Dirección", "Direccion", "dirección"];
+  const townKeys = ["Municipio", "municipio", "Localidad"];
+  const priceKeys = {
+    "Precio_x0020_Gasolina_x0020_95_x0020_E5": ["Precio_x0020_Gasolina_x0020_95_x0020_E5", "Precio Gasolina 95 E5"],
+    "Precio_x0020_Gasolina_x0020_98_x0020_E5": ["Precio_x0020_Gasolina_x0020_98_x0020_E5", "Precio Gasolina 98 E5"],
+    "Precio_x0020_Gasoleo_x0020_A": ["Precio_x0020_Gasoleo_x0020_A", "Precio Gasoleo A"],
+    "Precio_x0020_Gasoleo_x0020_Premium": ["Precio_x0020_Gasoleo_x0020_Premium", "Precio Gasoleo Premium"],
+    "Precio_x0020_Gasolina_x0020_95_x0020_E10": ["Precio_x0020_Gasolina_x0020_95_x0020_E10", "Precio Gasolina 95 E10"]
+  };
+
+  function value(obj, keys) {
+    for (const key of keys) {
+      if (obj && obj[key] !== undefined && obj[key] !== null && String(obj[key]).trim() !== "") {
+        return String(obj[key]).trim();
+      }
+    }
+    return "";
+  }
+
+  function cleanPrice(raw) {
+    if (!raw) return null;
+    const n = Number(String(raw).replace(",", ".").replace(/[^\d.]/g, ""));
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }
+
+  function stationList(data) {
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.ListaEESSPrecio)) return data.ListaEESSPrecio;
+    if (data && data.d) return stationList(data.d);
+    if (data && data.ListaEESSPrecio && data.ListaEESSPrecio.EESSPrecio) {
+      const list = data.ListaEESSPrecio.EESSPrecio;
+      return Array.isArray(list) ? list : [list];
+    }
+    return [];
+  }
+
+  function setStatus(message, isError) {
+    status.textContent = message;
+    status.className = isError ? "status error" : "status";
+  }
+
+  async function getJson(url) {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { "Accept": "application/json" }
+    });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    return response.json();
+  }
+
+  function loadProvinces() {
+    const provinces = [...new Set(stations.map(s => value(s, provinceKeys)).filter(Boolean))]
+      .sort((a,b) => a.localeCompare(b, "es"));
+    for (const province of provinces) {
+      const option = document.createElement("option");
+      option.value = province;
+      option.textContent = province;
+      provinceSelect.appendChild(option);
+    }
+  }
+
+  function mapUrl(station) {
+    const lat = value(station, ["Latitud", "Latitud_x0020__x0028_WGS84_x0029_"]);
+    const lon = value(station, ["Longitud_x0020__x0028_WGS84_x0029_", "Longitud", "Longitud (WGS84)"]);
+    if (lat && lon) {
+      const latitude = Number(lat.replace(",", "."));
+      const longitude = Number(lon.replace(",", "."));
+      if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
+        return "https://www.google.com/maps/dir/?api=1&destination=" +
+          encodeURIComponent(latitude + "," + longitude);
+      }
+    }
+    const query = [value(station, nameKeys), value(station, addressKeys),
+      value(station, townKeys), value(station, provinceKeys)].filter(Boolean).join(", ");
+    return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(query);
+  }
+
+  function render() {
+    const selectedProvince = provinceSelect.value;
+    const query = searchInput.value.trim().toLocaleLowerCase("es");
+    const fuelKey = fuelSelect.value;
+    const fuelNames = priceKeys[fuelKey] || [fuelKey];
+
+    const filtered = stations.map(station => ({
+      station,
+      price: cleanPrice(value(station, fuelNames))
+    })).filter(item => {
+      const s = item.station;
+      const province = value(s, provinceKeys);
+      const searchable = [
+        value(s, nameKeys), value(s, addressKeys),
+        value(s, townKeys), province
+      ].join(" ").toLocaleLowerCase("es");
+      return item.price !== null &&
+        (!selectedProvince || province === selectedProvince) &&
+        (!query || searchable.includes(query));
+    }).sort((a,b) => a.price - b.price);
+
+    count.textContent = filtered.length + " estaciones";
+    results.replaceChildren();
+
+    if (!filtered.length) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = loaded
+        ? "No encontramos estaciones con ese combustible y esos filtros. Prueba otra provincia o selecciona otro carburante."
+        : "No hay datos disponibles en este momento.";
+      results.appendChild(empty);
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    filtered.slice(0, 100).forEach(({station, price}) => {
+      const card = document.createElement("article");
+      card.className = "station";
+
+      const top = document.createElement("div");
+      top.className = "station-top";
+
+      const brand = document.createElement("div");
+      brand.className = "brand";
+      brand.textContent = value(station, nameKeys) || "Gasolinera";
+
+      const priceEl = document.createElement("div");
+      priceEl.className = "price";
+      priceEl.textContent = price.toLocaleString("es-ES", {
+        minimumFractionDigits: 3, maximumFractionDigits: 3
+      }) + " €/L";
+
+      top.append(brand, priceEl);
+
+      const address = document.createElement("p");
+      address.className = "address";
+      address.textContent = [
+        value(station, addressKeys),
+        value(station, townKeys),
+        value(station, provinceKeys)
+      ].filter(Boolean).join(" · ") || "Dirección no disponible";
+
+      const details = document.createElement("div");
+      details.className = "details";
+      const hours = value(station, ["Horario", "horario"]);
+      details.textContent = hours ? "Horario: " + hours : "Precio publicado en el registro oficial";
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+      const map = document.createElement("a");
+      map.className = "button secondary";
+      map.href = mapUrl(station);
+      map.target = "_blank";
+      map.rel = "noopener noreferrer";
+      map.textContent = "Cómo llegar";
+      actions.appendChild(map);
+
+      card.append(top, address, details, actions);
+      fragment.appendChild(card);
+    });
+    results.appendChild(fragment);
+  }
+
+  async function loadStations() {
+    searchBtn.disabled = true;
+    setStatus("Consultando los precios publicados por el servicio oficial...");
+    results.innerHTML = '<div class="empty">Cargando estaciones de servicio...</div>';
+
+    try {
+      const data = await getJson(API + "EstacionesTerrestres/");
+      stations = stationList(data);
+      if (!stations.length) throw new Error("La respuesta no contiene estaciones.");
+      loaded = true;
+      loadProvinces();
+      setStatus("Datos recibidos. Puedes filtrar y ordenar las estaciones por el precio más bajo.");
+      render();
+    } catch (error) {
+      loaded = false;
+      setStatus(
+        "No se han podido cargar los precios automáticamente. El servicio oficial puede estar temporalmente inaccesible o bloquear la conexión desde esta página. No mostramos precios inventados. Puedes consultar los datos en la web oficial.",
+        true
+      );
+      results.innerHTML = "";
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "Prueba a recargar la página más tarde o consulta directamente el servicio oficial.";
+      const link = document.createElement("a");
+      link.href = "https://energia.serviciosmin.gob.es/ServiciosRestCarburantes/PreciosCarburantes/help";
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "Abrir servicio oficial";
+      link.style.color = "#ff8a5f";
+      link.style.display = "inline-block";
+      link.style.marginTop = "12px";
+      empty.appendChild(document.createElement("br"));
+      empty.appendChild(link);
+      results.appendChild(empty);
+      count.textContent = "";
+    } finally {
+      searchBtn.disabled = false;
+    }
+  }
+
+  searchBtn.addEventListener("click", render);
+  provinceSelect.addEventListener("change", render);
+  fuelSelect.addEventListener("change", render);
+  searchInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") render();
+  });
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    provinceSelect.value = "";
+    fuelSelect.value = "Precio_x0020_Gasolina_x0020_95_x0020_E5";
+    searchInput.value = "";
+    render();
+  });
+
+  loadStations();
+})();
+</script>
+</body>
+</html>
