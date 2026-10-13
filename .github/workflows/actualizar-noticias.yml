@@ -1,0 +1,43 @@
+
+name: Actualizar noticias del motor
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: actualizar-noticias
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Consultar RSS y generar JSON
+        run: python scripts/actualizar_noticias.py
+
+      - name: Guardar noticias actualizadas
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add noticias.json
+          if git diff --cached --quiet; then
+            echo "No hay cambios nuevos."
+          else
+            git commit -m "Actualizar noticias del motor"
+            git push
+          fi
