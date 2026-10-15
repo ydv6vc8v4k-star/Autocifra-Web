@@ -1,0 +1,791 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090d16">
+<meta name="description" content="AutoCifra: tu garaje digital, rutas, calculadoras, precios de carburantes y diagnóstico de averías para coche y moto.">
+<meta name="robots" content="index,follow">
+
+<!-- Google Consent Mode: consentimiento denegado por defecto -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+
+  function gtag() {
+    window.dataLayer.push(arguments);
+  }
+
+  gtag('consent', 'default', {
+    analytics_storage: 'denied',
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    wait_for_update: 500
+  });
+</script>
+
+<title>AutoCifra | Tecnología para el motor</title>
+
+<style>
+:root {
+  --bg:#090d16;
+  --panel:#111827;
+  --panel2:#151f30;
+  --text:#f3f7ff;
+  --muted:#9aa9bd;
+  --accent:#ff642e;
+  --blue:#31c8ff;
+  --border:rgba(135,164,199,.19);
+}
+* {box-sizing:border-box}
+html {scroll-behavior:smooth;scroll-padding-top:100px}
+body {
+  margin:0;
+  background:
+    radial-gradient(ellipse at 80% 0%,rgba(49,200,255,.08),transparent 36%),
+    radial-gradient(ellipse at 0% 35%,rgba(255,100,46,.055),transparent 30%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.6;
+}
+body.modal-open {overflow:hidden}
+a {color:inherit;text-decoration:none}
+button,input {font:inherit}
+button {cursor:pointer}
+.container {width:min(1120px,90%);margin:auto}
+
+header {
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:rgba(9,13,22,.91);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+nav {
+  min-height:74px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+.logo {
+  font-size:25px;
+  font-weight:950;
+  letter-spacing:-1.5px;
+  white-space:nowrap;
+}
+.logo span,h1 span {color:var(--accent)}
+.logo::before {
+  content:"";
+  display:inline-block;
+  width:8px;height:8px;
+  margin:0 9px 3px 0;
+  background:var(--blue);
+  border-radius:2px;
+  box-shadow:0 0 13px var(--blue);
+  transform:rotate(45deg);
+}
+.nav-links {
+  display:flex;
+  flex-wrap:wrap;
+  gap:16px;
+  font-size:13px;
+  color:var(--muted);
+}
+.nav-links a:hover {color:var(--blue)}
+
+.hero {
+  position:relative;
+  min-height:590px;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  border-bottom:1px solid var(--border);
+  background:
+    linear-gradient(90deg,rgba(7,11,19,.98) 0%,rgba(7,11,19,.85) 42%,rgba(7,11,19,.28) 100%),
+    linear-gradient(0deg,rgba(9,13,22,.6),transparent 45%),
+    url("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1800&q=85")
+    center/cover no-repeat;
+}
+.hero::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.18;
+  background-image:
+    linear-gradient(rgba(49,200,255,.16) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(49,200,255,.16) 1px,transparent 1px);
+  background-size:55px 55px;
+  mask-image:linear-gradient(90deg,black,transparent 80%);
+}
+.hero-content {
+  position:relative;
+  z-index:1;
+  max-width:710px;
+  padding:86px 0;
+}
+.eyebrow {
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  color:var(--blue);
+  text-transform:uppercase;
+  letter-spacing:2.4px;
+  font-size:11px;
+  font-weight:900;
+}
+.eyebrow::before {
+  content:"";
+  display:block;
+  width:23px;height:2px;
+  background:var(--accent);
+  box-shadow:0 0 10px rgba(255,100,46,.7);
+}
+h1 {
+  font-size:clamp(42px,7.2vw,76px);
+  line-height:1.02;
+  letter-spacing:-3px;
+  margin:22px 0;
+  text-transform:uppercase;
+  font-weight:950;
+}
+h1 span {text-shadow:0 0 32px rgba(255,100,46,.22)}
+.hero p {max-width:550px;color:#c0cada;font-size:17px}
+.actions {display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.button {
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  gap:9px;
+  padding:13px 19px;
+  border:1px solid var(--accent);
+  border-radius:7px;
+  background:linear-gradient(135deg,#ff7545,#ed4c1b);
+  color:white;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.2px;
+  transition:transform .2s,box-shadow .2s;
+  box-shadow:0 5px 25px rgba(255,100,46,.13);
+}
+.button:hover {transform:translateY(-3px);box-shadow:0 8px 28px rgba(255,100,46,.27)}
+.button.secondary {
+  background:rgba(9,13,22,.45);
+  border-color:rgba(49,200,255,.55);
+  box-shadow:none;
+}
+.button.secondary:hover {border-color:var(--blue)}
+.hero-status {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 20px;
+  margin-top:32px;
+  color:#b5c4d7;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.hero-status span {display:flex;align-items:center;gap:7px}
+.status-dot {
+  width:6px;height:6px;border-radius:50%;
+  background:#53e0a1;box-shadow:0 0 10px #53e0a1;
+}
+
+section {padding:70px 0}
+.section-heading {margin-bottom:28px}
+h2 {font-size:clamp(28px,4vw,39px);line-height:1.15;letter-spacing:-1px;margin:12px 0}
+.section-heading p,.muted {color:var(--muted)}
+.grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.card {
+  position:relative;
+  display:block;
+  min-width:0;
+  background:linear-gradient(145deg,rgba(21,31,48,.96),rgba(13,19,31,.98));
+  border:1px solid var(--border);
+  border-radius:13px;
+  overflow:hidden;
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+}
+.card::before {
+  content:"";
+  position:absolute;z-index:1;top:0;left:12%;
+  width:76%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--blue),transparent);
+  opacity:0;transition:opacity .25s;
+}
+.card:hover {
+  transform:translateY(-5px);
+  border-color:rgba(49,200,255,.55);
+  box-shadow:0 14px 36px rgba(0,0,0,.22),0 0 22px rgba(49,200,255,.055);
+}
+.card:hover::before {opacity:1}
+.card img {
+  display:block;width:100%;height:185px;
+  object-fit:cover;background:#192536;
+  filter:saturate(.83);transition:transform .4s,filter .4s;
+}
+.card:hover img {transform:scale(1.035);filter:saturate(1.08)}
+.card-content {padding:21px}
+.card h3 {margin:0 0 9px;font-size:20px;letter-spacing:-.4px}
+.card p {color:var(--muted);font-size:14px;min-height:45px;margin:0}
+.card-link {display:inline-block;color:var(--blue);font-size:12px;font-weight:900;margin-top:17px}
+.card-link::after {
+  content:"";display:block;width:30px;height:2px;
+  margin-top:6px;background:var(--accent);transition:width .2s;
+}
+.card:hover .card-link::after {width:62px}
+.card-tag {
+  display:inline-block;margin-bottom:12px;padding:4px 8px;
+  border:1px solid rgba(49,200,255,.24);border-radius:4px;
+  color:var(--blue);font-size:9px;font-weight:900;
+  text-transform:uppercase;letter-spacing:1px;
+}
+.card-tag.orange {color:#ff946f;border-color:rgba(255,100,46,.3)}
+
+.feature {
+  position:relative;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:center;
+  gap:35px;
+  padding:25px;
+  background:linear-gradient(120deg,rgba(49,200,255,.045),transparent 55%),var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+}
+.feature::after {
+  content:"";position:absolute;right:-50px;top:-70px;
+  width:180px;height:180px;
+  border:1px solid rgba(49,200,255,.15);
+  transform:rotate(45deg);pointer-events:none;
+}
+.feature img {
+  width:100%;height:310px;object-fit:cover;
+  border-radius:10px;border:1px solid var(--border);
+}
+.feature p {color:var(--muted)}
+.feature .button {margin-top:10px}
+.mini-label {
+  color:var(--accent);font-size:10px;font-weight:900;
+  text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;
+}
+
+/* CONTACTO */
+.contact-section {padding-top:0}
+.contact-panel {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:25px;
+  padding:30px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:linear-gradient(120deg,rgba(49,200,255,.06),rgba(255,100,46,.04)),var(--panel);
+}
+.contact-panel p {color:var(--muted);margin-bottom:0}
+.contact-email {
+  color:var(--blue);
+  font-weight:800;
+  overflow-wrap:anywhere;
+}
+.contact-email:hover {text-decoration:underline}
+
+/* PIE DE PÁGINA */
+footer {
+  border-top:1px solid var(--border);
+  padding:30px 0;
+  color:var(--muted);
+  font-size:12px;
+  background:rgba(4,7,13,.75);
+}
+footer .container {display:flex;flex-direction:column;gap:20px}
+.footer-top,.footer-bottom {
+  display:flex;flex-wrap:wrap;
+  justify-content:space-between;align-items:center;gap:16px;
+}
+footer strong {color:var(--text)}
+.footer-links {display:flex;flex-wrap:wrap;gap:12px 20px}
+.footer-links a,.footer-cookie-button {
+  color:var(--muted);
+  background:none;border:0;padding:0;
+  font-size:12px;text-align:left;
+}
+.footer-links a:hover,.footer-cookie-button:hover {color:var(--blue)}
+.footer-bottom {border-top:1px solid var(--border);padding-top:18px}
+.footer-contact {overflow-wrap:anywhere}
+
+/* PANEL DE CONSENTIMIENTO */
+.cookie-banner {
+  position:fixed;
+  z-index:100;
+  left:16px;right:16px;bottom:16px;
+  max-width:960px;margin:0 auto;
+  padding:23px;
+  background:#111827;
+  border:1px solid rgba(49,200,255,.32);
+  border-radius:14px;
+  box-shadow:0 15px 70px rgba(0,0,0,.65);
+}
+.cookie-banner[hidden],.cookie-settings[hidden] {display:none}
+.cookie-banner h2,.cookie-settings h2 {font-size:22px;margin:0 0 8px}
+.cookie-banner p,.cookie-settings p {font-size:13px;color:var(--muted);margin:0 0 15px}
+.cookie-banner a,.cookie-settings a {color:var(--blue);text-decoration:underline}
+.cookie-actions {display:flex;flex-wrap:wrap;gap:9px}
+.cookie-btn {
+  padding:10px 14px;border-radius:6px;
+  border:1px solid var(--border);
+  background:#182437;color:var(--text);
+  font-size:12px;font-weight:800;
+}
+.cookie-btn.primary {background:var(--accent);border-color:var(--accent);color:white}
+.cookie-btn:hover {border-color:var(--blue)}
+.cookie-settings {
+  position:fixed;z-index:110;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:18px;background:rgba(0,0,0,.76);
+}
+.cookie-settings-panel {
+  width:min(520px,100%);
+  max-height:90vh;overflow:auto;
+  padding:25px;background:#111827;
+  border:1px solid var(--border);border-radius:14px;
+  box-shadow:0 15px 70px rgba(0,0,0,.6);
+}
+.cookie-option {
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:18px;padding:15px 0;border-top:1px solid var(--border);
+}
+.cookie-option strong {display:block;font-size:14px}
+.cookie-option small {display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.cookie-option input {width:20px;height:20px;accent-color:var(--accent);flex-shrink:0}
+.cookie-option input:disabled {opacity:.65}
+.cookie-settings-actions {display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}
+
+@media(max-width:850px) {
+  nav {align-items:flex-start;flex-direction:column;padding:14px 0;gap:11px}
+  .nav-links {gap:10px 15px}
+  .hero {min-height:520px}
+  .grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px) {
+  .container {width:91%}
+  .logo {font-size:23px}
+  .nav-links {font-size:12px;gap:8px 13px}
+  .hero {min-height:500px;background-position:58% center}
+  .hero-content {padding:58px 0}
+  h1 {letter-spacing:-2px;font-size:clamp(39px,11vw,56px)}
+  .hero p {font-size:15px}
+  .hero-status {gap:10px 13px;font-size:9px}
+  .grid {grid-template-columns:1fr}
+  .card img {height:215px}
+  .feature {grid-template-columns:1fr;padding:15px;gap:20px}
+  .feature img {height:220px}
+  section {padding:48px 0}
+  .contact-panel {align-items:flex-start;flex-direction:column;padding:22px}
+  .cookie-banner {left:10px;right:10px;bottom:10px;padding:18px}
+  .cookie-actions .cookie-btn {flex:1 1 130px}
+  .footer-top,.footer-bottom {align-items:flex-start;flex-direction:column}
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <nav class="container" aria-label="Navegación principal">
+    <a class="logo" href="index.html" aria-label="AutoCifra, inicio">AUTO<span>CIFRA</span></a>
+    <div class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="Garaje.html">Mi garaje</a>
+      <a href="rutas.html">Rutas</a>
+      <a href="calculadora.html">Calculadoras</a>
+      <a href="gasolineras.html">Gasolineras</a>
+      <a href="fallos.html">Diagnóstico</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="eyebrow">Tecnología para los amantes del motor</div>
+        <h1>Más motor.<br>Más control.<br><span>Más carretera.</span></h1>
+        <p>
+          Tu espacio digital para organizar vehículos, calcular gastos,
+          encontrar combustible, descubrir rutas y orientarte ante averías.
+          Todo en un solo lugar.
+        </p>
+        <div class="actions">
+          <a class="button" href="#herramientas">Explorar herramientas <span>↘</span></a>
+          <a class="button secondary" href="Garaje.html">Abrir mi garaje →</a>
+        </div>
+        <div class="hero-status">
+          <span><i class="status-dot"></i> Herramientas del motor</span>
+          <span>COCHE · MOTO · TECNOLOGÍA</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="herramientas">
+    <div class="container">
+      <div class="section-heading">
+        <div class="eyebrow">Tu centro de operaciones</div>
+        <h2>Explora AutoCifra<span style="color:var(--accent)">.</span></h2>
+        <p class="muted">Elige una herramienta y ponte al volante.</p>
+      </div>
+
+      <div class="grid">
+        <a class="card" href="Garaje.html">
+          <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80" alt="Coche deportivo" loading="lazy">
+          <div class="card-content">
+            <span class="card-tag">Personalización</span>
+            <h3>Mi garaje</h3>
+            <p>Organiza tus vehículos y consulta sus datos en un solo lugar.</p>
+            <span class="card-link">Entrar en mi garaje →</span>
+          </div>
+        </a>
+
+        <a class="card" href="rutas.html">
+          <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80" alt="Carretera y montañas" loading="lazy">
+          <div class="card-content">
+            <span class="card-tag">Aventura</span>
+            <h3>Rutas</h3>
+            <p>Prepara escapadas por carretera para disfrutar con coche o moto.</p>
+            <span class="card-link">Descubrir rutas →</span>
+          </div>
+        </a>
+
+        <a class="card" href="calculadora.html">
+          <img src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=900&q=80" alt="Mecánica de automóvil" loading="lazy">
+          <div class="card-content">
+            <span class="card-tag">Datos y consumo</span>
+            <h3>Calculadoras</h3>
+            <p>Calcula consumo, combustible y coste estimado de tus viajes.</p>
+            <span class="card-link">Calcular ahora →</span>
+          </div>
+        </a>
+
+        <a class="card" href="gasolineras.html">
+          <img src="https://images.unsplash.com/photo-1545262810-77515befe149?auto=format&fit=crop&w=900&q=80" alt="Estación de servicio" loading="lazy">
+          <div class="card-content">
+            <span class="card-tag">Ahorro</span>
+            <h3>Gasolineras y precios</h3>
+            <p>Busca estaciones, compara carburantes y planifica dónde repostar.</p>
+            <span class="card-link">Buscar gasolineras →</span>
+          </div>
+        </a>
+
+        <a class="card" href="fallos.html">
+          <img src="https://images.unsplash.com/photo-1487754180451-c456f719a1fc?auto=format&fit=crop&w=900&q=80" alt="Diagnóstico y reparación de automóvil" loading="lazy">
+          <div class="card-content">
+            <span class="card-tag orange">Diagnóstico OBD2</span>
+            <h3>Fallos y averías</h3>
+            <p>Investiga posibles causas según los síntomas, sonidos y códigos de avería.</p>
+            <span class="card-link">Analizar una avería →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="feature">
+        <img src="https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1100&q=85" alt="Coche deportivo circulando por carretera" loading="lazy">
+        <div>
+          <div class="eyebrow">Diseñado para conductores</div>
+          <h2>Tu coche.<br>Tus números.<br><span style="color:var(--accent)">Tu carretera.</span></h2>
+          <p>
+            Desde controlar los gastos hasta preparar una ruta o consultar
+            posibles averías, AutoCifra reúne herramientas útiles para
+            acompañarte antes, durante y después de cada viaje.
+          </p>
+          <a class="button" href="calculadora.html">Empezar ahora →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-section" id="contacto">
+    <div class="container">
+      <div class="contact-panel">
+        <div>
+          <div class="eyebrow">Estamos aquí para ayudarte</div>
+          <h2>Contacta con AutoCifra</h2>
+          <p>¿Tienes alguna duda, sugerencia o has encontrado un problema en la web?</p>
+        </div>
+        <a class="button" href="mailto:Autocifra.es@autocifra.es?subject=Contacto%20desde%20AutoCifra">
+          Escribir un correo →
+        </a>
+      </div>
+      <p class="muted" style="margin-top:14px;font-size:13px">
+        Correo de contacto:
+        <a class="contact-email" href="mailto:Autocifra.es@autocifra.es">Autocifra.es@autocifra.es</a>
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <a class="logo" href="index.html">AUTO<span>CIFRA</span></a>
+      <span>Pasión por el motor. Tecnología para el conductor.</span>
+    </div>
+
+    <div class="footer-links" aria-label="Información legal">
+      <a href="privacidad.html">Política de privacidad</a>
+      <a href="aviso-legal.html">Aviso legal</a>
+      <a href="cookies.html">Política de cookies</a>
+      <button class="footer-cookie-button" id="open-cookie-settings" type="button">
+        Configurar cookies
+      </button>
+      <a href="mailto:Autocifra.es@autocifra.es">Contacto</a>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© <span id="current-year">2026</span> <strong>AutoCifra</strong>. Todos los derechos reservados.</span>
+      <span class="footer-contact">
+        Contacto:
+        <a class="contact-email" href="mailto:Autocifra.es@autocifra.es">Autocifra.es@autocifra.es</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- AVISO DE COOKIES -->
+<div class="cookie-banner" id="cookie-banner" role="region" aria-label="Preferencias de cookies" hidden>
+  <h2>Tu privacidad importa</h2>
+  <p>
+    Utilizamos almacenamiento estrictamente necesario para recordar tus preferencias.
+    Las tecnologías opcionales de analítica o publicidad requieren tu elección cuando
+    sea legalmente necesario. Puedes aceptar, rechazar o configurar las opciones.
+    Consulta nuestra <a href="cookies.html">política de cookies</a> y
+    <a href="privacidad.html">política de privacidad</a>.
+  </p>
+  <div class="cookie-actions">
+    <button class="cookie-btn primary" id="accept-all-cookies" type="button">Aceptar todas</button>
+    <button class="cookie-btn" id="reject-optional-cookies" type="button">Rechazar opcionales</button>
+    <button class="cookie-btn" id="configure-cookies" type="button">Configurar</button>
+  </div>
+</div>
+
+<!-- CONFIGURACIÓN DE COOKIES -->
+<div class="cookie-settings" id="cookie-settings" role="dialog" aria-modal="true"
+     aria-labelledby="cookie-settings-title" hidden>
+  <div class="cookie-settings-panel">
+    <h2 id="cookie-settings-title">Configurar cookies</h2>
+    <p>
+      Elige tus preferencias. Puedes modificarlas en cualquier momento desde
+      el enlace «Configurar cookies» del pie de página.
+    </p>
+
+    <div class="cookie-option">
+      <div>
+        <strong>Necesarias</strong>
+        <small>Imprescindibles para guardar las preferencias y funciones básicas.</small>
+      </div>
+      <input type="checkbox" checked disabled aria-label="Cookies necesarias, siempre activas">
+    </div>
+
+    <div class="cookie-option">
+      <div>
+        <strong>Analítica</strong>
+        <small>Permiten medir las visitas y el uso de la web mediante Google Analytics.</small>
+      </div>
+      <input type="checkbox" id="analytics-consent">
+    </div>
+
+    <div class="cookie-option">
+      <div>
+        <strong>Publicidad</strong>
+        <small>Permiten tecnologías publicitarias cuando se configure Google AdSense y su consentimiento.</small>
+      </div>
+      <input type="checkbox" id="advertising-consent">
+    </div>
+
+    <p style="margin-top:15px">
+      La opción de publicidad todavía no activa anuncios. La configuración de AdSense
+      y de la CMP certificada de Google se realizará por separado.
+    </p>
+
+    <div class="cookie-settings-actions">
+      <button class="cookie-btn primary" id="save-cookie-settings" type="button">Guardar selección</button>
+      <button class="cookie-btn" id="reject-from-settings" type="button">Rechazar opcionales</button>
+      <button class="cookie-btn" id="close-cookie-settings" type="button">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const CONSENT_KEY = "autocifra_cookie_preferences_v1";
+  const GA_ID = "G-11EDW5K7R2";
+
+  const banner = document.getElementById("cookie-banner");
+  const settings = document.getElementById("cookie-settings");
+  const analytics = document.getElementById("analytics-consent");
+  const advertising = document.getElementById("advertising-consent");
+
+  document.getElementById("current-year").textContent =
+    new Date().getFullYear();
+
+  function readConsent() {
+    try {
+      const raw = localStorage.getItem(CONSENT_KEY);
+      if (!raw) return null;
+
+      const value = JSON.parse(raw);
+
+      if (
+        value.version !== 1 ||
+        typeof value.necessary !== "boolean" ||
+        typeof value.analytics !== "boolean" ||
+        typeof value.advertising !== "boolean"
+      ) {
+        return null;
+      }
+
+      return value;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function loadAnalytics() {
+    if (window.autocifraAnalyticsLoading) return;
+
+    window.autocifraAnalyticsLoading = true;
+
+    const script = document.createElement("script");
+    script.async = true;
+    script.src =
+      "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
+
+    script.onload = () => {
+      gtag("js", new Date());
+      gtag("config", GA_ID);
+    };
+
+    script.onerror = () => {
+      window.autocifraAnalyticsLoading = false;
+    };
+
+    document.head.appendChild(script);
+  }
+
+  function updateGoogleConsent(consent) {
+    const analyticsAllowed = Boolean(consent && consent.analytics);
+
+    gtag("consent", "update", {
+      analytics_storage: analyticsAllowed ? "granted" : "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied"
+    });
+
+    if (analyticsAllowed) {
+      loadAnalytics();
+    }
+  }
+
+  function saveConsent(analyticsAllowed, advertisingAllowed) {
+    const consent = {
+      version: 1,
+      necessary: true,
+      analytics: Boolean(analyticsAllowed),
+      advertising: Boolean(advertisingAllowed),
+      updatedAt: new Date().toISOString()
+    };
+
+    try {
+      localStorage.setItem(CONSENT_KEY, JSON.stringify(consent));
+    } catch (error) {
+      alert("No se han podido guardar tus preferencias en este navegador.");
+      return;
+    }
+
+    updateGoogleConsent(consent);
+
+    banner.hidden = true;
+    settings.hidden = true;
+    document.body.classList.remove("modal-open");
+
+    window.dispatchEvent(new CustomEvent("autocifra:consent-updated", {
+      detail: consent
+    }));
+  }
+
+  function openSettings() {
+    const current = readConsent();
+
+    analytics.checked = current ? current.analytics : false;
+    advertising.checked = current ? current.advertising : false;
+
+    settings.hidden = false;
+    document.body.classList.add("modal-open");
+  }
+
+  function closeSettings() {
+    settings.hidden = true;
+    document.body.classList.remove("modal-open");
+  }
+
+  function showBannerIfNeeded() {
+    banner.hidden = Boolean(readConsent());
+  }
+
+  document.getElementById("accept-all-cookies").addEventListener("click", () => {
+    saveConsent(true, true);
+  });
+
+  document.getElementById("reject-optional-cookies").addEventListener("click", () => {
+    saveConsent(false, false);
+  });
+
+  document.getElementById("configure-cookies").addEventListener("click", openSettings);
+  document.getElementById("open-cookie-settings").addEventListener("click", openSettings);
+
+  document.getElementById("save-cookie-settings").addEventListener("click", () => {
+    saveConsent(analytics.checked, advertising.checked);
+  });
+
+  document.getElementById("reject-from-settings").addEventListener("click", () => {
+    saveConsent(false, false);
+  });
+
+  document.getElementById("close-cookie-settings").addEventListener("click", closeSettings);
+
+  settings.addEventListener("click", (event) => {
+    if (event.target === settings) closeSettings();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !settings.hidden) {
+      closeSettings();
+    }
+  });
+
+  const existingConsent = readConsent();
+
+  if (existingConsent) {
+    updateGoogleConsent(existingConsent);
+  }
+
+  showBannerIfNeeded();
+})();
+</script>
+</body>
+</html>
