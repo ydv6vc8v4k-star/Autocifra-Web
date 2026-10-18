@@ -1,0 +1,786 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090b10">
+<title>Mi Garaje | AutoCifra</title>
+<style>
+:root{--bg:#090b10;--panel:#141821;--panel2:#1d232d;--orange:#ff6b2c;--white:#f5f7fa;--muted:#a3adbb;--border:#2b323e}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.container{max-width:1200px;margin:auto;padding:22px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+.logo{font-size:21px;font-weight:900;letter-spacing:1px}.logo span{color:var(--orange)}
+.logo small{display:block;font-size:10px;color:var(--muted);letter-spacing:3px;margin-top:3px}
+.status{font-size:11px;border:1px solid var(--border);color:var(--muted);padding:9px 12px;border-radius:20px}
+.hero{min-height:390px;display:flex;align-items:end;padding:40px;border-radius:24px;overflow:hidden;position:relative;background:#171b23;border:1px solid var(--border)}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#090b10 0%,rgba(9,11,16,.82) 40%,rgba(9,11,16,.08) 100%),linear-gradient(0deg,rgba(9,11,16,.7),transparent),url("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1600&q=85") center/cover}
+.hero-content{position:relative;max-width:560px}
+.eyebrow{color:var(--orange);text-transform:uppercase;font-size:11px;font-weight:900;letter-spacing:2px}
+.hero h1{font-size:clamp(40px,7vw,68px);line-height:.98;letter-spacing:-2px;margin:15px 0}
+.hero p{color:#d0d5dd;line-height:1.7;max-width:440px}
+.btn{border:1px solid transparent;border-radius:11px;padding:12px 16px;background:var(--orange);color:#101114;font-weight:850;transition:.2s}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.btn.secondary{color:white;background:#171c25;border-color:var(--border)}
+.btn:disabled{opacity:.5;cursor:wait;transform:none}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0 30px}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px}
+.stat span{color:var(--muted);font-size:12px}
+.stat strong{display:block;font-size:26px;margin-top:10px}
+.section-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:25px 0 18px}
+.section-heading h2{font-size:26px;margin:7px 0}
+.section-heading p{font-size:13px;color:var(--muted);margin:0}
+.tabs{display:flex;gap:9px;overflow-x:auto;padding:3px 0 18px}
+.tab{flex:0 0 auto;padding:12px 15px;border-radius:11px;border:1px solid var(--border);background:var(--panel);color:#c3cad4;font-weight:750}
+.tab.active{background:#321d14;border-color:var(--orange);color:#ffb18d}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:.2s;min-width:0}
+.card:hover{transform:translateY(-3px);border-color:var(--orange)}
+.card-image{height:195px;position:relative;background:#202630}
+.card-image img{width:100%;height:100%;object-fit:cover;display:block}
+.tag{position:absolute;top:12px;left:12px;background:rgba(9,11,16,.9);padding:7px 10px;border-radius:20px;font-size:10px;font-weight:900;letter-spacing:1px}
+.card-content{padding:17px}
+.card-content h3{font-size:19px;margin:0 0 8px;overflow-wrap:anywhere}
+.card-content p{color:var(--muted);font-size:13px;line-height:1.6;margin:0;overflow-wrap:anywhere}
+.specs{display:flex;flex-wrap:wrap;gap:7px;margin:15px 0}
+.spec{font-size:11px;padding:7px 9px;border-radius:8px;background:var(--panel2);color:#d6dbe2}
+.card-bottom{border-top:1px solid var(--border);padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-bottom small{color:var(--muted)}
+.link-btn{border:0;background:transparent;color:#ff9a6a;font-weight:850}
+.tuning{min-height:280px;display:flex;align-items:end;padding:28px;margin-top:28px;border-radius:22px;overflow:hidden;position:relative;background:#191d25;border:1px solid var(--border)}
+.tuning:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(8,10,14,.97),rgba(8,10,14,.08)),url("https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1600&q=85") center 55%/cover}
+.tuning-content{position:relative;max-width:570px}
+.tuning h2{font-size:clamp(26px,4vw,39px);margin:10px 0}
+.tuning p{color:#d0d5dd;line-height:1.6}
+.gallery{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:12px}
+.gallery img{width:100%;height:190px;object-fit:cover;border-radius:14px;border:1px solid var(--border)}
+.message{padding:25px;border:1px dashed #444c59;color:var(--muted);border-radius:15px;text-align:center;line-height:1.7;overflow-wrap:anywhere}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;margin:16px 0}
+.panel h3{margin-top:0}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.field{display:flex;flex-direction:column;gap:7px;min-width:0}
+.field.full{grid-column:1/-1}
+.field label{font-size:12px;color:#c5cbd5}
+.field input,.field select,.field textarea{width:100%;min-width:0;background:#090b10;color:white;border:1px solid var(--border);border-radius:9px;padding:12px}
+.field textarea{min-height:85px;resize:vertical}
+.form-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+.notice{font-size:12px;color:var(--muted);line-height:1.7}
+.feedback{font-size:13px;line-height:1.6;margin-top:12px;overflow-wrap:anywhere}
+.gallery-item{position:relative}
+.gallery-item img{display:block}
+.gallery-item p{font-size:12px;color:var(--muted)}
+.photo-preview{width:100%;max-width:440px;max-height:260px;object-fit:contain;display:block;margin-top:10px;border:1px solid var(--border);border-radius:12px;background:#090b10}
+.photo-help{font-size:12px;line-height:1.6;color:var(--muted)}
+footer{text-align:center;padding:30px 0 10px;color:#798392;font-size:12px}
+[hidden]{display:none!important}
+@media(max-width:760px){
+.container{padding:13px}.hero{min-height:340px;padding:23px}
+.hero:before{background:linear-gradient(90deg,rgba(9,11,16,.95),rgba(9,11,16,.58)),linear-gradient(0deg,rgba(9,11,16,.7),transparent),url("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1000&q=80") center/cover}
+.stats{grid-template-columns:repeat(2,1fr)}.stat{padding:14px}.stat strong{font-size:23px}
+.grid{grid-template-columns:1fr}.card-image{height:225px}
+.gallery{grid-template-columns:1fr 1fr}.gallery img{height:160px}
+.gallery-item:first-child{grid-column:1/-1}.gallery-item:first-child img{height:220px}
+.section-heading h2{font-size:22px}.status{font-size:9px}.tuning{padding:21px;min-height:240px}
+.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <a class="logo" href="index.html" style="color:inherit;text-decoration:none">AUTO<span>CIFRA</span><small>MI GARAJE</small></a>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+    <span class="status" id="connectionStatus">CONECTANDO...</span>
+    <button class="btn secondary" id="accountBtn">Iniciar sesión</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="eyebrow">Tu pasión, en un solo sitio</div>
+    <h1>Tu garaje.<br>Tu máquina.<br>Tu historia.</h1>
+    <p>Todos tus coches, motos, preparaciones y mantenimientos organizados en un solo lugar.</p>
+    <div class="actions">
+      <button class="btn" id="explore">Explorar mi garaje ↓</button>
+      <button class="btn secondary" id="jump-tuning">Zona tuning ↗</button>
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat"><span>Mis vehículos</span><strong id="statVehicles">0</strong></div>
+  <div class="stat"><span>Potencia total</span><strong id="statPower">0 CV</strong></div>
+  <div class="stat"><span>Gastos registrados</span><strong id="statExpenses">0 €</strong></div>
+  <div class="stat"><span>Próximas revisiones</span><strong id="statMaintenance">0</strong></div>
+</section>
+
+<section id="garage">
+  <div class="section-heading">
+    <div><div class="eyebrow">Tu colección</div><h2 id="sectionTitle">Mi garaje</h2><p id="sectionDescription">Tus vehículos, preparaciones y registros.</p></div>
+    <button class="btn" id="addVehicleBtn">+ Añadir</button>
+  </div>
+
+  <nav class="tabs" aria-label="Secciones del garaje">
+    <button class="tab active" data-view="all">✦ Vehículos</button>
+    <button class="tab" data-view="car">🚘 Coches</button>
+    <button class="tab" data-view="moto">🏍️ Motos</button>
+    <button class="tab" data-view="tuning">🔧 Tuning</button>
+    <button class="tab" data-view="maintenance">🛠️ Mantenimiento</button>
+    <button class="tab" data-view="expenses">💶 Gastos</button>
+    <button class="tab" data-view="gallery">📸 Galería</button>
+  </nav>
+
+  <div class="grid" id="cards"></div>
+  <div id="gallery" class="gallery" hidden></div>
+  <div id="records"></div>
+  <div class="message" id="emptyMessage" hidden></div>
+</section>
+
+<section class="tuning" id="tuningBanner">
+  <div class="tuning-content">
+    <div class="eyebrow">Personaliza · Mejora · Disfruta</div>
+    <h2>Cada modificación cuenta una historia.</h2>
+    <p>Documenta la evolución de tu vehículo: estética, motor, suspensión, escape y mantenimiento.</p>
+    <button class="btn" id="tuningBtn">Gestionar preparaciones</button>
+  </div>
+</section>
+
+<section class="panel" id="authPanel" hidden>
+  <h3 id="authHeading">Tu cuenta AutoCifra</h3>
+  <p class="notice">Regístrate o inicia sesión para guardar tus vehículos y consultar tus registros privados.</p>
+  <form id="authForm">
+    <div class="form-grid">
+      <div class="field full"><label for="authEmail">Correo electrónico</label><input id="authEmail" type="email" autocomplete="email" required></div>
+      <div class="field full"><label for="authPassword">Contraseña (mínimo 6 caracteres)</label><input id="authPassword" type="password" minlength="6" autocomplete="current-password" required></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn" id="loginBtn" type="submit">Iniciar sesión</button>
+      <button class="btn secondary" id="registerBtn" type="button">Crear cuenta</button>
+      <button class="btn secondary" id="cancelAuthBtn" type="button">Cancelar</button>
+    </div>
+  </form>
+  <div class="feedback" id="authFeedback" role="status"></div>
+</section>
+
+<section class="panel" id="editorPanel" hidden>
+  <h3 id="editorTitle">Añadir vehículo</h3>
+  <p class="notice">Los registros se guardarán en tu cuenta de AutoCifra.</p>
+  <form id="editorForm">
+    <div id="vehicleFields">
+      <div class="form-grid">
+        <div class="field"><label for="vehicleType">Tipo</label><select id="vehicleType"><option value="Coche">Coche</option><option value="Moto">Moto</option></select></div>
+        <div class="field"><label for="vehicleMake">Marca *</label><input id="vehicleMake" maxlength="80" required placeholder="Audi, BMW, Yamaha..."></div>
+        <div class="field"><label for="vehicleModel">Modelo *</label><input id="vehicleModel" maxlength="100" required placeholder="A3, F900R..."></div>
+        <div class="field"><label for="vehicleYear">Año</label><input id="vehicleYear" type="number" min="1900" max="2100" placeholder="2020"></div>
+        <div class="field"><label for="vehiclePower">Potencia (CV)</label><input id="vehiclePower" type="number" min="1" max="5000" placeholder="150"></div>
+        <div class="field"><label for="vehicleEngine">Motor</label><input id="vehicleEngine" maxlength="100" placeholder="1.5 TFSI, 900 cc..."></div>
+
+        <!-- NUEVO: seleccionar foto desde iPhone, Archivos u ordenador -->
+        <div class="field full">
+          <label for="vehiclePhotoFile">Foto del vehículo (opcional)</label>
+          <input id="vehiclePhotoFile" type="file" accept="image/*">
+          <p class="photo-help">En iPhone podrás elegir una imagen de Fotos o Archivos. En ordenador podrás seleccionar una imagen guardada en el equipo. La imagen se reducirá para facilitar su almacenamiento.</p>
+          <img id="vehiclePhotoPreview" class="photo-preview" alt="Vista previa de la foto del vehículo" hidden>
+          <button class="btn secondary" id="removeVehiclePhoto" type="button" hidden>Quitar foto seleccionada</button>
+          <div class="feedback" id="photoFeedback" role="status"></div>
+        </div>
+
+        <div class="field full"><label for="vehicleImage">URL de imagen (opcional, alternativa)</label><input id="vehicleImage" type="url" placeholder="https://..."></div>
+        <div class="field full"><label for="vehicleNotes">Notas y modificaciones</label><textarea id="vehicleNotes" maxlength="2000"></textarea></div>
+      </div>
+    </div>
+    <div id="recordFields" hidden>
+      <div class="form-grid">
+        <div class="field full"><label for="recordVehicle">Vehículo</label><select id="recordVehicle" required></select></div>
+        <div class="field full"><label for="recordTitle">Título *</label><input id="recordTitle" maxlength="150" required placeholder="Ej. Escape, cambio de aceite..."></div>
+        <div class="field full"><label for="recordDescription">Descripción</label><textarea id="recordDescription" maxlength="2000"></textarea></div>
+        <div class="field" id="recordCostWrap"><label for="recordCost">Coste (€)</label><input id="recordCost" type="number" min="0" step="0.01" placeholder="0"></div>
+        <div class="field" id="recordDateWrap"><label for="recordDate">Fecha</label><input id="recordDate" type="date"></div>
+        <div class="field" id="recordNextDateWrap"><label for="recordNextDate">Próxima revisión</label><input id="recordNextDate" type="date"></div>
+        <div class="field" id="recordNextKmWrap"><label for="recordNextKm">Próximos kilómetros</label><input id="recordNextKm" type="number" min="0" placeholder="120000"></div>
+        <div class="field" id="recordCategoryWrap"><label for="recordCategory">Categoría de gasto</label><select id="recordCategory"><option>Combustible</option><option>Mantenimiento</option><option>Modificaciones</option><option>Seguro</option><option>Impuestos</option><option>Otros</option></select></div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn" id="saveBtn" type="submit">Guardar</button>
+      <button class="btn secondary" id="cancelEditorBtn" type="button">Cancelar</button>
+    </div>
+  </form>
+  <div class="feedback" id="editorFeedback" role="status"></div>
+</section>
+
+<section class="panel" id="accountPanel" hidden>
+  <h3>Mi cuenta</h3><p class="notice" id="accountEmail"></p>
+  <div class="form-actions"><button class="btn secondary" id="logoutBtn">Cerrar sesión</button></div>
+</section>
+
+<footer>AutoCifra · Mi Garaje · Tus vehículos, tus datos, tu pasión.</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+"use strict";
+
+document.getElementById("connectionStatus").textContent = "JAVASCRIPT ACTIVO";
+document.getElementById("connectionStatus").style.color = "#9ce6a7";
+
+const SUPABASE_URL = "https://fcwriuxqiywkjyjpkfvp.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdWIiLCJyZWYiOiJmY3dyaXV4cWl5d2tqeWp rZnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4NDI4NzgsImV4cCI6MjEwNzQxODg3OH0.aXtvy4Q3vci-iM-Jjhrm2vzqKRJuFFeux2uZlcV-I7Q";
+
+let db = null;
+let currentUser = null;
+let vehicles = [];
+let modifications = [];
+let maintenanceRecords = [];
+let expenses = [];
+let photos = [];
+let currentView = "all";
+let editorMode = "vehicle";
+let selectedVehicleImage = "";
+
+const $ = id => document.getElementById(id);
+
+const viewInfo = {
+  all: ["Mi garaje", "Tus vehículos guardados en AutoCifra."],
+  car: ["Mis coches", "Coches registrados en tu cuenta."],
+  moto: ["Mis motos", "Motos registradas en tu cuenta."],
+  tuning: ["Preparaciones y tuning", "Modificaciones, piezas y costes de tus proyectos."],
+  maintenance: ["Mantenimiento", "Revisiones realizadas y próximas fechas."],
+  expenses: ["Gastos", "Historial de gastos por vehículo."],
+  gallery: ["Mi galería", "Fotografías asociadas a tus vehículos."]
+};
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  })[c]);
+}
+function money(value) {
+  return (Number(value) || 0).toLocaleString("es-ES", {style:"currency",currency:"EUR"});
+}
+function validImage(url) {
+  const value = String(url || "").trim();
+  if (value.startsWith("data:image/")) return value;
+  try {
+    const parsed = new URL(value);
+    return ["https:","http:"].includes(parsed.protocol) ? parsed.href : "";
+  } catch (_) { return ""; }
+}
+function defaultImage(type) {
+  return type === "Moto"
+    ? "https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1000&q=80"
+    : "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1000&q=80";
+}
+function vehicleName(id) {
+  const v = vehicles.find(item => item.id === id);
+  return v ? `${v.make} ${v.model}` : "Vehículo";
+}
+function feedback(id, text, error=false) {
+  $(id).textContent = text;
+  $(id).style.color = error ? "#ff8b8b" : "#9ce6a7";
+}
+function setStatus(text) { $("connectionStatus").textContent = text; }
+
+function showEmpty(text) {
+  $("emptyMessage").hidden = false;
+  $("emptyMessage").textContent = text;
+}
+function hideEmpty() { $("emptyMessage").hidden = true; }
+
+function updateStats() {
+  $("statVehicles").textContent = vehicles.length;
+  $("statPower").textContent =
+    vehicles.reduce((sum,v) => sum + (Number(v.power_cv)||0),0).toLocaleString("es-ES") + " CV";
+  $("statExpenses").textContent = money(expenses.reduce((sum,e) => sum + (Number(e.amount)||0),0));
+  const today = new Date().toISOString().slice(0,10);
+  $("statMaintenance").textContent = maintenanceRecords.filter(m => m.next_date && m.next_date >= today).length;
+}
+
+function vehicleCard(v) {
+  const own = currentUser && v.user_id === currentUser.id;
+  const specs = [
+    v.year ? `${v.year}` : "",
+    v.power_cv ? `${v.power_cv} CV` : "",
+    v.engine || ""
+  ].filter(Boolean);
+  return `<article class="card">
+    <div class="card-image">
+      <img loading="lazy" src="${escapeHTML(validImage(v.image_url)||defaultImage(v.vehicle_type))}" alt="${escapeHTML(v.make)} ${escapeHTML(v.model)}">
+      <span class="tag">${escapeHTML(v.vehicle_type)}</span>
+    </div>
+    <div class="card-content">
+      <h3>${escapeHTML(v.make)} ${escapeHTML(v.model)}</h3>
+      <p>${escapeHTML(v.notes || "Tu vehículo, guardado en AutoCifra.")}</p>
+      <div class="specs">${specs.map(s=>`<span class="spec">${escapeHTML(s)}</span>`).join("")}</div>
+      <div class="card-bottom">
+        <small>${own ? "Mi vehículo" : "Vehículo público"}</small>
+        ${own ? `<button class="link-btn" data-delete-vehicle="${escapeHTML(v.id)}">Eliminar</button>` : ""}
+      </div>
+      ${own ? `<div class="form-actions">
+        <button class="btn secondary" data-add-record="modification" data-id="${escapeHTML(v.id)}">+ Tuning</button>
+        <button class="btn secondary" data-add-record="maintenance" data-id="${escapeHTML(v.id)}">+ Revisión</button>
+        <button class="btn secondary" data-add-record="expense" data-id="${escapeHTML(v.id)}">+ Gasto</button>
+      </div>` : ""}
+    </div>
+  </article>`;
+}
+
+function renderRecordCards(items, kind) {
+  if (!items.length) return "";
+  return items.map(item => {
+    let title = item.title || item.category || "Registro";
+    let desc = item.description || "";
+    let date = item.installed_at || item.service_date || item.expense_date || "";
+    let cost = item.cost ?? item.amount;
+    let vehicle = vehicleName(item.vehicle_id);
+    return `<article class="card"><div class="card-content">
+      <span class="eyebrow">${escapeHTML(kind)}</span>
+      <h3>${escapeHTML(title)}</h3>
+      <p>${escapeHTML(vehicle)}${date ? " · " + escapeHTML(date) : ""}</p>
+      ${desc ? `<p style="margin-top:8px">${escapeHTML(desc)}</p>` : ""}
+      <div class="specs">${cost != null ? `<span class="spec">${money(cost)}</span>` : ""}
+      ${item.next_date ? `<span class="spec">Próxima: ${escapeHTML(item.next_date)}</span>` : ""}
+      ${item.next_km ? `<span class="spec">${escapeHTML(item.next_km)} km</span>` : ""}</div>
+    </div></article>`;
+  }).join("");
+}
+
+function renderGallery() {
+  const list = photos.filter(p => vehicles.some(v => v.id === p.vehicle_id));
+  $("gallery").innerHTML = list.map(p => {
+    const url = validImage(p.photo_url);
+    if (!url) return "";
+    return `<div class="gallery-item"><img loading="lazy" src="${escapeHTML(url)}" alt="${escapeHTML(p.caption || vehicleName(p.vehicle_id))}"><p>${escapeHTML(p.caption || vehicleName(p.vehicle_id))}</p></div>`;
+  }).join("");
+  if (!list.length) {
+    $("gallery").innerHTML = `<div class="message" style="grid-column:1/-1">Todavía no hay fotos guardadas en la tabla vehicle_photos.</div>`;
+  }
+}
+
+function render() {
+  const info = viewInfo[currentView];
+  $("sectionTitle").textContent = info[0];
+  $("sectionDescription").textContent = info[1];
+  $("cards").hidden = ["gallery","tuning","maintenance","expenses"].includes(currentView);
+  $("gallery").hidden = currentView !== "gallery";
+  $("records").innerHTML = "";
+  hideEmpty();
+
+  document.querySelectorAll(".tab").forEach(tab => tab.classList.toggle("active",tab.dataset.view===currentView));
+
+  if (currentView === "all" || currentView === "car" || currentView === "moto") {
+    const list = vehicles.filter(v => currentView==="all" || (currentView==="car" ? v.vehicle_type==="Coche" : v.vehicle_type==="Moto"));
+    $("cards").innerHTML = list.map(vehicleCard).join("");
+    if (!list.length) showEmpty(currentUser ? "Todavía no tienes vehículos en esta sección. Pulsa «Añadir» para registrar el primero." : "Inicia sesión para consultar tu garaje privado o registra una cuenta.");
+  } else if (currentView === "tuning") {
+    $("cards").innerHTML = "";
+    $("records").innerHTML = `<div class="form-actions"><button class="btn" data-open-record="modification">+ Registrar modificación</button></div><div class="grid">${renderRecordCards(modifications,"Tuning")}</div>`;
+    if (!modifications.length) showEmpty("Todavía no hay modificaciones registradas.");
+  } else if (currentView === "maintenance") {
+    $("cards").innerHTML = "";
+    $("records").innerHTML = `<div class="form-actions"><button class="btn" data-open-record="maintenance">+ Registrar mantenimiento</button></div><div class="grid">${renderRecordCards(maintenanceRecords,"Mantenimiento")}</div>`;
+    if (!maintenanceRecords.length) showEmpty("Todavía no hay mantenimientos registrados.");
+  } else if (currentView === "expenses") {
+    $("cards").innerHTML = "";
+    $("records").innerHTML = `<div class="form-actions"><button class="btn" data-open-record="expense">+ Registrar gasto</button></div><div class="grid">${renderRecordCards(expenses,"Gasto")}</div>`;
+    if (!expenses.length) showEmpty("Todavía no hay gastos registrados.");
+  } else if (currentView === "gallery") {
+    renderGallery();
+  }
+  updateStats();
+}
+
+async function fetchTable(table) {
+  const {data,error} = await db.from(table).select("*").order("created_at",{ascending:false});
+  if (error) throw error;
+  return data || [];
+}
+
+async function loadData() {
+  if (!db) {
+    setStatus("FALTA CONFIGURAR");
+    render();
+    return;
+  }
+  setStatus(currentUser ? "SESIÓN ACTIVA" : "MODO PÚBLICO");
+  try {
+    const vQuery = db.from("vehicles").select("*").order("created_at",{ascending:false});
+    const vResult = currentUser ? await vQuery : await vQuery.eq("is_public",true);
+    if (vResult.error) throw vResult.error;
+    vehicles = vResult.data || [];
+
+    if (currentUser) {
+      const results = await Promise.all([
+        fetchTable("modifications"),
+        fetchTable("maintenance"),
+        fetchTable("expenses"),
+        fetchTable("vehicle_photos")
+      ]);
+      modifications = results[0].filter(r => r.user_id === currentUser.id);
+      maintenanceRecords = results[1].filter(r => r.user_id === currentUser.id);
+      expenses = results[2].filter(r => r.user_id === currentUser.id);
+      photos = results[3].filter(r => r.user_id === currentUser.id);
+    } else {
+      modifications = [];
+      maintenanceRecords = [];
+      expenses = [];
+      photos = [];
+    }
+    render();
+  } catch (err) {
+    console.error(err);
+    setStatus("REVISAR SUPABASE");
+    vehicles = [];
+    modifications = [];
+    maintenanceRecords = [];
+    expenses = [];
+    photos = [];
+    render();
+    showEmpty("No se han podido cargar los datos. Comprueba las tablas, las políticas RLS y la conexión de Supabase. Detalle: " + err.message);
+  }
+}
+
+function showAuth() {
+  $("authPanel").hidden = false;
+  $("editorPanel").hidden = true;
+  $("accountPanel").hidden = true;
+  feedback("authFeedback","");
+  $("authPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function showAccount() {
+  $("accountPanel").hidden = false;
+  $("authPanel").hidden = true;
+  $("editorPanel").hidden = true;
+  $("accountEmail").textContent = currentUser ? currentUser.email : "";
+  $("accountPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function populateVehicleSelect(selectedId) {
+  const select = $("recordVehicle");
+  select.innerHTML = vehicles
+    .filter(v => currentUser && v.user_id === currentUser.id)
+    .map(v => `<option value="${escapeHTML(v.id)}">${escapeHTML(v.make)} ${escapeHTML(v.model)}</option>`)
+    .join("");
+  if (selectedId) select.value = selectedId;
+}
+
+function resetPhotoPicker() {
+  selectedVehicleImage = "";
+  $("vehiclePhotoFile").value = "";
+  $("vehiclePhotoPreview").src = "";
+  $("vehiclePhotoPreview").hidden = true;
+  $("removeVehiclePhoto").hidden = true;
+  feedback("photoFeedback","");
+}
+
+function showEditor(mode, vehicleId) {
+  if (!currentUser) {
+    showAuth();
+    feedback("authFeedback","Inicia sesión para guardar registros.",true);
+    return;
+  }
+  editorMode = mode;
+  $("editorPanel").hidden = false;
+  $("authPanel").hidden = true;
+  $("accountPanel").hidden = true;
+  $("editorForm").reset();
+  resetPhotoPicker();
+  feedback("editorFeedback","");
+
+  const isVehicle = mode === "vehicle";
+  $("recordFields").querySelectorAll("input, select, textarea").forEach(el => el.disabled = isVehicle);
+  $("vehicleFields").querySelectorAll("input, select, textarea").forEach(el => el.disabled = !isVehicle);
+  $("vehiclePhotoFile").disabled = !isVehicle;
+  $("removeVehiclePhoto").disabled = !isVehicle;
+
+  $("vehicleFields").hidden = !isVehicle;
+  $("recordFields").hidden = isVehicle;
+  $("editorTitle").textContent = isVehicle ? "Añadir vehículo" :
+    mode === "modification" ? "Registrar modificación" :
+    mode === "maintenance" ? "Registrar mantenimiento" : "Registrar gasto";
+
+  ["recordCostWrap","recordDateWrap","recordNextDateWrap","recordNextKmWrap","recordCategoryWrap"].forEach(id => $(id).hidden = true);
+
+  if (!isVehicle) {
+    populateVehicleSelect(vehicleId);
+    $("recordCostWrap").hidden = false;
+    if (mode === "modification") $("recordDateWrap").hidden = false;
+    if (mode === "maintenance") {
+      $("recordDateWrap").hidden = false;
+      $("recordNextDateWrap").hidden = false;
+      $("recordNextKmWrap").hidden = false;
+    }
+    if (mode === "expense") {
+      $("recordDateWrap").hidden = false;
+      $("recordCategoryWrap").hidden = false;
+    }
+    if (!$("recordVehicle").options.length) feedback("editorFeedback","Primero añade un vehículo a tu garaje.",true);
+  }
+  $("editorPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+/* NUEVO: convierte la foto a JPEG reducido para limitar el tamaño guardado. */
+function readAndCompressImage(file) {
+  return new Promise((resolve,reject) => {
+    if (!file || !file.type.startsWith("image/")) {
+      reject(new Error("Selecciona un archivo de imagen válido."));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("No se ha podido leer la imagen."));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("No se ha podido abrir la imagen seleccionada."));
+      img.onload = () => {
+        const maxSide = 1000;
+        const scale = Math.min(1,maxSide / Math.max(img.width,img.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1,Math.round(img.width*scale));
+        canvas.height = Math.max(1,Math.round(img.height*scale));
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("No se ha podido procesar la imagen."));
+          return;
+        }
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        resolve(canvas.toDataURL("image/jpeg",0.72));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+$("vehiclePhotoFile").addEventListener("change",async event=>{
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  feedback("photoFeedback","Procesando imagen…");
+  try {
+    const dataUrl = await readAndCompressImage(file);
+    if (dataUrl.length > 900000) {
+      throw new Error("La imagen sigue siendo demasiado grande. Elige una foto más pequeña.");
+    }
+    selectedVehicleImage = dataUrl;
+    $("vehiclePhotoPreview").src = dataUrl;
+    $("vehiclePhotoPreview").hidden = false;
+    $("removeVehiclePhoto").hidden = false;
+    feedback("photoFeedback","Foto lista. Se guardará con el vehículo.");
+  } catch(err) {
+    selectedVehicleImage = "";
+    $("vehiclePhotoFile").value = "";
+    $("vehiclePhotoPreview").src = "";
+    $("vehiclePhotoPreview").hidden = true;
+    $("removeVehiclePhoto").hidden = true;
+    feedback("photoFeedback",err.message,true);
+  }
+});
+
+$("removeVehiclePhoto").addEventListener("click",resetPhotoPicker);
+
+async function handleAuth(event) {
+  event.preventDefault();
+  if (!db) return feedback("authFeedback","Configura primero la clave pública de Supabase.",true);
+  const email = $("authEmail").value.trim();
+  const password = $("authPassword").value;
+  $("loginBtn").disabled = true;
+  try {
+    const {error} = await db.auth.signInWithPassword({email,password});
+    if (error) throw error;
+    $("authPanel").hidden = true;
+    await refreshSession();
+  } catch(err) {
+    feedback("authFeedback",err.message,true);
+  } finally {
+    $("loginBtn").disabled = false;
+  }
+}
+
+async function handleRegister() {
+  if (!db) return feedback("authFeedback","Configura primero la clave pública de Supabase.",true);
+  const email = $("authEmail").value.trim();
+  const password = $("authPassword").value;
+  if (!email || password.length < 6) return feedback("authFeedback","Introduce un correo válido y una contraseña de al menos 6 caracteres.",true);
+  $("registerBtn").disabled = true;
+  try {
+    const {data,error} = await db.auth.signUp({email,password});
+    if (error) throw error;
+    if (data.session) {
+      $("authPanel").hidden = true;
+      await refreshSession();
+      feedback("editorFeedback","Cuenta creada correctamente.");
+    } else {
+      feedback("authFeedback","Cuenta creada. Revisa tu correo para confirmar el registro y después inicia sesión.");
+    }
+  } catch(err) {
+    feedback("authFeedback",err.message,true);
+  } finally {
+    $("registerBtn").disabled = false;
+  }
+}
+
+async function saveEditor(event) {
+  event.preventDefault();
+  if (!db || !currentUser) return feedback("editorFeedback","Inicia sesión antes de guardar.",true);
+  $("saveBtn").disabled = true;
+  try {
+    let table, record;
+    if (editorMode === "vehicle") {
+      const typedUrl = validImage($("vehicleImage").value.trim());
+      record = {
+        user_id:currentUser.id,
+        vehicle_type:$("vehicleType").value,
+        make:$("vehicleMake").value.trim(),
+        model:$("vehicleModel").value.trim(),
+        year:$("vehicleYear").value ? Number($("vehicleYear").value) : null,
+        power_cv:$("vehiclePower").value ? Number($("vehiclePower").value) : null,
+        engine:$("vehicleEngine").value.trim() || null,
+        image_url:selectedVehicleImage || typedUrl || null,
+        notes:$("vehicleNotes").value.trim() || null,
+        is_public:false
+      };
+      if (!record.make || !record.model) throw new Error("La marca y el modelo son obligatorios.");
+      if ($("vehicleImage").value.trim() && !typedUrl && !selectedVehicleImage) {
+        throw new Error("La URL de imagen no es válida. Usa una dirección http o https.");
+      }
+      table = "vehicles";
+    } else {
+      const vehicleId = $("recordVehicle").value;
+      const ownVehicle = vehicles.some(v => v.id === vehicleId && v.user_id === currentUser.id);
+      if (!ownVehicle) throw new Error("Selecciona uno de tus vehículos.");
+      const title = $("recordTitle").value.trim();
+      if (!title) throw new Error("El título es obligatorio.");
+      const description = $("recordDescription").value.trim() || null;
+      const cost = $("recordCost").value === "" ? null : Number($("recordCost").value);
+      const date = $("recordDate").value || null;
+
+      if (editorMode === "modification") {
+        table = "modifications";
+        record = {user_id:currentUser.id,vehicle_id:vehicleId,title,description,cost,installed_at:date};
+      } else if (editorMode === "maintenance") {
+        table = "maintenance";
+        record = {user_id:currentUser.id,vehicle_id:vehicleId,title,description,cost,service_date:date,next_date:$("recordNextDate").value||null,next_km:$("recordNextKm").value ? Number($("recordNextKm").value) : null};
+      } else {
+        table = "expenses";
+        record = {user_id:currentUser.id,vehicle_id:vehicleId,category:$("recordCategory").value,description:description || title,amount:cost ?? 0,expense_date:date};
+      }
+    }
+
+    const {error} = await db.from(table).insert(record);
+    if (error) throw error;
+    $("editorPanel").hidden = true;
+    resetPhotoPicker();
+    await loadData();
+    feedback("authFeedback","Registro guardado correctamente.");
+  } catch(err) {
+    console.error(err);
+    feedback("editorFeedback","No se pudo guardar: " + err.message,true);
+  } finally {
+    $("saveBtn").disabled = false;
+  }
+}
+
+async function deleteVehicle(id) {
+  if (!db || !currentUser) return;
+  if (!confirm("¿Quieres eliminar este vehículo?")) return;
+  try {
+    const {error} = await db.from("vehicles").delete().eq("id",id).eq("user_id",currentUser.id);
+    if (error) throw error;
+    await loadData();
+  } catch(err) {
+    alert("No se pudo eliminar: " + err.message + ". Comprueba si tiene registros asociados.");
+  }
+}
+
+async function refreshSession() {
+  if (!db) return;
+  const {data,error} = await db.auth.getSession();
+  if (error) console.error(error);
+  currentUser = data.session ? data.session.user : null;
+  $("accountBtn").textContent = currentUser ? "Mi cuenta" : "Iniciar sesión";
+  await loadData();
+}
+
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    currentView = tab.dataset.view;
+    render();
+  });
+});
+
+$("explore").addEventListener("click",()=>$("garage").scrollIntoView({behavior:"smooth"}));
+$("jump-tuning").addEventListener("click",()=>$("tuningBanner").scrollIntoView({behavior:"smooth"}));
+$("tuningBtn").addEventListener("click",()=>{currentView="tuning";render();$("garage").scrollIntoView({behavior:"smooth"});});
+$("addVehicleBtn").addEventListener("click",()=>showEditor("vehicle"));
+$("accountBtn").addEventListener("click",()=>currentUser?showAccount():showAuth());
+$("cancelAuthBtn").addEventListener("click",()=>$("authPanel").hidden=true);
+$("cancelEditorBtn").addEventListener("click",()=>$("editorPanel").hidden=true);
+$("authForm").addEventListener("submit",handleAuth);
+$("registerBtn").addEventListener("click",handleRegister);
+$("editorForm").addEventListener("submit",saveEditor);
+
+$("saveBtn").addEventListener("click", () => {
+  feedback("editorFeedback", "Guardando el registro…");
+});
+
+$("logoutBtn").addEventListener("click",async()=>{
+  if (!db) return;
+  const {error} = await db.auth.signOut();
+  if (error) return alert("No se pudo cerrar sesión: "+error.message);
+  currentUser = null;
+  $("accountPanel").hidden = true;
+  await refreshSession();
+});
+
+document.addEventListener("click",event=>{
+  const del = event.target.closest("[data-delete-vehicle]");
+  if (del) deleteVehicle(del.dataset.deleteVehicle);
+
+  const add = event.target.closest("[data-add-record]");
+  if (add) showEditor(add.dataset.addRecord,add.dataset.id);
+
+  const open = event.target.closest("[data-open-record]");
+  if (open) showEditor(open.dataset.openRecord);
+});
+
+async function init() {
+  if (!window.supabase) {
+    setStatus("ERROR DE LIBRERÍA");
+    showEmpty("No se ha cargado la librería de Supabase. Comprueba tu conexión a internet.");
+    return;
+  }
+
+  if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes("PEGA_AQUI")) {
+    setStatus("FALTA LA CLAVE");
+    showEmpty("Pega la clave pública anon de Supabase en SUPABASE_ANON_KEY.");
+    render();
+    return;
+  }
+
+  try {
+    db = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+    db.auth.onAuthStateChange((event, session) => {
+      currentUser = session ? session.user : null;
+      setTimeout(() => refreshSession(), 0);
+    });
+    await refreshSession();
+  } catch (err) {
+    console.error(err);
+    setStatus("ERROR DE CONEXIÓN");
+    showEmpty("No se ha podido iniciar Supabase: " + err.message);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
