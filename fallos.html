@@ -1,0 +1,1036 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090d16">
+<meta name="description" content="Diagnóstico orientativo de averías, buscador de códigos OBD2, mantenimiento y guías para coches y motos. Herramientas gratuitas de AutoCifra.">
+<title>Diagnóstico OBD2 y mantenimiento de coches y motos | AutoCifra</title>
+
+<style>
+:root{
+  --bg:#090d16;--panel:#111925;--panel2:#172231;--panel3:#0b121d;
+  --text:#f5f7fa;--muted:#9baabd;--orange:#ff642e;--blue:#31c8ff;
+  --green:#43d6a0;--red:#ff5364;--border:rgba(255,255,255,.09);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:100px}
+body{
+  margin:0;color:var(--text);background:
+  radial-gradient(ellipse at 85% 0%,rgba(49,200,255,.08),transparent 35%),var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6
+}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.container{width:min(1120px,calc(100% - 32px));margin:auto}
+header{
+  position:sticky;top:0;z-index:20;background:rgba(9,13,22,.94);
+  backdrop-filter:blur(16px);border-bottom:1px solid var(--border)
+}
+nav{min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.logo{font-size:23px;font-weight:950;letter-spacing:-1.3px;white-space:nowrap}
+.logo span{color:var(--orange)}
+.nav-links{display:flex;flex-wrap:wrap;gap:15px;font-size:12px;color:var(--muted)}
+.nav-links a:hover{color:var(--blue)}
+.hero{
+  padding:65px 0 55px;border-bottom:1px solid var(--border);
+  background:linear-gradient(90deg,rgba(7,11,19,.97),rgba(7,11,19,.78)),
+  url("https://images.unsplash.com/photo-1487754180451-c456f719a1fc?auto=format&fit=crop&w=1800&q=85") center/cover
+}
+.eyebrow{color:var(--blue);font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(38px,7vw,65px);line-height:1.04;letter-spacing:-2px;margin:14px 0}
+h1 span{color:var(--orange)}
+.hero p{max-width:670px;color:#c2cede;font-size:15px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:12px 17px;border:1px solid var(--orange);border-radius:9px;
+  background:linear-gradient(135deg,#ff7545,#ed4c1b);color:white;
+  font-size:12px;font-weight:900;transition:.2s
+}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.btn.secondary{background:transparent;border-color:var(--border);color:var(--text)}
+.btn.blue{background:rgba(49,200,255,.1);border-color:rgba(49,200,255,.4);color:var(--blue)}
+.btn.small{padding:8px 11px;font-size:11px}
+section{padding:42px 0}
+.section-heading{margin-bottom:22px}
+h2{font-size:clamp(24px,4vw,34px);line-height:1.2;margin:8px 0}
+h3{line-height:1.3}
+.muted{color:var(--muted)}
+.small-text{font-size:11px;color:var(--muted);line-height:1.7}
+.panel{
+  background:linear-gradient(145deg,rgba(21,31,48,.97),rgba(13,19,31,.98));
+  border:1px solid var(--border);border-radius:16px;padding:23px;min-width:0
+}
+.panel h2{font-size:21px;margin-top:0}
+.layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(250px,.65fr);gap:20px;align-items:start}
+.field{margin-bottom:16px}
+label{display:block;font-size:12px;font-weight:800;margin-bottom:7px;color:#d5deea}
+input,select,textarea{
+  display:block;width:100%;min-width:0;padding:12px;
+  border:1px solid #35445a;border-radius:9px;background:var(--panel3);
+  color:var(--text);font:inherit;font-size:13px;outline:none
+}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(49,200,255,.1)}
+textarea{resize:vertical;min-height:90px}
+option{background:#0b1220}
+.check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.check-option{
+  display:flex;align-items:flex-start;gap:9px;padding:10px;
+  background:var(--panel3);border:1px solid var(--border);
+  border-radius:8px;font-size:11px;font-weight:600;cursor:pointer
+}
+.check-option input{width:16px;height:16px;flex:0 0 16px;margin:2px 0 0;accent-color:var(--orange)}
+.form-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}
+.notice{
+  padding:13px;border-radius:9px;background:rgba(255,100,46,.07);
+  border:1px solid rgba(255,100,46,.3);color:#ffd1c2;font-size:12px;margin:14px 0
+}
+.notice.danger{background:rgba(255,83,100,.08);border-color:rgba(255,83,100,.4);color:#ffc3cb}
+.info-box{padding:14px;border:1px solid var(--border);background:rgba(9,13,22,.5);border-radius:10px;margin-bottom:11px}
+.info-box h3{font-size:14px;margin:0 0 5px}
+.info-box p{font-size:12px;color:var(--muted);margin:0}
+.pill{
+  display:inline-block;padding:4px 8px;border-radius:5px;
+  border:1px solid rgba(49,200,255,.3);color:var(--blue);
+  font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase
+}
+.pill.orange{color:#ff9a78;border-color:rgba(255,100,46,.35)}
+.result{
+  display:none;margin-top:20px;padding:19px;
+  border:1px solid rgba(49,200,255,.3);border-radius:12px;
+  background:rgba(49,200,255,.045)
+}
+.result h3{margin-top:0}
+.result li{margin:7px 0;font-size:13px}
+.result ul{padding-left:20px}
+.result h4{margin:18px 0 7px}
+.tabs{
+  display:flex;gap:8px;overflow-x:auto;padding:8px;margin:0 0 25px;
+  background:#0d1520;border:1px solid var(--border);border-radius:13px;
+  scrollbar-width:thin
+}
+.tab{
+  flex:1;min-width:max-content;padding:12px 15px;border:1px solid transparent;
+  border-radius:9px;background:transparent;color:var(--muted);
+  font-size:12px;font-weight:850;transition:.2s
+}
+.tab:hover{color:white;background:rgba(255,255,255,.04)}
+.tab.active{color:white;background:rgba(255,100,46,.13);border-color:rgba(255,100,46,.35)}
+.tool-section{display:none}
+.tool-section.active{display:block;animation:appear .25s ease}
+@keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.code-search{display:grid;grid-template-columns:1fr auto;gap:9px}
+.code-result{margin-top:18px}
+.code-card{
+  padding:18px;border:1px solid var(--border);border-radius:12px;
+  background:rgba(9,13,22,.5);margin-top:12px
+}
+.code-card h3{margin:5px 0 10px}
+.code-card ul{padding-left:19px;color:#c4d0df;font-size:13px}
+.code-card li{margin:6px 0}
+.code-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:17px}
+.code-chip{
+  padding:12px;border:1px solid var(--border);border-radius:9px;
+  background:var(--panel3);text-align:left;color:var(--text)
+}
+.code-chip strong{display:block;color:var(--blue);font-size:13px}
+.code-chip span{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.maintenance-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.maintenance-list{display:grid;gap:10px;margin-top:18px}
+.maintenance-item{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;
+  align-items:center;padding:14px;background:var(--panel3);
+  border:1px solid var(--border);border-radius:11px
+}
+.maintenance-item h3{font-size:13px;margin:0 0 4px}
+.maintenance-item p{font-size:11px;color:var(--muted);margin:0}
+.item-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.status-tag{font-size:10px;font-weight:900;padding:5px 8px;border-radius:5px}
+.status-ok{background:rgba(67,214,160,.1);color:var(--green)}
+.status-soon{background:rgba(255,180,70,.1);color:#ffc16b}
+.status-late{background:rgba(255,83,100,.1);color:#ff8290}
+.empty{
+  padding:22px;text-align:center;border:1px dashed #35445a;
+  border-radius:11px;color:var(--muted);font-size:12px
+}
+.guides{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+.guide{
+  padding:19px;border:1px solid var(--border);border-radius:12px;
+  background:linear-gradient(145deg,#151f30,#0e1522)
+}
+.guide .guide-icon{font-size:23px}
+.guide h3{font-size:16px;margin:9px 0}
+.guide p{font-size:12px;color:var(--muted);line-height:1.7}
+.guide details{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
+.guide summary{cursor:pointer;color:var(--blue);font-size:11px;font-weight:850}
+.guide details p{margin-bottom:0}
+footer{border-top:1px solid var(--border);padding:24px 0;color:var(--muted);font-size:11px}
+footer .container{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
+@media(max-width:800px){
+  nav{align-items:flex-start;flex-direction:column;padding:13px 0;gap:8px}
+  .nav-links{gap:9px 14px}
+  .layout{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .hero{padding:45px 0}
+  section{padding:32px 0}
+  .panel{padding:16px}
+  .check-grid,.guides,.maintenance-grid{grid-template-columns:1fr}
+  .code-grid{grid-template-columns:repeat(2,1fr)}
+  .code-search{grid-template-columns:1fr}
+  .tabs{margin-left:-4px;margin-right:-4px}
+  .tab{padding:11px 12px}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <nav class="container">
+    <a class="logo" href="index.html">AUTO<span>CIFRA</span></a>
+    <div class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="Garaje.html">Mi garaje</a>
+      <a href="rutas.html">Rutas</a>
+      <a href="calculadora.html">Calculadoras</a>
+      <a href="gasolineras.html">Gasolineras</a>
+      <a href="fallos.html">Diagnóstico</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+<section class="hero">
+  <div class="container">
+    <div class="eyebrow">Centro de diagnóstico AutoCifra</div>
+    <h1>Detecta el origen.<br><span>Entiende tu vehículo.</span></h1>
+    <p>
+      Consulta códigos OBD2, analiza síntomas y organiza el mantenimiento
+      de tu coche o moto. Herramientas y guías para entender mejor lo que
+      le ocurre a tu vehículo.
+    </p>
+    <div class="hero-actions">
+      <a class="btn" href="#herramientas">Explorar herramientas ↓</a>
+      <a class="btn secondary" href="#guias">Consultar guías</a>
+    </div>
+  </div>
+</section>
+
+<section id="herramientas">
+<div class="container">
+  <div class="section-heading">
+    <div class="eyebrow">Herramientas del motor</div>
+    <h2>Diagnóstico y mantenimiento</h2>
+    <p class="muted">Cuatro apartados para consultar averías, entender síntomas y llevar un control básico de revisiones.</p>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Herramientas de diagnóstico">
+    <button class="tab active" type="button" data-tab="diagnostico" role="tab" aria-selected="true">⌕ Diagnóstico</button>
+    <button class="tab" type="button" data-tab="obd" role="tab" aria-selected="false">▦ Códigos OBD2</button>
+    <button class="tab" type="button" data-tab="mantenimiento" role="tab" aria-selected="false">⚙ Mantenimiento</button>
+    <button class="tab" type="button" data-tab="guias" role="tab" aria-selected="false">▤ Guías</button>
+  </div>
+
+  <!-- DIAGNÓSTICO -->
+  <div class="tool-section active" id="tab-diagnostico" role="tabpanel">
+    <div class="layout">
+      <div class="panel">
+        <h2>¿Qué le ocurre a tu vehículo?</h2>
+        <p class="small-text">Selecciona los síntomas que observas. El resultado es orientativo y no confirma una avería.</p>
+
+        <form id="diagnosticForm">
+          <div class="field">
+            <label for="vehicle">Tipo de vehículo</label>
+            <select id="vehicle">
+              <option value="coche">Coche</option>
+              <option value="moto">Moto</option>
+              <option value="furgoneta">Furgoneta</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="sound">¿Qué sonido escuchas?</label>
+            <select id="sound">
+              <option value="">No hay un sonido concreto</option>
+              <option value="metal">Rascado o roce metálico</option>
+              <option value="cadena">Traqueteo parecido a una cadena</option>
+              <option value="golpeteo">Golpeteo del motor</option>
+              <option value="tac">Tac-tac repetitivo</option>
+              <option value="chillido">Chillido o chirrido</option>
+              <option value="silbido">Silbido al acelerar</option>
+              <option value="zumbido">Zumbido o vibración sonora</option>
+              <option value="giro">Golpe al girar o pasar baches</option>
+              <option value="frenos">Rascado al frenar</option>
+              <option value="arranque">Clics al intentar arrancar</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="when">¿Cuándo aparece?</label>
+            <select id="when">
+              <option value="siempre">En todo momento</option>
+              <option value="arranque">Al arrancar en frío</option>
+              <option value="acelerar">Al acelerar</option>
+              <option value="ralenti">Al ralentí</option>
+              <option value="frenar">Al frenar</option>
+              <option value="girar">Al girar</option>
+              <option value="baches">Al pasar baches</option>
+              <option value="caliente">Con el motor caliente</option>
+              <option value="velocidad">A cierta velocidad</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Otros síntomas</label>
+            <div class="check-grid">
+              <label class="check-option"><input type="checkbox" name="symptom" value="potencia"> Pérdida de potencia</label>
+              <label class="check-option"><input type="checkbox" name="symptom" value="arranque"> Le cuesta arrancar</label>
+              <label class="check-option"><input type="checkbox" name="symptom" value="temperatura"> Temperatura elevada</label>
+              <label class="check-option"><input type="checkbox" name="symptom" value="humo"> Humo anormal</label>
+              <label class="check-option"><input type="checkbox" name="symptom" value="vibracion"> Vibraciones</label>
+              <label class="check-option"><input type="checkbox" name="symptom" value="testigo"> Testigo encendido</label>
+              <label class="check-option"><input type="checkbox" name="symptom" value="fuga"> Pérdida de líquido</label>
+              <label class="check-option"><input type="checkbox" name="symptom" value="consumo"> Consumo elevado</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="warning">Testigo de advertencia</label>
+            <select id="warning">
+              <option value="ninguno">Ninguno</option>
+              <option value="motor_fijo">Motor amarillo fijo</option>
+              <option value="motor_parpadea">Motor amarillo parpadeante</option>
+              <option value="aceite">Aceite rojo / presión de aceite</option>
+              <option value="temperatura">Temperatura roja</option>
+              <option value="frenos">Frenos / líquido de frenos</option>
+              <option value="otro">Otro testigo</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="severity">Gravedad percibida</label>
+            <select id="severity">
+              <option value="leve">Leve, funciona normalmente</option>
+              <option value="medio">Moderada, se nota al conducir</option>
+              <option value="grave">Grave, pérdida de potencia o funcionamiento irregular</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="obd">Código OBD2 (opcional)</label>
+            <input id="obd" type="text" placeholder="Ejemplo: P0420" maxlength="12" autocapitalize="characters">
+          </div>
+
+          <div class="field">
+            <label for="details">Más detalles (opcional)</label>
+            <textarea id="details" placeholder="Ej.: el ruido viene de la rueda delantera y aparece al frenar..."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn" type="submit">Analizar síntomas →</button>
+            <button class="btn secondary" type="reset">Limpiar</button>
+          </div>
+        </form>
+        <div id="diagnosticResult" class="result" aria-live="polite"></div>
+      </div>
+
+      <aside class="panel">
+        <span class="pill orange">Seguridad primero</span>
+        <h2>Cuándo debes parar</h2>
+        <div class="notice danger">
+          <strong>Presión de aceite o temperatura en rojo:</strong>
+          detente en un lugar seguro y apaga el motor. No abras el circuito de refrigeración en caliente.
+        </div>
+        <div class="info-box">
+          <h3>Testigo de motor parpadeante</h3>
+          <p>Puede indicar fallos de combustión que dañen el catalizador. Evita continuar circulando y solicita asistencia.</p>
+        </div>
+        <div class="info-box">
+          <h3>Problemas de frenos</h3>
+          <p>Si la frenada cambia, aparece un ruido fuerte o se enciende un testigo rojo, no sigas conduciendo.</p>
+        </div>
+        <div class="info-box">
+          <h3>Fugas de combustible</h3>
+          <p>No arranques el vehículo si sospechas una fuga. Evita llamas, chispas y fuentes de ignición.</p>
+        </div>
+        <p class="small-text">Una herramienta online no puede inspeccionar físicamente el vehículo ni confirmar una avería.</p>
+      </aside>
+    </div>
+  </div>
+
+  <!-- BUSCADOR OBD -->
+  <div class="tool-section" id="tab-obd" role="tabpanel">
+    <div class="panel">
+      <div class="eyebrow">Base de códigos de avería</div>
+      <h2>Buscador de códigos OBD2</h2>
+      <p class="muted">Introduce un código para consultar su significado, posibles causas y comprobaciones iniciales.</p>
+
+      <div class="code-search">
+        <input id="codeSearch" type="search" maxlength="12" placeholder="Escribe un código, por ejemplo P0300">
+        <button class="btn" id="searchCode" type="button">Buscar código →</button>
+      </div>
+
+      <div id="codeResult" class="code-result" aria-live="polite">
+        <div class="empty">Introduce un código OBD2 para consultar la información disponible.</div>
+      </div>
+
+      <h3 style="margin-top:27px">Códigos frecuentes</h3>
+      <p class="small-text">Pulsa uno de estos códigos para consultar su información.</p>
+      <div class="code-grid" id="popularCodes"></div>
+    </div>
+    <div class="notice">
+      La descripción de un código puede variar según fabricante, modelo y motorización. Un código identifica un circuito o condición detectada, pero no necesariamente la pieza que hay que sustituir.
+    </div>
+  </div>
+
+  <!-- MANTENIMIENTO -->
+  <div class="tool-section" id="tab-mantenimiento" role="tabpanel">
+    <div class="layout">
+      <div class="panel">
+        <div class="eyebrow">Control de revisiones</div>
+        <h2>Tu plan de mantenimiento</h2>
+        <p class="small-text">Añade operaciones, kilómetros y el intervalo que quieres controlar. Los datos se guardan en este navegador.</p>
+
+        <form id="maintenanceForm">
+          <div class="maintenance-grid">
+            <div class="field">
+              <label for="maintenanceVehicle">Vehículo</label>
+              <select id="maintenanceVehicle">
+                <option value="Coche">Coche</option>
+                <option value="Moto">Moto</option>
+                <option value="Furgoneta">Furgoneta</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="currentKm">Kilómetros actuales</label>
+              <input id="currentKm" type="number" min="0" step="1" placeholder="Ej. 85000" required>
+            </div>
+            <div class="field">
+              <label for="maintenanceType">Operación</label>
+              <select id="maintenanceType">
+                <option value="Aceite y filtro">Aceite y filtro</option>
+                <option value="Filtro de aire">Filtro de aire</option>
+                <option value="Filtro de habitáculo">Filtro de habitáculo</option>
+                <option value="Filtro de combustible">Filtro de combustible</option>
+                <option value="Bujías">Bujías</option>
+                <option value="Líquido de frenos">Líquido de frenos</option>
+                <option value="Refrigerante">Refrigerante</option>
+                <option value="Pastillas de freno">Pastillas de freno</option>
+                <option value="Neumáticos">Neumáticos</option>
+                <option value="Distribución">Distribución</option>
+                <option value="Cadena de transmisión">Cadena de transmisión</option>
+                <option value="Otra revisión">Otra revisión</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="lastKm">Kilómetros de la última revisión</label>
+              <input id="lastKm" type="number" min="0" step="1" placeholder="Ej. 80000" required>
+            </div>
+            <div class="field">
+              <label for="intervalKm">Intervalo de revisión (km)</label>
+              <input id="intervalKm" type="number" min="1" step="1" placeholder="Ej. 15000" required>
+            </div>
+            <div class="field">
+              <label for="maintenanceNotes">Notas (opcional)</label>
+              <input id="maintenanceNotes" type="text" maxlength="120" placeholder="Marca de aceite, taller...">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn" type="submit">Añadir al mantenimiento +</button>
+          </div>
+        </form>
+
+        <div class="notice">
+          Los intervalos los eliges tú. Consulta siempre el manual del fabricante: pueden depender del motor, año, uso y condiciones de conducción.
+        </div>
+      </div>
+
+      <aside class="panel">
+        <span class="pill">Tu control</span>
+        <h2>Cómo utilizarlo</h2>
+        <div class="info-box">
+          <h3>1. Introduce los kilómetros</h3>
+          <p>Escribe el kilometraje actual del vehículo y el de la última operación.</p>
+        </div>
+        <div class="info-box">
+          <h3>2. Configura el intervalo</h3>
+          <p>Indica cada cuántos kilómetros quieres volver a revisar ese elemento.</p>
+        </div>
+        <div class="info-box">
+          <h3>3. Consulta lo pendiente</h3>
+          <p>La herramienta calcula los kilómetros restantes o si has superado el intervalo indicado.</p>
+        </div>
+        <p class="small-text">Este registro es local: no se sincroniza con Mi Garaje ni con otros dispositivos.</p>
+      </aside>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <div class="section-heading">
+        <div class="eyebrow">Operaciones guardadas</div>
+        <h2>Historial y próximas revisiones</h2>
+        <p class="small-text">Se muestran las operaciones registradas en este navegador.</p>
+      </div>
+      <div id="maintenanceList" class="maintenance-list">
+        <div class="empty">Todavía no has añadido operaciones de mantenimiento.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GUÍAS -->
+  <div class="tool-section" id="tab-guias" role="tabpanel">
+    <div class="section-heading">
+      <div class="eyebrow">Información práctica</div>
+      <h2>Guías de averías y mantenimiento</h2>
+      <p class="muted">Aprende a reconocer síntomas, entender posibles causas y saber cuándo solicitar una revisión.</p>
+    </div>
+
+    <div class="guides">
+      <article class="guide">
+        <div class="guide-icon">🛢️</div>
+        <span class="pill orange">Lubricación</span>
+        <h3>¿Qué ocurre si se enciende el testigo de aceite?</h3>
+        <p>La advertencia roja de presión de aceite requiere actuar inmediatamente.</p>
+        <details>
+          <summary>Leer guía</summary>
+          <p>Detén el vehículo en un lugar seguro y apaga el motor. Circular sin presión suficiente puede causar daños graves. Cuando el motor esté en condiciones seguras, consulta el manual y comprueba el nivel siguiendo sus indicaciones. Un nivel correcto no descarta un problema de presión. No continúes si el testigo permanece encendido: solicita asistencia y una comprobación del sistema.</p>
+        </details>
+      </article>
+
+      <article class="guide">
+        <div class="guide-icon">🌡️</div>
+        <span class="pill">Refrigeración</span>
+        <h3>Por qué puede subir la temperatura del motor</h3>
+        <p>El sistema de refrigeración mantiene el motor dentro de su rango de funcionamiento.</p>
+        <details>
+          <summary>Leer guía</summary>
+          <p>Entre las posibles causas están una fuga de refrigerante, un ventilador que no funciona, un termostato defectuoso o problemas de circulación. Si aparece una advertencia de temperatura elevada, detente en un lugar seguro y apaga el motor. Nunca abras el tapón del circuito cuando esté caliente: existe riesgo de quemaduras por vapor y líquido a presión.</p>
+        </details>
+      </article>
+
+      <article class="guide">
+        <div class="guide-icon">🔋</div>
+        <span class="pill">Electricidad</span>
+        <h3>El vehículo no arranca: batería o motor de arranque</h3>
+        <p>El comportamiento al girar la llave o pulsar el botón puede aportar pistas.</p>
+        <details>
+          <summary>Leer guía</summary>
+          <p>Un clic repetido puede estar relacionado con una batería descargada o conexiones deficientes. Si el motor gira con normalidad pero no arranca, también pueden intervenir el encendido, el combustible o la gestión electrónica. Comprueba los síntomas y solicita una prueba de batería y sistema de carga. Evita puentear conexiones si no conoces el procedimiento seguro.</p>
+        </details>
+      </article>
+
+      <article class="guide">
+        <div class="guide-icon">🛑</div>
+        <span class="pill orange">Frenos</span>
+        <h3>Ruidos al frenar: qué puede estar ocurriendo</h3>
+        <p>Un chirrido o roce metálico puede tener distintos orígenes.</p>
+        <details>
+          <summary>Leer guía</summary>
+          <p>Puede deberse a polvo, humedad, pastillas desgastadas, discos dañados o elementos mal colocados. Un ruido metálico persistente merece una inspección cuanto antes. Si notas pérdida de eficacia, vibraciones fuertes, pedal anormal o una advertencia de frenos, no continúes circulando y solicita asistencia.</p>
+        </details>
+      </article>
+
+      <article class="guide">
+        <div class="guide-icon">💨</div>
+        <span class="pill">Motor</span>
+        <h3>Humo por el escape: cómo interpretar su aspecto</h3>
+        <p>El color, la duración y las condiciones en las que aparece son importantes.</p>
+        <details>
+          <summary>Leer guía</summary>
+          <p>El vapor blanco ligero al arrancar en frío puede ser condensación. Un humo blanco persistente, humo azulado o humo negro pueden indicar situaciones diferentes relacionadas con refrigerante, aceite o combustión. No diagnostiques únicamente por el color: registra cuándo aparece, si el motor consume líquidos y si hay otros síntomas. Ante humo abundante u olor a quemado, detente con seguridad.</p>
+        </details>
+      </article>
+
+      <article class="guide">
+        <div class="guide-icon">⚙️</div>
+        <span class="pill">Mantenimiento</span>
+        <h3>Qué revisar antes de un viaje largo</h3>
+        <p>Una comprobación básica ayuda a detectar problemas antes de salir.</p>
+        <details>
+          <summary>Leer guía</summary>
+          <p>Comprueba la presión y el estado de los neumáticos, iluminación, limpiaparabrisas, nivel de aceite y refrigerante siguiendo el manual, frenos y posibles fugas. Revisa también la documentación y el equipamiento obligatorio. En motos, presta atención adicional a cadena, transmisión, neumáticos y mandos. Si detectas un defecto de seguridad, resuélvelo antes del viaje.</p>
+        </details>
+      </article>
+    </div>
+  </div>
+</div>
+</section>
+</main>
+
+<footer>
+  <div class="container">
+    <span>© 2026 AutoCifra · Herramientas para el mundo del motor</span>
+    <span>Información orientativa. No sustituye una diagnosis profesional.</span>
+    <a href="index.html">← Volver al inicio</a>
+  </div>
+</footer>
+
+<script>
+"use strict";
+
+/* NAVEGACIÓN ENTRE HERRAMIENTAS */
+const tabs = document.querySelectorAll(".tab");
+const toolSections = document.querySelectorAll(".tool-section");
+
+function activateTab(name){
+  tabs.forEach(tab=>{
+    const active = tab.dataset.tab === name;
+    tab.classList.toggle("active",active);
+    tab.setAttribute("aria-selected",String(active));
+  });
+  toolSections.forEach(section=>{
+    section.classList.toggle("active",section.id === "tab-"+name);
+  });
+}
+tabs.forEach(tab=>{
+  tab.addEventListener("click",()=>activateTab(tab.dataset.tab));
+});
+
+/* BASE DE CÓDIGOS OBD2 */
+const obdCodes = {
+  P0101:{
+    title:"Rango o rendimiento incorrecto del caudalímetro",
+    description:"La señal del sistema de medición de aire no coincide con lo esperado por la centralita.",
+    causes:["Fuga en la admisión","Caudalímetro contaminado o defectuoso","Filtro o conductos de aire obstruidos"],
+    checks:["Inspeccionar conductos y conexiones de admisión","Comprobar filtro de aire y lecturas del sensor"]
+  },
+  P0113:{
+    title:"Señal alta del sensor de temperatura del aire de admisión",
+    description:"La centralita detecta una señal eléctrica superior al rango esperado.",
+    causes:["Sensor desconectado o defectuoso","Cableado dañado","Problema en el conector"],
+    checks:["Inspeccionar conector y cableado","Comparar la lectura con la temperatura ambiente"]
+  },
+  P0115:{
+    title:"Fallo del circuito del sensor de temperatura del refrigerante",
+    description:"Se ha detectado un problema eléctrico en el circuito del sensor.",
+    causes:["Sensor defectuoso","Conector o cableado dañado","Problema en el circuito eléctrico"],
+    checks:["Comprobar conectores y cableado","Comparar lectura del sensor con la temperatura real"]
+  },
+  P0128:{
+    title:"Temperatura del refrigerante inferior a la prevista",
+    description:"El motor no alcanza la temperatura esperada dentro de las condiciones monitorizadas.",
+    causes:["Termostato que permanece abierto","Sensor de temperatura defectuoso","Condiciones de funcionamiento anómalas"],
+    checks:["Comprobar temperatura real mediante diagnosis","Revisar termostato y sensor"]
+  },
+  P0171:{
+    title:"Mezcla demasiado pobre",
+    description:"La corrección de combustible indica una mezcla con exceso de aire o falta de combustible.",
+    causes:["Entrada de aire no medida","Presión o suministro de combustible insuficiente","Sensor con lecturas incorrectas"],
+    checks:["Inspeccionar manguitos y fugas de admisión","Comprobar presión de combustible y datos de sensores"]
+  },
+  P0172:{
+    title:"Mezcla demasiado rica",
+    description:"La gestión del motor detecta una mezcla con exceso de combustible.",
+    causes:["Inyector con fuga","Presión de combustible elevada","Sensor de aire o temperatura con lecturas incorrectas"],
+    checks:["Revisar datos en vivo y correcciones de combustible","Comprobar inyectores y sensores"]
+  },
+  P0300:{
+    title:"Fallos de combustión aleatorios o múltiples",
+    description:"Se detectan fallos de combustión que pueden afectar a varios cilindros.",
+    causes:["Bujías o bobinas defectuosas","Problemas de combustible","Entrada de aire no medida"],
+    checks:["Leer datos adicionales del motor","Revisar encendido y alimentación con herramientas adecuadas"]
+  },
+  P0301:{
+    title:"Fallos de combustión en el cilindro 1",
+    description:"La centralita detecta fallos de combustión en el cilindro identificado.",
+    causes:["Bujía o bobina defectuosa","Inyector con problemas","Compresión insuficiente"],
+    checks:["Confirmar cilindro y código mediante diagnosis","Comprobar encendido, inyección y compresión si procede"]
+  },
+  P0302:{
+    title:"Fallos de combustión en el cilindro 2",
+    description:"La centralita detecta fallos de combustión en el cilindro identificado.",
+    causes:["Bujía o bobina defectuosa","Problemas del inyector","Posible problema mecánico"],
+    checks:["Comprobar datos del motor","Revisar encendido, inyección y compresión si procede"]
+  },
+  P0401:{
+    title:"Flujo insuficiente en el sistema EGR",
+    description:"El flujo de recirculación de gases detectado es inferior al esperado.",
+    causes:["Conductos obstruidos","Válvula EGR defectuosa","Problemas de control o sensores"],
+    checks:["Comprobar el sistema EGR según el fabricante","Revisar conductos, mando y sensores"]
+  },
+  P0420:{
+    title:"Eficiencia del catalizador por debajo del umbral",
+    description:"El sistema de control detecta una eficiencia inferior a la prevista en el catalizador.",
+    causes:["Catalizador degradado","Fugas en el escape","Problemas de combustión o sensores de oxígeno"],
+    checks:["Buscar otros códigos relacionados","Comprobar fugas y datos de sensores antes de cambiar el catalizador"]
+  },
+  P0442:{
+    title:"Posible fuga pequeña del sistema evaporativo",
+    description:"Se ha detectado una posible fuga en el sistema de control de emisiones evaporativas.",
+    causes:["Tapón de combustible mal cerrado o defectuoso","Manguito con fuga","Válvula del sistema evaporativo defectuosa"],
+    checks:["Comprobar el tapón si el vehículo lo utiliza","Solicitar una prueba de fugas si el código persiste"]
+  },
+  P0455:{
+    title:"Posible fuga grande del sistema evaporativo",
+    description:"El sistema ha detectado una fuga importante o una desconexión.",
+    causes:["Tapón de combustible mal cerrado","Tubería desconectada o dañada","Fallo en una válvula del sistema"],
+    checks:["Inspeccionar visualmente tapón y conexiones accesibles","Solicitar una prueba de humo si procede"]
+  },
+  P0299:{
+    title:"Presión de sobrealimentación insuficiente",
+    description:"La presión de sobrealimentación detectada es inferior a la solicitada.",
+    causes:["Fuga en manguitos de admisión","Problema de control del turbo","Fallo del turbocompresor u otros componentes"],
+    checks:["Inspeccionar manguitos y conexiones","Comprobar presión solicitada y real con diagnosis"]
+  },
+  P0700:{
+    title:"Aviso de fallo en el sistema de transmisión",
+    description:"La gestión del motor informa de que el módulo de transmisión ha registrado un fallo.",
+    causes:["Fallo registrado en el módulo de transmisión","Problema eléctrico o de control","Avería de transmisión que requiere códigos adicionales"],
+    checks:["Leer los códigos específicos del módulo de transmisión","Solicitar diagnosis especializada"]
+  }
+};
+
+function renderCode(code){
+  const target=document.getElementById("codeResult");
+  const info=obdCodes[code];
+  target.innerHTML="";
+
+  if(!info){
+    const box=document.createElement("div");
+    box.className="notice";
+    box.textContent=/^[PBCU][0-9A-F]{4}$/.test(code)
+      ?"El código tiene un formato reconocible, pero todavía no está incluido en nuestra base de datos. Consulta la documentación del fabricante o un equipo de diagnosis compatible."
+      :"Formato no reconocido. Comprueba que has introducido una letra y cuatro caracteres, por ejemplo P0420.";
+    target.appendChild(box);
+    return;
+  }
+
+  const card=document.createElement("article");
+  card.className="code-card";
+
+  const pill=document.createElement("span");
+  pill.className="pill";
+  pill.textContent=code;
+  card.appendChild(pill);
+
+  const title=document.createElement("h3");
+  title.textContent=info.title;
+  card.appendChild(title);
+
+  const description=document.createElement("p");
+  description.className="muted";
+  description.textContent=info.description;
+  card.appendChild(description);
+
+  function addList(heading,items){
+    const h=document.createElement("h4");
+    h.textContent=heading;
+    card.appendChild(h);
+    const ul=document.createElement("ul");
+    items.forEach(item=>{
+      const li=document.createElement("li");
+      li.textContent=item;
+      ul.appendChild(li);
+    });
+    card.appendChild(ul);
+  }
+  addList("Posibles causas",info.causes);
+  addList("Comprobaciones iniciales",info.checks);
+
+  const note=document.createElement("div");
+  note.className="notice";
+  note.textContent="El código no confirma por sí solo qué pieza está averiada. La interpretación puede variar según fabricante y vehículo. No sustituyas componentes sin comprobar la causa.";
+  card.appendChild(note);
+  target.appendChild(card);
+}
+
+function searchCode(){
+  const code=document.getElementById("codeSearch").value.trim().toUpperCase().replace(/\s+/g,"");
+  if(!code){
+    document.getElementById("codeResult").innerHTML='<div class="notice">Introduce un código para realizar la búsqueda.</div>';
+    return;
+  }
+  renderCode(code);
+}
+document.getElementById("searchCode").addEventListener("click",searchCode);
+document.getElementById("codeSearch").addEventListener("keydown",event=>{
+  if(event.key==="Enter"){event.preventDefault();searchCode();}
+});
+
+const popular=["P0300","P0301","P0171","P0420","P0299","P0700"];
+const popularContainer=document.getElementById("popularCodes");
+popular.forEach(code=>{
+  const button=document.createElement("button");
+  button.type="button";
+  button.className="code-chip";
+  const strong=document.createElement("strong");
+  strong.textContent=code;
+  const span=document.createElement("span");
+  span.textContent=obdCodes[code].title;
+  button.append(strong,span);
+  button.addEventListener("click",()=>{
+    document.getElementById("codeSearch").value=code;
+    renderCode(code);
+    document.getElementById("codeResult").scrollIntoView({behavior:"smooth",block:"nearest"});
+  });
+  popularContainer.appendChild(button);
+});
+
+/* DIAGNÓSTICO POR SÍNTOMAS */
+const diagnosticForm=document.getElementById("diagnosticForm");
+const diagnosticResult=document.getElementById("diagnosticResult");
+
+function addUnique(list,text){
+  if(!list.includes(text))list.push(text);
+}
+function appendText(parent,tag,text){
+  const node=document.createElement(tag);
+  node.textContent=text;
+  parent.appendChild(node);
+  return node;
+}
+diagnosticForm.addEventListener("submit",event=>{
+  event.preventDefault();
+
+  const sound=document.getElementById("sound").value;
+  const when=document.getElementById("when").value;
+  const warning=document.getElementById("warning").value;
+  const severity=document.getElementById("severity").value;
+  const vehicle=document.getElementById("vehicle").value;
+  const details=document.getElementById("details").value.trim();
+  const code=document.getElementById("obd").value.trim().toUpperCase().replace(/\s+/g,"");
+  const symptoms=Array.from(document.querySelectorAll('input[name="symptom"]:checked')).map(x=>x.value);
+
+  let causes=[],checks=[],urgent=false;
+
+  const soundMap={
+    metal:["Contacto entre piezas metálicas, desgaste o componente suelto.","Si ocurre al frenar, podría estar relacionado con pastillas o discos."],
+    cadena:["Holgura, lubricación insuficiente o desgaste de un mecanismo de transmisión."],
+    golpeteo:["Posible problema de lubricación, distribución, accesorios o componentes internos."],
+    tac:["Posible problema de lubricación, distribución, accesorios o componentes internos."],
+    chillido:["Correa, rodamiento o fricción entre componentes."],
+    silbido:["Posible fuga de admisión o sobrealimentación, especialmente al acelerar."],
+    zumbido:["Rodamiento, neumático, bomba u otro componente giratorio."],
+    giro:["Suspensión, dirección, silentblocks, transmisión o componentes de rueda."],
+    frenos:["Pastillas desgastadas, suciedad o daño en los discos de freno."],
+    arranque:["Batería descargada, conexiones eléctricas deficientes o motor de arranque."]
+  };
+  if(soundMap[sound])soundMap[sound].forEach(x=>addUnique(causes,x));
+
+  if(sound==="metal"||sound==="frenos"){
+    addUnique(checks,"Solicitar una inspección del sistema afectado. Si cambia la frenada, no sigas conduciendo.");
+  }
+  if(sound==="cadena"){
+    addUnique(checks,"No manipular piezas móviles con el motor en marcha.");
+    if(vehicle==="moto")addUnique(checks,"Con la moto apagada, revisar tensión y estado de la cadena según el manual.");
+  }
+  if(sound==="golpeteo"||sound==="tac"){
+    addUnique(checks,"Comprobar cuándo aparece el ruido y solicitar una revisión del motor.");
+    urgent=true;
+  }
+  if(sound==="chillido")addUnique(checks,"Comprobar cuándo aparece y solicitar una inspección de correas y rodamientos.");
+  if(sound==="silbido")addUnique(checks,"Revisar manguitos y conexiones con el motor apagado.");
+  if(sound==="zumbido"||sound==="giro")addUnique(checks,"Observar si depende de la velocidad, el giro o las revoluciones.");
+  if(sound==="arranque")addUnique(checks,"Comprobar batería y conexiones sin provocar cortocircuitos.");
+
+  const symptomMap={
+    potencia:["Pérdida de potencia relacionada con admisión, encendido, combustible, escape o gestión electrónica.","Leer códigos y evitar exigir al motor."],
+    arranque:["Posible problema de batería, motor de arranque, combustible o encendido.","Registrar si el motor gira o solo se escuchan clics."],
+    temperatura:["Posible problema de refrigeración, nivel de refrigerante, termostato o ventilación.","Si la temperatura entra en zona roja, detente y apaga el motor. No abras el circuito caliente."],
+    humo:["El color del humo y las condiciones en que aparece ayudan a acotar el origen.","Si el humo es abundante o hay olor a quemado, detente en un lugar seguro."],
+    vibracion:["Neumáticos, equilibrado, soportes, transmisión o funcionamiento irregular del motor.","Anotar si depende de velocidad, frenado o revoluciones."],
+    testigo:["El testigo necesita identificarse para determinar qué sistema está alertando.","Consultar el manual y registrar los códigos de diagnosis."],
+    fuga:["Posible fuga de aceite, refrigerante, combustible u otro fluido.","Si sospechas una fuga de combustible, no arranques el vehículo."],
+    consumo:["Presión de neumáticos, mantenimiento, sensores, conducción o problemas de combustión.","Comparar consumo real y revisar si hay otros síntomas."]
+  };
+  symptoms.forEach(symptom=>{
+    if(symptomMap[symptom]){
+      addUnique(causes,symptomMap[symptom][0]);
+      addUnique(checks,symptomMap[symptom][1]);
+    }
+  });
+
+  if(symptoms.includes("temperatura")||symptoms.includes("humo")||symptoms.includes("fuga"))urgent=true;
+
+  let codeInfo=null;
+  if(code){
+    if(/^[PBCU][0-9A-F]{4}$/.test(code))codeInfo=obdCodes[code]||null;
+    else addUnique(checks,"Verifica el formato del código. Los códigos OBD2 suelen contener una letra seguida de cuatro caracteres.");
+  }
+  if(codeInfo){
+    addUnique(causes,codeInfo.title);
+    codeInfo.causes.forEach(x=>addUnique(causes,x));
+    codeInfo.checks.forEach(x=>addUnique(checks,x));
+  }
+
+  if(causes.length===0){
+    causes.push("La información aportada no permite señalar una causa concreta con suficiente confianza.");
+    causes.push("Puede ser necesario combinar síntomas, códigos de avería e inspección física.");
+  }
+  if(checks.length===0){
+    checks.push("Anota cuándo aparece el problema y si cambia con temperatura, velocidad o revoluciones.");
+    checks.push("Si el síntoma persiste, solicita una diagnosis profesional.");
+  }
+
+  const warningMessages={
+    aceite:"TESTIGO ROJO DE ACEITE: apaga el motor en cuanto sea seguro. No sigas circulando.",
+    temperatura:"TEMPERATURA: detente en un lugar seguro, apaga el motor y deja que se enfríe. No abras el circuito caliente.",
+    motor_parpadea:"MOTOR PARPADEANTE: puede haber un fallo de combustión que dañe el catalizador. Evita continuar y solicita asistencia.",
+    frenos:"TESTIGO DE FRENOS: si la advertencia persiste o la frenada cambia, no conduzcas y solicita asistencia."
+  };
+  if(["aceite","temperatura","motor_parpadea","frenos"].includes(warning))urgent=true;
+  if(severity==="grave")urgent=true;
+
+  diagnosticResult.style.display="block";
+  diagnosticResult.innerHTML="";
+  appendText(diagnosticResult,"h3",urgent?"Prioridad: revisar con urgencia":"Resultado orientativo");
+  appendText(diagnosticResult,"p","Vehículo: "+vehicle+". Momento indicado: "+when+".");
+
+  if(warningMessages[warning]){
+    const box=appendText(diagnosticResult,"div",warningMessages[warning]);
+    box.className="notice danger";
+  }else if(urgent){
+    const box=appendText(diagnosticResult,"div","Por los síntomas seleccionados, evita utilizar el vehículo hasta valorar el problema si afecta a la seguridad o al funcionamiento del motor.");
+    box.className="notice danger";
+  }
+
+  if(code){
+    appendText(diagnosticResult,"h4","Código OBD2: "+code);
+    appendText(diagnosticResult,"p",codeInfo?codeInfo.title:"No hay una interpretación específica disponible en esta herramienta para ese código.");
+  }
+
+  function addResultList(title,items){
+    appendText(diagnosticResult,"h4",title);
+    const ul=document.createElement("ul");
+    items.forEach(item=>appendText(ul,"li",item));
+    diagnosticResult.appendChild(ul);
+  }
+  addResultList("Posibles causas",causes);
+  addResultList("Qué comprobar",checks);
+
+  if(details){
+    appendText(diagnosticResult,"h4","Detalles aportados");
+    appendText(diagnosticResult,"p",details);
+  }
+  const disclaimer=appendText(diagnosticResult,"div","Este resultado es orientativo. No confirma una avería ni sustituye una diagnosis profesional. No cambies piezas solo por esta estimación.");
+  disclaimer.className="notice";
+  diagnosticResult.scrollIntoView({behavior:"smooth",block:"start"});
+});
+diagnosticForm.addEventListener("reset",()=>{
+  diagnosticResult.style.display="none";
+  diagnosticResult.innerHTML="";
+});
+
+/* MANTENIMIENTO LOCAL */
+const STORAGE_KEY="autocifra_maintenance_v1";
+const maintenanceForm=document.getElementById("maintenanceForm");
+const maintenanceList=document.getElementById("maintenanceList");
+
+function loadMaintenance(){
+  try{
+    const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+    return Array.isArray(data)?data:[];
+  }catch(error){return [];}
+}
+function saveMaintenance(items){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(items));
+    return true;
+  }catch(error){return false;}
+}
+function maintenanceStatus(item){
+  const due=item.lastKm+item.intervalKm;
+  const remaining=due-item.currentKm;
+  if(remaining<0)return {text:"Vencido",className:"status-late",detail:"Superado en "+Math.abs(remaining).toLocaleString("es-ES")+" km"};
+  if(remaining<=1000)return {text:"Próximo",className:"status-soon",detail:"Quedan "+remaining.toLocaleString("es-ES")+" km"};
+  return {text:"Al día",className:"status-ok",detail:"Quedan "+remaining.toLocaleString("es-ES")+" km"};
+}
+function renderMaintenance(){
+  const items=loadMaintenance();
+  maintenanceList.innerHTML="";
+  if(!items.length){
+    const empty=appendText(maintenanceList,"div","Todavía no has añadido operaciones de mantenimiento.");
+    empty.className="empty";
+    return;
+  }
+
+  items.forEach((item,index)=>{
+    const status=maintenanceStatus(item);
+    const row=document.createElement("article");
+    row.className="maintenance-item";
+
+    const info=document.createElement("div");
+    appendText(info,"h3",item.type+" · "+item.vehicle);
+    appendText(info,"p","Última revisión: "+item.lastKm.toLocaleString("es-ES")+" km · Próxima: "+(item.lastKm+item.intervalKm).toLocaleString("es-ES")+" km");
+    appendText(info,"p","Kilómetros actuales: "+item.currentKm.toLocaleString("es-ES")+" km · "+status.detail);
+    if(item.notes)appendText(info,"p","Notas: "+item.notes);
+
+    const actions=document.createElement("div");
+    actions.className="item-actions";
+    const tag=appendText(actions,"span",status.text);
+    tag.className="status-tag "+status.className;
+
+    const edit=document.createElement("button");
+    edit.type="button";edit.className="btn blue small";edit.textContent="Editar";
+    edit.addEventListener("click",()=>editMaintenance(index));
+    actions.appendChild(edit);
+
+    const remove=document.createElement("button");
+    remove.type="button";remove.className="btn secondary small";remove.textContent="Eliminar";
+    remove.addEventListener("click",()=>deleteMaintenance(index));
+    actions.appendChild(remove);
+
+    row.append(info,actions);
+    maintenanceList.appendChild(row);
+  });
+}
+maintenanceForm.addEventListener("submit",event=>{
+  event.preventDefault();
+  const currentKm=Number(document.getElementById("currentKm").value);
+  const lastKm=Number(document.getElementById("lastKm").value);
+  const intervalKm=Number(document.getElementById("intervalKm").value);
+
+  if(!Number.isFinite(currentKm)||!Number.isFinite(lastKm)||!Number.isFinite(intervalKm)||currentKm<0||lastKm<0||intervalKm<=0){
+    alert("Revisa los kilómetros y el intervalo introducido.");
+    return;
+  }
+  if(lastKm>currentKm){
+    alert("Los kilómetros de la última revisión no pueden superar los kilómetros actuales.");
+    return;
+  }
+
+  const item={
+    vehicle:document.getElementById("maintenanceVehicle").value,
+    currentKm,lastKm,intervalKm,
+    type:document.getElementById("maintenanceType").value,
+    notes:document.getElementById("maintenanceNotes").value.trim()
+  };
+  const items=loadMaintenance();
+  items.push(item);
+  if(!saveMaintenance(items)){
+    alert("No se ha podido guardar. Comprueba el espacio disponible del navegador.");
+    return;
+  }
+  maintenanceForm.reset();
+  renderMaintenance();
+});
+function editMaintenance(index){
+  const items=loadMaintenance();
+  const item=items[index];
+  if(!item)return;
+  document.getElementById("maintenanceVehicle").value=item.vehicle;
+  document.getElementById("currentKm").value=item.currentKm;
+  document.getElementById("maintenanceType").value=item.type;
+  document.getElementById("lastKm").value=item.lastKm;
+  document.getElementById("intervalKm").value=item.intervalKm;
+  document.getElementById("maintenanceNotes").value=item.notes||"";
+  items.splice(index,1);
+  saveMaintenance(items);
+  renderMaintenance();
+  document.getElementById("maintenanceForm").scrollIntoView({behavior:"smooth"});
+}
+function deleteMaintenance(index){
+  if(!confirm("¿Quieres eliminar esta operación de mantenimiento?"))return;
+  const items=loadMaintenance();
+  items.splice(index,1);
+  saveMaintenance(items);
+  renderMaintenance();
+}
+renderMaintenance();
+</script>
+</body>
+</html>
