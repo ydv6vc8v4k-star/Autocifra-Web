@@ -1,0 +1,854 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090d16">
+<title>Rutas | AutoCifra</title>
+<meta name="description" content="Planifica rutas en coche y moto, añade paradas y calcula costes con AutoCifra.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+:root{
+--bg:#090d16;
+--p:#111a27;
+--p2:#172334;
+--line:#26364a;
+--o:#ff642e;
+--b:#31c8ff;
+--t:#f4f7fb;
+--m:#91a0b4
+}
+*{box-sizing:border-box}
+body{
+margin:0;
+background:radial-gradient(ellipse at 80% -15%,#17364b55,transparent 38%),var(--bg);
+color:var(--t);
+font-family:"DM Sans",sans-serif
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1280px,94%);margin:auto}
+header{
+height:68px;
+border-bottom:1px solid var(--line);
+position:sticky;
+top:0;
+background:#090d16ed;
+backdrop-filter:blur(15px);
+z-index:50
+}
+.nav{
+height:100%;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:15px
+}
+.brand{font:800 21px Orbitron}
+.brand span{color:var(--o)}
+.links{display:flex;gap:20px;color:#b8c5d5;font-size:13px}
+.btn{
+border:1px solid var(--line);
+background:#152131;
+color:white;
+padding:11px 14px;
+border-radius:10px;
+font-size:12px;
+font-weight:800
+}
+.primary{
+background:linear-gradient(110deg,var(--o),#ff8955);
+color:#111722;
+border:0
+}
+.blue{border-color:#31c8ff66;color:var(--b);background:#31c8ff10}
+.hero{
+padding:38px 0 25px;
+display:flex;
+justify-content:space-between;
+align-items:end;
+gap:20px
+}
+.eyebrow{
+font-size:10px;
+letter-spacing:2px;
+text-transform:uppercase;
+color:var(--b);
+font-weight:800
+}
+h1{
+font:800 clamp(27px,4vw,46px) Orbitron;
+line-height:1.15;
+margin:10px 0
+}
+h1 span{color:var(--o)}
+.hero p,.sub{
+color:var(--m);
+font-size:13px;
+line-height:1.65;
+max-width:680px
+}
+.tabs{
+display:flex;
+gap:7px;
+overflow:auto;
+border-bottom:1px solid var(--line);
+padding:5px 0 15px
+}
+.tabs button{
+white-space:nowrap;
+border:1px solid transparent;
+background:none;
+color:var(--m);
+padding:11px 14px;
+border-radius:9px;
+font-weight:800;
+font-size:12px
+}
+.tabs button.active{
+color:white;
+background:#ff642e18;
+border-color:#ff642e55
+}
+.tabs b{color:var(--o)}
+.view{display:none;padding:22px 0 50px}
+.view.active{display:block}
+.layout{
+display:grid;
+grid-template-columns:minmax(290px,.78fr) minmax(0,1.22fr);
+gap:15px
+}
+.panel{
+background:linear-gradient(145deg,#141f2e,#101824);
+border:1px solid var(--line);
+border-radius:16px;
+padding:18px
+}
+.panel h2{font:700 18px Orbitron;margin:6px 0}
+.field{display:grid;gap:6px;margin:12px 0}
+.field label{font-size:10px;color:#b9c7d8;font-weight:800}
+.field input,.field select{
+width:100%;
+background:#0a121e;
+border:1px solid #2c3d53;
+border-radius:9px;
+padding:12px;
+color:white;
+outline:none;
+font-size:13px
+}
+.field input:focus,.field select:focus{border-color:var(--b)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stop{display:flex;gap:7px;align-items:center}
+.stop input{flex:1;min-width:0}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.actions .btn{flex:1}
+#map{
+height:470px;
+width:100%;
+border-radius:14px;
+background:#182638
+}
+.mapbox{padding:7px}
+.stats{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px;
+margin-top:10px
+}
+.metric{
+background:#0b1420;
+border:1px solid var(--line);
+border-radius:10px;
+padding:11px
+}
+.metric small{display:block;color:var(--m);font-size:9px}
+.metric strong{
+display:block;
+font:700 16px Orbitron;
+margin-top:5px
+}
+.orange{color:var(--o)}
+.notice{
+background:#31c8ff0c;
+border:1px solid #31c8ff33;
+color:#b7ddeb;
+padding:11px;
+border-radius:10px;
+font-size:10px;
+line-height:1.55;
+margin-top:12px
+}
+.status{font-size:11px;color:var(--m);margin-top:9px;min-height:17px}
+.costgrid,.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.bigcost{font:700 32px Orbitron;color:var(--o);margin:15px 0}
+.cards{grid-template-columns:repeat(3,1fr)}
+.routecard{overflow:hidden;padding:0}
+.routepic{
+height:180px;
+position:relative;
+overflow:hidden;
+background:#101824;
+border-bottom:1px solid var(--line)
+}
+.routepic img{
+width:100%;
+height:100%;
+object-fit:cover;
+display:block;
+transition:transform .5s ease
+}
+.routecard:hover .routepic img{transform:scale(1.07)}
+.routepic::after{
+content:"";
+position:absolute;
+inset:0;
+background:linear-gradient(to top,rgba(9,13,22,.75),transparent 65%);
+pointer-events:none
+}
+.routepic span{
+position:absolute;
+z-index:2;
+bottom:12px;
+left:14px;
+font-size:12px;
+font-weight:800;
+color:white;
+text-shadow:0 2px 8px #000
+}
+.routebody{padding:15px}
+.routebody h3{font-size:15px;margin:6px 0}
+.routebody p{
+font-size:11px;
+color:var(--m);
+line-height:1.5;
+min-height:48px
+}
+.meta{font-size:10px;color:#b9c7d8;margin:10px 0}
+.empty{
+border:1px dashed #3a4d64;
+border-radius:12px;
+padding:24px;
+text-align:center;
+color:var(--m);
+font-size:12px;
+grid-column:1/-1
+}
+footer{
+border-top:1px solid var(--line);
+padding:22px 0;
+color:#718198;
+font-size:11px
+}
+@media(max-width:850px){
+.layout{grid-template-columns:1fr}
+#map{height:370px}
+.cards{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+.links{display:none}
+.hero{display:block;padding-top:28px}
+.two,.costgrid{grid-template-columns:1fr}
+.cards{grid-template-columns:1fr}
+#map{height:330px}
+.panel{padding:14px}
+.view{padding-top:16px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="wrap nav">
+<a class="brand" href="/">AUTO<span>CIFRA</span></a>
+<nav class="links">
+<a href="/">Inicio</a>
+<a href="/Garaje.html">Mi Garaje</a>
+<a href="/calculadora.html">Calculadora</a>
+<a href="/gasolineras.html">Gasolineras</a>
+</nav>
+<div>
+<span id="userLabel" style="font-size:10px;color:var(--m)"></span>
+<button class="btn blue" id="auth">Iniciar sesión</button>
+</div>
+</div>
+</header>
+
+<main class="wrap">
+
+<section class="hero">
+<div>
+<div class="eyebrow">AUTO CIFRA · ROAD TRIP STUDIO</div>
+<h1>Tu próxima aventura<br>empieza <span>en el mapa.</span></h1>
+<p>Planifica recorridos en coche o moto, añade paradas, estima el combustible y guarda tus viajes.</p>
+</div>
+</section>
+
+<nav class="tabs">
+<button class="active" data-tab="planner"><b>01</b> Planificar</button>
+<button data-tab="costs"><b>02</b> Costes</button>
+<button data-tab="discover"><b>03</b> Descubrir</button>
+<button data-tab="saved"><b>04</b> Mis rutas</button>
+</nav>
+
+<section class="view active" id="planner">
+<div class="layout">
+
+<div class="panel">
+<div class="eyebrow">CONFIGURA TU RECORRIDO</div>
+<h2>Diseña el viaje</h2>
+<p class="sub">Añade origen, destino y paradas intermedias.</p>
+
+<div class="field">
+<label>SALIDA</label>
+<input id="origin" placeholder="Ej. Valencia, España">
+</div>
+
+<div class="field">
+<label>DESTINO</label>
+<input id="destination" placeholder="Ej. Teruel, España">
+</div>
+
+<div id="stops"></div>
+<button class="btn blue" id="addStop">＋ Añadir parada</button>
+
+<div class="two">
+<div class="field">
+<label>VEHÍCULO</label>
+<select id="vehicle">
+<option value="car">🚗 Coche</option>
+<option value="motorcycle">🏍️ Moto</option>
+</select>
+</div>
+<div class="field">
+<label>VEHÍCULO DE MI GARAJE</label>
+<select id="garageVehicle">
+<option value="">Consumo manual</option>
+</select>
+</div>
+</div>
+
+<div class="two">
+<div class="field">
+<label>CONSUMO (L/100 KM)</label>
+<input id="consumption" type="number" min="0" step=".1" placeholder="6.5">
+</div>
+<div class="field">
+<label>PRECIO COMBUSTIBLE (€/L)</label>
+<input id="price" type="number" min="0" step=".001" value="1.60">
+</div>
+</div>
+
+<div class="actions">
+<button class="btn primary" id="calculate">CALCULAR RUTA ↗</button>
+<button class="btn" id="clear">Limpiar</button>
+</div>
+
+<div class="status" id="status">Introduce los lugares para calcular el recorrido.</div>
+
+<div class="notice">
+El proveedor de rutas utilizado calcula recorridos de automóvil. Para motos se muestra una estimación por carretera, no una ruta específica para motocicletas. Comprueba siempre restricciones y señalización.
+</div>
+</div>
+
+<div>
+<div class="panel mapbox"><div id="map"></div></div>
+<div class="stats">
+<div class="metric"><small>DISTANCIA</small><strong id="km">— km</strong></div>
+<div class="metric"><small>DURACIÓN</small><strong id="time">—</strong></div>
+<div class="metric"><small>COSTE IDA</small><strong class="orange" id="cost">— €</strong></div>
+</div>
+<div class="actions">
+<button class="btn blue" id="save">☆ Guardar ruta</button>
+<button class="btn" id="toCosts">Ver costes</button>
+</div>
+</div>
+
+</div>
+</section>
+
+<section class="view" id="costs">
+<div class="eyebrow">PRESUPUESTO DE CARRETERA</div>
+<h2 style="font:700 22px Orbitron">Calcula el coste del viaje</h2>
+<p class="sub">Puedes usar la distancia calculada o introducir kilómetros manualmente.</p>
+
+<div class="costgrid">
+<div class="panel">
+<div class="field">
+<label>DISTANCIA (KM)</label>
+<input id="cKm" type="number" min="0" placeholder="Distancia">
+</div>
+<div class="two">
+<div class="field">
+<label>CONSUMO (L/100 KM)</label>
+<input id="cUse" type="number" min="0" step=".1" placeholder="6.5">
+</div>
+<div class="field">
+<label>PRECIO (€/L)</label>
+<input id="cPrice" type="number" min="0" step=".001" value="1.60">
+</div>
+</div>
+<div class="field">
+<label>OCUPANTES</label>
+<input id="people" type="number" min="1" value="1">
+</div>
+<label style="font-size:12px">
+<input type="checkbox" id="return"> Ida y vuelta
+</label>
+</div>
+
+<div class="panel">
+<div class="eyebrow">ESTIMACIÓN TOTAL</div>
+<div class="bigcost" id="total">— €</div>
+<p class="sub" id="explain">Introduce distancia, consumo y precio.</p>
+<div class="stats">
+<div class="metric"><small>LITROS</small><strong id="litres">—</strong></div>
+<div class="metric"><small>POR PERSONA</small><strong id="personCost">— €</strong></div>
+<div class="metric"><small>€/100 KM</small><strong id="per100">— €</strong></div>
+</div>
+</div>
+</div>
+
+<div class="notice">
+Estimación basada en los datos introducidos. No incluye peajes, aparcamiento, desgaste ni tráfico. Los precios no se actualizan automáticamente.
+</div>
+</section>
+
+<section class="view" id="discover">
+<div class="eyebrow">INSPIRACIÓN PARA TU SIGUIENTE SALIDA</div>
+<h2 style="font:700 22px Orbitron">Descubre carreteras</h2>
+<p class="sub">Ideas de destinos para abrir en el planificador. No son rutas verificadas ni instrucciones de navegación.</p>
+<div class="cards" id="discoverCards"></div>
+</section>
+
+<section class="view" id="saved">
+<div class="eyebrow">TU HISTORIAL PERSONAL</div>
+<h2 style="font:700 22px Orbitron">Mis rutas guardadas</h2>
+<p class="sub">Sin iniciar sesión se guardan en este dispositivo. Con sesión iniciada se sincronizan con Supabase si has creado la tabla indicada.</p>
+<div class="cards" id="savedCards"></div>
+</section>
+
+</main>
+
+<footer>
+<div class="wrap">© AutoCifra · Mapas © OpenStreetMap · Rutas mediante OSRM</div>
+</footer>
+
+<script>
+const SUPABASE_URL='https://fcwriuxqiywkjyjpkfvp.supabase.co',
+SUPABASE_KEY='sb_publishable_buxMEbnIal4pEVYeIdNrgA_e31HryJb',
+db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+let user=null,map,layer=null,pins=[],last=null,vehicles=[];
+
+const $=id=>document.getElementById(id);
+const fmt=n=>new Intl.NumberFormat('es-ES',{maximumFractionDigits:1}).format(n);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function say(t){$('status').textContent=t}
+
+function tab(n){
+document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===n));
+document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===n));
+if(n==='planner')setTimeout(()=>map.invalidateSize(),100);
+if(n==='saved')showSaved();
+if(n==='costs')calcCost();
+}
+
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+
+map=L.map('map').setView([39.47,-0.38],7);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+maxZoom:19,
+attribution:'© OpenStreetMap'
+}).addTo(map);
+
+function addStop(v=''){
+let d=document.createElement('div');
+d.className='field stop';
+d.innerHTML=`<input class="stopInput" placeholder="Parada intermedia" value="${esc(v)}"><button class="btn" type="button">✕</button>`;
+d.querySelector('button').onclick=()=>d.remove();
+$('stops').append(d);
+}
+$('addStop').onclick=()=>addStop();
+
+async function geo(q){
+let r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(q),{
+headers:{'Accept-Language':'es'}
+});
+if(!r.ok)throw Error('No se pudo buscar '+q);
+let a=await r.json();
+if(!a.length)throw Error('No se encontró '+q);
+return [+a[0].lon,+a[0].lat];
+}
+
+function dur(m){
+let h=Math.floor(m/60),r=Math.round(m%60);
+return h?`${h} h ${r} min`:`${r} min`;
+}
+
+$('calculate').onclick=async()=>{
+let places=[
+$('origin').value.trim(),
+...Array.from(document.querySelectorAll('.stopInput')).map(x=>x.value.trim()).filter(Boolean),
+$('destination').value.trim()
+];
+
+if(!places[0]||!places.at(-1)){
+say('Introduce salida y destino.');
+return;
+}
+
+let b=$('calculate');
+b.disabled=true;
+b.textContent='CALCULANDO…';
+
+try{
+let coords=[];
+for(let p of places)coords.push(await geo(p));
+
+let u='https://router.project-osrm.org/route/v1/driving/'+coords.map(c=>c.join(',')).join(';')+'?overview=full&geometries=geojson';
+let res=await fetch(u),j=await res.json();
+
+if(j.code!=='Ok')throw Error('No se encontró un recorrido.');
+
+let r=j.routes[0];
+
+last={
+origin:places[0],
+destination:places.at(-1),
+stops:places.slice(1,-1),
+km:r.distance/1000,
+min:r.duration/60,
+vehicle:$('vehicle').value,
+cons:Number($('consumption').value)||0,
+price:Number($('price').value)||0
+};
+
+if(layer)map.removeLayer(layer);
+pins.forEach(p=>map.removeLayer(p));
+
+layer=L.geoJSON(r.geometry,{style:{color:'#ff642e',weight:5}}).addTo(map);
+
+coords.forEach((c,i)=>{
+pins.push(L.marker([c[1],c[0]]).addTo(map).bindPopup(esc(places[i])));
+});
+
+map.fitBounds(layer.getBounds(),{padding:[25,25]});
+
+$('km').textContent=fmt(last.km)+' km';
+$('time').textContent=dur(last.min);
+updatePlanCost();
+
+$('cKm').value=last.km.toFixed(1);
+$('cUse').value=last.cons||'';
+$('cPrice').value=last.price||1.6;
+
+say('Ruta calculada. Revisa el trazado antes de salir.');
+
+}catch(e){
+say(e.message||'Error calculando la ruta.');
+}finally{
+b.disabled=false;
+b.textContent='CALCULAR RUTA ↗';
+}
+};
+
+function updatePlanCost(){
+let l=last?.cons?last.km*last.cons/100:null;
+$('cost').textContent=l&&last.price?fmt(l*last.price)+' €':'— €';
+}
+
+['consumption','price'].forEach(id=>{
+$(id).addEventListener('input',()=>{
+if(last){
+last.cons=Number($('consumption').value)||0;
+last.price=Number($('price').value)||0;
+updatePlanCost();
+}
+});
+});
+
+$('clear').onclick=()=>{
+['origin','destination','consumption'].forEach(i=>$(i).value='');
+$('stops').innerHTML='';
+last=null;
+
+if(layer)map.removeLayer(layer);
+pins.forEach(p=>map.removeLayer(p));
+pins=[];
+
+$('km').textContent='— km';
+$('time').textContent='—';
+$('cost').textContent='— €';
+say('Formulario limpio.');
+};
+
+$('toCosts').onclick=()=>tab('costs');
+
+function calcCost(){
+let km=Number($('cKm').value);
+let use=Number($('cUse').value);
+let price=Number($('cPrice').value);
+let people=Math.max(1,Number($('people').value)||1);
+let mult=$('return').checked?2:1;
+
+if(!(km>0&&use>0&&price>0)){
+$('total').textContent='— €';
+$('explain').textContent='Introduce distancia, consumo y precio.';
+return;
+}
+
+let litres=km*mult*use/100;
+let cost=litres*price;
+
+$('total').textContent=fmt(cost)+' €';
+$('explain').textContent=`${fmt(km*mult)} km · ${mult===2?'Ida y vuelta':'Solo ida'} · ${fmt(price)} €/L`;
+$('litres').textContent=fmt(litres)+' L';
+$('personCost').textContent=fmt(cost/people)+' €';
+$('per100').textContent=fmt(use*price)+' €';
+}
+
+['cKm','cUse','cPrice','people','return'].forEach(i=>{
+$(i).addEventListener('input',calcCost);
+});
+
+$('save').onclick=async()=>{
+if(!last){
+say('Calcula una ruta antes de guardarla.');
+return;
+}
+
+let name=prompt('Nombre de la ruta:',last.origin+' → '+last.destination);
+if(!name)return;
+
+let rec={
+id:crypto.randomUUID(),
+name,
+origin:last.origin,
+destination:last.destination,
+stops:last.stops,
+distance_km:last.km,
+duration_min:last.min,
+vehicle:last.vehicle,
+consumption:last.cons,
+fuel_price:last.price,
+created_at:new Date().toISOString()
+};
+
+if(user){
+let {error}=await db.from('ac_routes').insert({...rec,user_id:user.id});
+if(error){
+alert('No se pudo guardar en la cuenta. Se guardará localmente. Comprueba que has creado la tabla ac_routes en Supabase.');
+localSave(rec);
+}else{
+say('Ruta guardada en tu cuenta.');
+}
+}else{
+localSave(rec);
+say('Guardada en este dispositivo. Inicia sesión para sincronizar.');
+}
+
+showSaved();
+};
+
+function localGet(){
+try{return JSON.parse(localStorage.getItem('ac_routes_local')||'[]')}
+catch{return []}
+}
+
+function localSave(r){
+localStorage.setItem('ac_routes_local',JSON.stringify([r,...localGet()]));
+}
+
+async function showSaved(){
+let rows=localGet();
+
+if(user){
+let {data,error}=await db.from('ac_routes').select('*').order('created_at',{ascending:false});
+if(!error&&data)rows=data;
+}
+
+$('savedCards').innerHTML=rows.length
+?rows.map(r=>`
+<article class="panel">
+<div class="eyebrow">${r.vehicle==='motorcycle'?'MOTO':'COCHE'} · ${new Date(r.created_at).toLocaleDateString('es-ES')}</div>
+<h3>${esc(r.name)}</h3>
+<p class="sub">${esc(r.origin)} → ${esc(r.destination)}</p>
+<div class="meta">${fmt(r.distance_km)} km · ${dur(r.duration_min)}</div>
+<button class="btn" data-del="${esc(r.id)}">Eliminar</button>
+</article>
+`).join('')
+:'<div class="empty">Todavía no has guardado ninguna ruta.</div>';
+
+document.querySelectorAll('[data-del]').forEach(b=>{
+b.onclick=async()=>{
+if(!confirm('¿Eliminar esta ruta?'))return;
+
+if(user){
+await db.from('ac_routes').delete().eq('id',b.dataset.del).eq('user_id',user.id);
+}
+
+localStorage.setItem(
+'ac_routes_local',
+JSON.stringify(localGet().filter(r=>r.id!==b.dataset.del))
+);
+
+showSaved();
+};
+});
+}
+
+/* DESTINOS CON FOTOGRAFÍAS */
+
+const destinations=[
+[
+'Montaña',
+'Sierra de Espadán',
+'Castellón, España',
+'Bosques, pueblos y carreteras de interior.',
+'https://images.unsplash.com/photo-1472396961693-142e6e269027?w=900&auto=format&fit=crop'
+],
+[
+'Costa',
+'Costa de Valencia',
+'Valencia, España',
+'Una escapada junto al Mediterráneo.',
+'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=900&auto=format&fit=crop'
+],
+[
+'Alta montaña',
+'Sierra Nevada',
+'Granada, España',
+'Paisajes de montaña y carreteras panorámicas.',
+'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&auto=format&fit=crop'
+],
+[
+'Naturaleza',
+'Picos de Europa',
+'Asturias, España',
+'Valles, montañas y paisajes del norte.',
+'https://images.unsplash.com/photo-1464278533981-50106e6176b1?w=900&auto=format&fit=crop'
+],
+[
+'Carretera',
+'Albarracín',
+'Teruel, España',
+'Un pueblo histórico rodeado de naturaleza.',
+'https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=900&auto=format&fit=crop'
+],
+[
+'Escapada',
+'Cabo de Gata',
+'Almería, España',
+'Paisajes costeros y paradas panorámicas.',
+'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=900&auto=format&fit=crop'
+]
+];
+
+$('discoverCards').innerHTML=destinations.map(d=>`
+<article class="panel routecard">
+<div class="routepic">
+<img
+src="${d[4]}"
+alt="${d[1]}"
+loading="lazy"
+onerror="this.style.display='none'"
+>
+<span>${d[0]}</span>
+</div>
+<div class="routebody">
+<div class="eyebrow">${d[0]}</div>
+<h3>${d[1]}</h3>
+<p>${d[3]}</p>
+<div class="meta">📍 ${d[2]}</div>
+<button class="btn blue" data-dest="${d[2]}">
+Planificar visita ↗
+</button>
+</div>
+</article>
+`).join('');
+
+document.querySelectorAll('[data-dest]').forEach(b=>{
+b.onclick=()=>{
+$('destination').value=b.dataset.dest;
+tab('planner');
+window.scrollTo({top:0,behavior:'smooth'});
+};
+});
+
+/* AUTENTICACIÓN Y GARAJE */
+
+async function authRefresh(){
+let {data}=await db.auth.getSession();
+user=data.session?.user||null;
+$('userLabel').textContent=user?user.email:'Planificación sin cuenta';
+$('auth').textContent=user?'Cerrar sesión':'Iniciar sesión';
+if(user)loadGarage();
+}
+
+async function loadGarage(){
+let {data,error}=await db.from('ac_vehicles').select('*').eq('user_id',user.id);
+
+if(error){
+console.warn('No se pudieron cargar los vehículos:',error.message);
+return;
+}
+
+vehicles=data||[];
+
+$('garageVehicle').innerHTML=
+'<option value="">Consumo manual</option>'+
+vehicles.map(v=>`
+<option value="${esc(v.id)}">${esc([v.make,v.model].filter(Boolean).join(' '))}</option>
+`).join('');
+}
+
+$('garageVehicle').onchange=()=>{
+let v=vehicles.find(x=>String(x.id)===$('garageVehicle').value);
+if(!v)return;
+
+$('vehicle').value=v.vehicle_type==='moto'?'motorcycle':'car';
+say('Vehículo cargado. Introduce manualmente su consumo medio: la ficha actual no contiene ese dato.');
+};
+
+$('auth').onclick=async()=>{
+if(user){
+await db.auth.signOut();
+user=null;
+authRefresh();
+return;
+}
+
+let email=prompt('Correo de tu cuenta AutoCifra:');
+if(!email)return;
+
+let password=prompt('Contraseña:');
+if(!password)return;
+
+let {error}=await db.auth.signInWithPassword({email,password});
+
+if(error)alert('No se pudo iniciar sesión: '+error.message);
+else authRefresh();
+};
+
+db.auth.onAuthStateChange((_e,s)=>{
+user=s?.user||null;
+$('userLabel').textContent=user?user.email:'Planificación sin cuenta';
+if(user)loadGarage();
+});
+
+authRefresh();
+</script>
+
+</body>
+</html>
