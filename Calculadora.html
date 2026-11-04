@@ -1,0 +1,897 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090d16">
+<meta name="description" content="Calcula el combustible, los litros y el coste de tus viajes en coche o moto con la calculadora gratuita de AutoCifra.">
+<title>Calculadora de combustible y viajes | AutoCifra</title>
+
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#090d16;
+  --panel:#111925;
+  --panel2:#172231;
+  --panel3:#1d2a3a;
+  --orange:#ff642e;
+  --orange2:#ff8a55;
+  --blue:#31c8ff;
+  --white:#f5f7fa;
+  --muted:#9baabd;
+  --border:rgba(255,255,255,.09);
+  --green:#43d6a0;
+  --radius:20px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:
+    radial-gradient(ellipse at 85% 5%,rgba(49,200,255,.09),transparent 30%),
+    radial-gradient(ellipse at 5% 30%,rgba(255,100,46,.08),transparent 28%),
+    var(--bg);
+  color:var(--white);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+a{color:var(--blue);text-decoration:none}
+button,input,select{font:inherit}
+button{touch-action:manipulation}
+.container{width:min(1120px,calc(100% - 32px));margin:auto}
+
+/* HEADER */
+header{
+  min-height:76px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  border-bottom:1px solid var(--border);
+}
+.logo{
+  color:white;
+  font-size:22px;
+  font-weight:950;
+  letter-spacing:1px;
+}
+.logo span{color:var(--orange)}
+.nav{
+  color:var(--muted);
+  font-size:13px;
+  font-weight:650;
+  transition:.2s;
+}
+.nav:hover{color:white}
+
+/* HERO */
+.hero{
+  position:relative;
+  padding:65px 0 38px;
+  overflow:hidden;
+}
+.hero::after{
+  content:"€";
+  position:absolute;
+  right:5%;
+  top:8px;
+  font-size:clamp(150px,25vw,290px);
+  font-weight:950;
+  color:rgba(255,255,255,.025);
+  pointer-events:none;
+}
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  color:var(--orange2);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+.eyebrow::before{
+  content:"";
+  width:20px;
+  height:2px;
+  background:var(--orange);
+}
+h1{
+  position:relative;
+  z-index:1;
+  font-size:clamp(38px,7vw,68px);
+  line-height:.99;
+  letter-spacing:-2.7px;
+  margin:17px 0;
+  max-width:760px;
+}
+h1 span{
+  color:var(--orange);
+}
+.hero p{
+  max-width:620px;
+  margin:0;
+  color:var(--muted);
+  line-height:1.8;
+  font-size:15px;
+}
+
+/* MAIN LAYOUT */
+.layout{
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:20px;
+  align-items:start;
+}
+.panel{
+  background:linear-gradient(145deg,rgba(23,34,49,.96),rgba(15,23,35,.98));
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:25px;
+  box-shadow:0 18px 55px rgba(0,0,0,.17);
+}
+.panel-heading{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  margin-bottom:8px;
+}
+.heading-icon{
+  width:43px;
+  height:43px;
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+  background:rgba(255,100,46,.12);
+  border:1px solid rgba(255,100,46,.2);
+  border-radius:13px;
+  color:var(--orange);
+  font-size:21px;
+}
+h2{
+  font-size:21px;
+  letter-spacing:-.5px;
+  margin:0;
+}
+.subtitle{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+  margin:0 0 24px;
+}
+
+/* FORM */
+.fields{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:17px;
+}
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-width:0;
+}
+.field.full{grid-column:1/-1}
+label{
+  color:#d5deea;
+  font-size:12px;
+  font-weight:750;
+}
+.input-wrap{position:relative}
+.input-wrap input{padding-right:65px}
+input,select{
+  width:100%;
+  min-width:0;
+  height:49px;
+  padding:0 14px;
+  color:white;
+  background:#0b121d;
+  border:1px solid #2b394a;
+  border-radius:11px;
+  outline:none;
+  transition:border .2s,box-shadow .2s;
+}
+input:focus,select:focus{
+  border-color:var(--orange);
+  box-shadow:0 0 0 3px rgba(255,100,46,.12);
+}
+input::placeholder{color:#647387}
+.unit{
+  position:absolute;
+  right:13px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#7f91a6;
+  font-size:11px;
+  font-weight:750;
+  pointer-events:none;
+}
+select{
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239baabd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 15px center;
+  padding-right:38px;
+}
+select option{background:#111925;color:white}
+.field-hint{
+  color:#728298;
+  font-size:10px;
+  line-height:1.5;
+}
+.calculate-btn{
+  width:100%;
+  min-height:54px;
+  border:0;
+  border-radius:12px;
+  background:linear-gradient(100deg,var(--orange),#ff854b);
+  color:#10141b;
+  font-size:14px;
+  font-weight:950;
+  cursor:pointer;
+  box-shadow:0 8px 24px rgba(255,100,46,.2);
+  transition:transform .2s,filter .2s,box-shadow .2s;
+}
+.calculate-btn:hover{
+  filter:brightness(1.08);
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(255,100,46,.28);
+}
+.calculate-btn:active{transform:scale(.99)}
+.form-note{
+  margin:17px 0 0;
+  color:#8291a4;
+  font-size:11px;
+  line-height:1.65;
+}
+
+/* RESULTS */
+.results{
+  position:sticky;
+  top:18px;
+  overflow:hidden;
+}
+.results::before{
+  content:"";
+  position:absolute;
+  top:-100px;
+  right:-100px;
+  width:240px;
+  height:240px;
+  border-radius:50%;
+  background:rgba(255,100,46,.08);
+  filter:blur(45px);
+  pointer-events:none;
+}
+.results-content{position:relative;z-index:1}
+.result-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 10px;
+  border-radius:30px;
+  background:rgba(255,255,255,.055);
+  color:#9baabd;
+  font-size:10px;
+  font-weight:800;
+}
+.status-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#728298;
+}
+.status.done{
+  color:var(--green);
+  background:rgba(67,214,160,.09);
+}
+.status.done .status-dot{background:var(--green)}
+.total-box{
+  margin:21px 0 15px;
+  padding:23px;
+  border-radius:17px;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(255,255,255,.11),transparent 40%),
+    linear-gradient(135deg,#472315,#24170f);
+  border:1px solid rgba(255,130,78,.27);
+}
+.total-label{
+  display:block;
+  color:#ffc09f;
+  font-size:12px;
+  font-weight:750;
+}
+.total-value{
+  display:block;
+  margin-top:8px;
+  font-size:clamp(37px,6vw,51px);
+  font-weight:950;
+  letter-spacing:-2px;
+  overflow-wrap:anywhere;
+}
+.total-caption{
+  display:block;
+  color:#d49c7e;
+  font-size:11px;
+  margin-top:6px;
+}
+.metrics{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.metric{
+  min-height:103px;
+  padding:16px;
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--border);
+  border-radius:13px;
+}
+.metric-icon{
+  font-size:16px;
+  margin-bottom:11px;
+}
+.metric-label{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:750;
+}
+.metric-value{
+  display:block;
+  margin-top:7px;
+  font-size:19px;
+  font-weight:900;
+  overflow-wrap:anywhere;
+}
+.result-message{
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  margin-top:16px;
+  padding:12px;
+  border-radius:11px;
+  background:rgba(49,200,255,.055);
+  border:1px solid rgba(49,200,255,.12);
+  color:#a8c6d7;
+  font-size:11px;
+  line-height:1.6;
+}
+.result-message.error{
+  background:rgba(255,100,46,.08);
+  border-color:rgba(255,100,46,.2);
+  color:#ffc09f;
+}
+.result-message .message-icon{font-size:14px}
+
+/* EXAMPLES */
+.section{margin-top:55px}
+.section-intro{margin-bottom:20px}
+.section h2{font-size:25px;margin:12px 0 8px}
+.section-intro p{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.7;
+  margin:0;
+}
+.examples{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:13px;
+}
+.example{
+  position:relative;
+  overflow:hidden;
+  padding:20px;
+  border-radius:16px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  transition:transform .2s,border-color .2s;
+}
+.example:hover{
+  transform:translateY(-3px);
+  border-color:rgba(49,200,255,.3);
+}
+.example-icon{
+  font-size:23px;
+  margin-bottom:15px;
+}
+.example-name{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:750;
+}
+.example strong{
+  display:block;
+  font-size:23px;
+  margin:7px 0;
+}
+.example-price{
+  color:var(--orange2);
+  font-size:13px;
+  font-weight:850;
+}
+.example small{
+  display:block;
+  color:#748398;
+  font-size:10px;
+  margin-top:8px;
+}
+
+/* EXPLANATION */
+.info-panel{
+  margin-top:30px;
+  padding:25px;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  background:linear-gradient(135deg,#111925,#0d1520);
+}
+.info-panel h2{margin-bottom:10px}
+.info-panel p{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.8;
+}
+.formula{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:17px;
+}
+.formula-item{
+  padding:15px;
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+.formula-item span{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  margin-bottom:7px;
+}
+.formula-item strong{
+  color:var(--blue);
+  font-size:13px;
+}
+
+/* FOOTER */
+footer{
+  margin-top:55px;
+  padding:25px 0;
+  border-top:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  color:#758398;
+  font-size:11px;
+}
+footer a{color:#aab7c7}
+
+/* RESPONSIVE */
+@media(max-width:760px){
+  .hero{padding:45px 0 28px}
+  .layout{grid-template-columns:1fr}
+  .results{position:static}
+  .panel{padding:20px}
+  .section{margin-top:42px}
+  .examples{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+  .container{width:calc(100% - 24px)}
+  header{min-height:65px}
+  .logo{font-size:19px}
+  .hero{padding-top:35px}
+  h1{font-size:43px;letter-spacing:-2px}
+  .hero p{font-size:13px}
+  .panel{padding:17px;border-radius:16px}
+  .fields{gap:14px}
+  .fields .field.full{grid-column:1/-1}
+  .metric{padding:13px;min-height:95px}
+  .metric-value{font-size:17px}
+  .total-box{padding:20px}
+  .examples{grid-template-columns:1fr}
+  .example{padding:17px}
+  .formula{grid-template-columns:1fr}
+  footer{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:350px){
+  .fields{grid-template-columns:1fr}
+  .fields .field.full{grid-column:auto}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+  <a class="logo" href="index.html">AUTO<span>CIFRA</span></a>
+  <a class="nav" href="index.html">← Volver al inicio</a>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Herramientas AutoCifra</div>
+  <h1>Tu próximo viaje.<br><span>Tu coste real.</span></h1>
+  <p>
+    Descubre cuánto combustible necesitas y cuánto vas a gastar
+    antes de salir a la carretera. Calcula los gastos de tus viajes
+    en coche o moto de forma sencilla.
+  </p>
+</section>
+
+<main class="layout">
+
+  <!-- FORMULARIO -->
+  <section class="panel">
+    <div class="panel-heading">
+      <div class="heading-icon">⌁</div>
+      <div>
+        <h2>Configura tu viaje</h2>
+      </div>
+    </div>
+
+    <p class="subtitle">
+      Introduce los datos de tu vehículo y las características del recorrido.
+    </p>
+
+    <form id="tripForm" novalidate>
+      <div class="fields">
+
+        <div class="field full">
+          <label for="distance">Distancia de ida</label>
+          <div class="input-wrap">
+            <input id="distance" type="number" min="0.01" step="any"
+              value="100" placeholder="Ej. 150" inputmode="decimal" required>
+            <span class="unit">KM</span>
+          </div>
+          <span class="field-hint">Distancia desde el origen hasta el destino.</span>
+        </div>
+
+        <div class="field">
+          <label for="consumption">Consumo medio</label>
+          <div class="input-wrap">
+            <input id="consumption" type="number" min="0" step="any"
+              value="6.5" placeholder="Ej. 6,5" inputmode="decimal" required>
+            <span class="unit">L/100 KM</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="fuelPrice">Precio combustible</label>
+          <div class="input-wrap">
+            <input id="fuelPrice" type="number" min="0" step="any"
+              value="1.60" placeholder="Ej. 1,60" inputmode="decimal" required>
+            <span class="unit">€/L</span>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label for="journey">Tipo de recorrido</label>
+          <select id="journey">
+            <option value="1">Solo ida</option>
+            <option value="2" selected>Ida y vuelta</option>
+          </select>
+        </div>
+
+        <div class="field full">
+          <label for="occupants">Personas que comparten el gasto</label>
+          <div class="input-wrap">
+            <input id="occupants" type="number" min="1" max="100"
+              step="1" value="1" inputmode="numeric" required>
+            <span class="unit">PERSONAS</span>
+          </div>
+        </div>
+
+        <div class="field full">
+          <button class="calculate-btn" id="calculate" type="submit">
+            CALCULAR MI VIAJE&nbsp; →
+          </button>
+        </div>
+
+      </div>
+    </form>
+
+    <p class="form-note">
+      Puedes modificar los datos tantas veces como quieras.
+      Los resultados solo se actualizarán cuando pulses el botón de calcular.
+    </p>
+  </section>
+
+  <!-- RESULTADOS -->
+  <aside class="panel results" aria-live="polite">
+    <div class="results-content">
+
+      <div class="result-top">
+        <div class="eyebrow">Tu presupuesto</div>
+        <div class="status" id="resultStatus">
+          <span class="status-dot"></span>
+          Pendiente
+        </div>
+      </div>
+
+      <div class="total-box">
+        <span class="total-label">Coste total de combustible</span>
+        <strong class="total-value" id="totalCost">— €</strong>
+        <span class="total-caption">Importe estimado del recorrido completo</span>
+      </div>
+
+      <div class="metrics">
+
+        <div class="metric">
+          <div class="metric-icon">↗</div>
+          <span class="metric-label">Distancia total</span>
+          <strong class="metric-value" id="totalDistance">— km</strong>
+        </div>
+
+        <div class="metric">
+          <div class="metric-icon">⛽</div>
+          <span class="metric-label">Combustible necesario</span>
+          <strong class="metric-value" id="litres">— L</strong>
+        </div>
+
+        <div class="metric">
+          <div class="metric-icon">⌁</div>
+          <span class="metric-label">Coste por kilómetro</span>
+          <strong class="metric-value" id="perKm">— €/km</strong>
+        </div>
+
+        <div class="metric">
+          <div class="metric-icon">♙</div>
+          <span class="metric-label">Coste por persona</span>
+          <strong class="metric-value" id="perPerson">— €</strong>
+        </div>
+
+      </div>
+
+      <div class="result-message" id="resultMessage">
+        <span class="message-icon">ⓘ</span>
+        <span>Introduce los datos y pulsa «Calcular mi viaje» para obtener tu presupuesto.</span>
+      </div>
+
+    </div>
+  </aside>
+
+</main>
+
+<!-- EJEMPLOS -->
+<section class="section">
+  <div class="section-intro">
+    <div class="eyebrow">Compara consumos</div>
+    <h2>¿Cuánto gastarías según tu vehículo?</h2>
+    <p>
+      Ejemplos orientativos para un recorrido de 200 km,
+      con un precio de combustible de 1,60 €/litro.
+    </p>
+  </div>
+
+  <div class="examples">
+
+    <article class="example">
+      <div class="example-icon">🏍️</div>
+      <span class="example-name">Moto eficiente</span>
+      <strong>3,5 L/100 km</strong>
+      <span class="example-price" id="example1">11,20 €</span>
+      <small>Coste estimado para 200 km</small>
+    </article>
+
+    <article class="example">
+      <div class="example-icon">🚗</div>
+      <span class="example-name">Coche compacto</span>
+      <strong>6 L/100 km</strong>
+      <span class="example-price" id="example2">19,20 €</span>
+      <small>Coste estimado para 200 km</small>
+    </article>
+
+    <article class="example">
+      <div class="example-icon">🏎️</div>
+      <span class="example-name">Coche de consumo alto</span>
+      <strong>9 L/100 km</strong>
+      <span class="example-price" id="example3">28,80 €</span>
+      <small>Coste estimado para 200 km</small>
+    </article>
+
+  </div>
+</section>
+
+<!-- EXPLICACIÓN -->
+<section class="info-panel">
+  <div class="eyebrow">Entiende tus gastos</div>
+  <h2>¿Cómo calcula AutoCifra tu viaje?</h2>
+
+  <p>
+    La calculadora utiliza la distancia recorrida, el consumo medio
+    de tu vehículo y el precio del combustible. Primero estima los
+    litros necesarios y después calcula su coste. Si viajas con más
+    personas, también reparte el importe total entre los ocupantes.
+  </p>
+
+  <div class="formula">
+    <div class="formula-item">
+      <span>Combustible necesario</span>
+      <strong>Distancia × Consumo ÷ 100</strong>
+    </div>
+    <div class="formula-item">
+      <span>Coste del viaje</span>
+      <strong>Litros × Precio por litro</strong>
+    </div>
+  </div>
+
+  <p>
+    <strong>Importante:</strong> el resultado es una estimación.
+    El consumo real puede variar según la velocidad, el tráfico,
+    la carga, la conducción y las condiciones de la carretera.
+    No incluye peajes, aparcamiento ni otros gastos.
+  </p>
+</section>
+
+<footer>
+  <span>© AutoCifra · Herramientas para el mundo del motor</span>
+  <a href="index.html">Volver a AutoCifra</a>
+</footer>
+
+</div>
+
+<script>
+"use strict";
+
+const el = id => document.getElementById(id);
+
+const euro = value =>
+  value.toLocaleString("es-ES", {
+    style: "currency",
+    currency: "EUR"
+  });
+
+const number = value =>
+  value.toLocaleString("es-ES", {
+    maximumFractionDigits: 2
+  });
+
+let hasCalculated = false;
+
+// Solo se ejecuta al enviar el formulario o pulsar el botón.
+function calculateTrip(event) {
+  if (event) event.preventDefault();
+
+  const distance = Number(el("distance").value);
+  const consumption = Number(el("consumption").value);
+  const fuelPrice = Number(el("fuelPrice").value);
+  const journeys = Number(el("journey").value);
+  const occupants = Number(el("occupants").value);
+
+  const message = el("resultMessage");
+
+  // Validación
+  if (
+    el("distance").value.trim() === "" ||
+    !Number.isFinite(distance) ||
+    distance <= 0
+  ) {
+    showError("Introduce una distancia de ida superior a cero.");
+    el("distance").focus();
+    return;
+  }
+
+  if (
+    el("consumption").value.trim() === "" ||
+    !Number.isFinite(consumption) ||
+    consumption < 0
+  ) {
+    showError("Introduce un consumo válido igual o superior a cero.");
+    el("consumption").focus();
+    return;
+  }
+
+  if (
+    el("fuelPrice").value.trim() === "" ||
+    !Number.isFinite(fuelPrice) ||
+    fuelPrice < 0
+  ) {
+    showError("Introduce un precio de combustible válido.");
+    el("fuelPrice").focus();
+    return;
+  }
+
+  if (
+    !Number.isInteger(occupants) ||
+    occupants < 1 ||
+    occupants > 100
+  ) {
+    showError("El número de personas debe estar entre 1 y 100.");
+    el("occupants").focus();
+    return;
+  }
+
+  // Cálculos
+  const totalDistance = distance * journeys;
+  const litres = totalDistance * consumption / 100;
+  const totalCost = litres * fuelPrice;
+  const costPerKm = totalDistance > 0
+    ? totalCost / totalDistance
+    : 0;
+  const costPerPerson = totalCost / occupants;
+
+  // Actualizar resultados únicamente después de pulsar calcular.
+  el("totalCost").textContent = euro(totalCost);
+  el("totalDistance").textContent = number(totalDistance) + " km";
+  el("litres").textContent = number(litres) + " L";
+  el("perKm").textContent = euro(costPerKm) + "/km";
+  el("perPerson").textContent = euro(costPerPerson);
+
+  const journeyText = journeys === 2
+    ? "ida y vuelta"
+    : "solo ida";
+
+  message.classList.remove("error");
+  message.innerHTML =
+    '<span class="message-icon">✓</span>' +
+    '<span>Presupuesto calculado para ' + journeyText +
+    '. Recuerda que es una estimación y no incluye peajes ni otros gastos.</span>';
+
+  el("resultStatus").classList.add("done");
+  el("resultStatus").innerHTML =
+    '<span class="status-dot"></span> Calculado';
+
+  hasCalculated = true;
+}
+
+function showError(text) {
+  const message = el("resultMessage");
+  message.classList.add("error");
+  message.innerHTML =
+    '<span class="message-icon">!</span><span>' + text + '</span>';
+
+  el("resultStatus").classList.remove("done");
+  el("resultStatus").innerHTML =
+    '<span class="status-dot"></span> Revisar datos';
+}
+
+// Al modificar datos, NO se recalcula.
+// Solo se informa de que los resultados anteriores pueden estar desactualizados.
+function markResultsOutdated() {
+  if (!hasCalculated) return;
+
+  const message = el("resultMessage");
+  message.classList.remove("error");
+  message.innerHTML =
+    '<span class="message-icon">ⓘ</span>' +
+    '<span>Has modificado los datos. Pulsa «Calcular mi viaje» para actualizar los resultados.</span>';
+
+  el("resultStatus").classList.remove("done");
+  el("resultStatus").innerHTML =
+    '<span class="status-dot"></span> Pendiente';
+}
+
+// Evento de envío del formulario.
+el("tripForm").addEventListener("submit", calculateTrip);
+
+// Los campos solo marcan los resultados como pendientes.
+// No ejecutan ningún cálculo.
+["distance", "consumption", "fuelPrice", "journey", "occupants"]
+  .forEach(id => {
+    el(id).addEventListener("input", markResultsOutdated);
+    el(id).addEventListener("change", markResultsOutdated);
+  });
+
+// Ejemplos orientativos: se muestran de forma independiente.
+function updateExample(id, consumption) {
+  const cost = 200 * consumption / 100 * 1.60;
+  el(id).textContent = euro(cost);
+}
+
+updateExample("example1", 3.5);
+updateExample("example2", 6);
+updateExample("example3", 9);
+</script>
+
+</body>
+</html>
