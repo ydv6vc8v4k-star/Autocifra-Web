@@ -1,1 +1,704 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Centro del Motor AutoCifra: guías de mecánica, averías, mantenimiento y curiosidades sobre coches y motos.">
+<title>Centro del Motor | AutoCifra</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+  --bg:#090d14;--surface:#101925;--surface2:#152233;
+  --surface3:#1c2c40;--orange:#ff642e;--blue:#31c8ff;
+  --text:#f2f5fa;--muted:#92a1b4;--line:rgba(255,255,255,.09);
+  --green:#55d6a0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,Helvetica,sans-serif}
+button,input,select{font:inherit}
+button,a{cursor:pointer}
+a{text-decoration:none;color:inherit}
+button{color:inherit}
+.layout{min-height:100vh}
+.sidebar{
+  position:fixed;inset:0 auto 0 0;width:245px;
+  background:#0c131e;border-right:1px solid var(--line);
+  padding:24px 16px;z-index:20;overflow-y:auto;
+}
+.brand{display:block;padding:0 10px 28px}
+.brand-name{font-size:25px;font-weight:900;letter-spacing:-1.5px}
+.brand-name span{color:var(--orange)}
+.brand-sub{font-size:9px;letter-spacing:3px;color:var(--muted);margin-top:5px}
+.side-label{color:#64758b;font-size:9px;font-weight:bold;letter-spacing:2px;padding:18px 11px 9px}
+.nav-item{
+  width:100%;display:flex;align-items:center;gap:12px;
+  background:transparent;border:0;border-radius:9px;
+  padding:12px 11px;text-align:left;color:#9aaabd;
+  font-size:13px;margin-bottom:3px;
+}
+.nav-item:hover{background:#182538;color:white}
+.nav-item.active{background:rgba(255,100,46,.12);color:white;box-shadow:inset 3px 0 var(--orange)}
+.nav-icon{width:20px;text-align:center;font-size:16px;flex:0 0 20px}
+.sidebar-note{
+  margin-top:28px;background:linear-gradient(145deg,#192b40,#101a29);
+  border:1px solid var(--line);padding:15px;border-radius:12px;
+}
+.sidebar-note strong{font-size:12px}
+.sidebar-note p{font-size:11px;line-height:1.6;color:var(--muted)}
+.small-link{font-size:11px;color:var(--blue)}
+.main{margin-left:245px;min-height:100vh}
+.topbar{
+  height:62px;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0 35px;background:rgba(9,13,20,.92);
+  position:sticky;top:0;z-index:10;backdrop-filter:blur(12px);
+}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-label{font-size:10px;letter-spacing:2px;color:var(--muted)}
+.topbar a{font-size:12px;color:var(--blue)}
+.mobile-menu{display:none;background:var(--surface2);border:1px solid var(--line);border-radius:7px;padding:8px 11px}
+.content{max-width:1250px;padding:30px 34px 70px;margin:auto}
+.page{display:none;animation:appear .25s ease}
+.page.active{display:block}
+@keyframes appear{from{opacity:.5;transform:translateY(5px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:10px;font-weight:bold;letter-spacing:2px;color:var(--orange)}
+h1{font-size:clamp(32px,4.3vw,54px);line-height:1.05;letter-spacing:-1.8px;margin:13px 0}
+h2{font-size:23px;letter-spacing:-.5px;margin:0 0 10px}
+h3{font-size:16px;line-height:1.4}
+p{line-height:1.65}
+.muted{color:var(--muted);font-size:13px}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:15px;margin:35px 0 16px}
+.section-head p{margin:0}
+.hero{
+  min-height:310px;position:relative;overflow:hidden;
+  border:1px solid var(--line);border-radius:17px;
+  background:radial-gradient(ellipse at 82% 40%,rgba(49,200,255,.14),transparent 32%),linear-gradient(115deg,#172538,#0d1521 70%);
+  padding:42px 38px;display:flex;align-items:center;
+}
+.hero-content{position:relative;z-index:2;max-width:630px}
+.hero p{color:#a9b8ca;max-width:530px;font-size:14px}
+.hero-art{
+  position:absolute;right:20px;bottom:0;width:38%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  opacity:.65;font-size:clamp(90px,15vw,185px);
+  background:radial-gradient(ellipse,rgba(255,100,46,.12),transparent 65%);
+  pointer-events:none;z-index:0;
+}
+.hero-art span{filter:drop-shadow(0 20px 30px #000)}
+.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(49,200,255,.25);background:rgba(49,200,255,.07);color:var(--blue);font-size:10px;padding:7px 10px;border-radius:30px}
+.search-panel{background:#111d2b;border:1px solid var(--line);padding:17px;border-radius:13px;margin-top:18px}
+.search-wrap{display:flex;gap:10px}
+.search-wrap input{min-width:0;flex:1;background:#09121e;color:white;border:1px solid var(--line);border-radius:8px;padding:14px 15px;outline:none}
+.search-wrap input:focus{border-color:var(--blue)}
+.btn{border:0;border-radius:8px;padding:12px 16px;font-weight:bold;font-size:12px;display:inline-flex;justify-content:center;align-items:center;gap:7px;text-decoration:none}
+.btn-orange{background:var(--orange);color:white}
+.btn-dark{background:#26374d;color:white;border:1px solid var(--line)}
+.btn-outline{background:transparent;color:var(--blue);border:1px solid rgba(49,200,255,.35)}
+.btn:hover{filter:brightness(1.1)}
+.feature-strip{display:grid;grid-template-columns:1.25fr .75fr;gap:15px;margin-top:20px}
+.feature-main{
+  min-height:225px;background:linear-gradient(125deg,#24364a,#111c2b);
+  border:1px solid var(--line);border-radius:14px;padding:24px;
+  position:relative;isolation:isolate;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.feature-main:after{
+  content:"⚙";position:absolute;right:20px;bottom:-40px;
+  font-size:170px;color:rgba(255,255,255,.045);
+  z-index:-1;pointer-events:none;line-height:1;
+}
+.feature-main>*{position:relative;z-index:1}
+.feature-main h2{max-width:400px;font-size:27px}
+.feature-main p{max-width:430px;color:#a6b5c8;font-size:13px}
+.feature-side{background:#111c2b;border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;justify-content:space-between}
+.feature-side .big-icon{font-size:40px}
+.feature-side h3{font-size:19px;margin:10px 0}
+.feature-side p{font-size:12px;color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:21px;margin-top:18px}
+.vehicle-banner{display:flex;align-items:center;justify-content:space-between;gap:15px;background:linear-gradient(100deg,#15283c,#101a28);border:1px solid rgba(49,200,255,.2);border-radius:12px;padding:18px;margin-top:20px}
+.vehicle-banner strong{font-size:17px}
+.vehicle-banner .muted{margin:5px 0 0}
+.status{font-size:9px;color:var(--green);letter-spacing:1.5px}
+.vehicle-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.vehicle-option{text-align:left;background:#0b1420;border:1px solid var(--line);border-radius:9px;padding:14px;color:white}
+.vehicle-option:hover,.vehicle-option.selected{border-color:var(--orange);background:#172538}
+.vehicle-option strong{display:block;font-size:13px;margin-bottom:6px}
+.vehicle-option small{font-size:11px;color:var(--muted)}
+.notice{border:1px solid rgba(49,200,255,.25);background:rgba(49,200,255,.06);border-radius:10px;padding:14px;font-size:12px;line-height:1.65;color:#c6e8f4;margin:15px 0}
+.notice strong{color:var(--blue)}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:7px}
+.field input,.field select{width:100%;background:#09121e;color:white;border:1px solid var(--line);border-radius:8px;padding:12px;outline:none}
+.field input:focus,.field select:focus{border-color:var(--blue)}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
+.message{display:none;font-size:12px;padding:11px;border-radius:8px;margin-top:12px}
+.message.ok{display:block;background:rgba(85,214,160,.08);color:#a9ebcf;border:1px solid rgba(85,214,160,.2)}
+.message.error{display:block;background:rgba(255,100,46,.08);color:#ffb69e;border:1px solid rgba(255,100,46,.2)}
+/* Centro de ayuda */
+.topic-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;margin-top:22px}
+.topic-menu{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;height:max-content}
+.topic-btn{width:100%;border:0;background:transparent;color:var(--muted);text-align:left;padding:11px;border-radius:7px;font-size:12px}
+.topic-btn:hover,.topic-btn.active{background:#1b2b3f;color:white}
+.topic-results{min-width:0}
+.guide{border-bottom:1px solid var(--line);padding:18px 2px}
+.guide:first-child{padding-top:3px}
+.guide:last-child{border-bottom:0}
+.guide h3{margin:7px 0}
+.guide p{font-size:13px;color:var(--muted);margin:0}
+.guide .tag{font-size:9px;color:var(--blue);letter-spacing:1.5px}
+.guide-detail{margin-top:12px;background:#0b1420;padding:14px;border-radius:9px;font-size:12px;color:#b5c3d4;line-height:1.7}
+.guide-detail[hidden]{display:none}
+/* Curiosidades */
+.magazine-feature{display:grid;grid-template-columns:1fr 1fr;min-height:270px;border-radius:15px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(120deg,#1d2d40,#111a28)}
+.magazine-art{display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(255,100,46,.18),transparent 65%);font-size:clamp(85px,13vw,150px)}
+.magazine-copy{padding:28px;display:flex;flex-direction:column;justify-content:center}
+.magazine-copy h2{font-size:clamp(23px,3vw,34px);line-height:1.2}
+.magazine-copy p{color:var(--muted);font-size:13px}
+.magazine-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:18px}
+.story{display:grid;grid-template-columns:90px minmax(0,1fr);gap:15px;padding:15px;background:var(--surface);border:1px solid var(--line);border-radius:11px}
+.story-art{display:flex;align-items:center;justify-content:center;background:#1b2b3d;border-radius:8px;font-size:35px;min-height:95px}
+.story h3{margin:6px 0}
+.story p{font-size:11px;color:var(--muted);margin:0;line-height:1.5}
+.story button{background:none;border:0;color:var(--blue);padding:9px 0 0;font-size:11px}
+.article{margin-top:20px;padding:25px;background:var(--surface);border:1px solid var(--line);border-radius:13px}
+.article .back{color:var(--blue);font-size:12px;cursor:pointer}
+.article h2{font-size:28px;line-height:1.25;margin-top:18px}
+.article p{color:#b3c0d0;font-size:14px;line-height:1.85}
+.article .article-lead{font-size:16px;color:white}
+.empty{padding:18px;border:1px dashed var(--line);border-radius:9px;color:var(--muted);font-size:12px}
+footer{border-top:1px solid var(--line);padding:25px;text-align:center;color:#66758a;font-size:11px}
+@media(max-width:1000px){.feature-strip{grid-template-columns:1fr}.topic-layout{grid-template-columns:190px minmax(0,1fr)}.magazine-grid{grid-template-columns:1fr}}
+@media(max-width:700px){
+ .sidebar{position:fixed;width:270px;height:100dvh;inset:0 auto 0 0;transform:translateX(-100%);transition:transform .25s;padding:20px 16px;box-shadow:15px 0 40px rgba(0,0,0,.3)}
+ .sidebar.open{transform:translateX(0)}
+ .brand{padding:35px 10px 25px}
+ .sidebar nav,.sidebar .side-label,.sidebar-note{display:block}
+ .mobile-menu{display:block;position:fixed;top:12px;left:12px;z-index:30}
+ .main{margin:0}
+ .topbar{height:55px;padding:0 16px 0 58px}
+ .content{padding:20px 15px 45px}
+ .hero{padding:27px 21px;min-height:260px}
+ .hero-art{opacity:.2;right:-25px}
+ .topic-layout{grid-template-columns:1fr}
+ .topic-menu{display:flex;overflow-x:auto;gap:5px}
+ .topic-btn{white-space:nowrap;width:auto;flex:0 0 auto}
+ .magazine-feature{grid-template-columns:1fr}
+ .magazine-art{min-height:135px;font-size:85px}
+ .magazine-copy{padding:22px}
+}
+@media(max-width:480px){
+ .form-grid,.vehicle-list{grid-template-columns:1fr}
+ .search-wrap{flex-direction:column}
+ .search-wrap .btn{width:100%}
+ .magazine-grid{grid-template-columns:1fr}
+ .story{grid-template-columns:70px minmax(0,1fr)}
+ .story-art{font-size:27px}
+ .vehicle-banner{align-items:flex-start;flex-direction:column}
+ .feature-main:after{font-size:110px;right:5px;bottom:-20px}
+}
+</style>
+</head>
+
+<body>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <button class="mobile-menu" id="mobileMenu" aria-label="Abrir menú">☰</button>
+  <a href="index.html" class="brand">
+    <div class="brand-name">Auto<span>Cifra</span></div>
+    <div class="brand-sub">CENTRO DEL MOTOR</div>
+  </a>
+
+  <div class="side-label">EXPLORAR</div>
+  <nav>
+    <button class="nav-item active" data-page="home"><span class="nav-icon">⌂</span> Inicio</button>
+    <button class="nav-item" data-page="vehicle"><span class="nav-icon">🚘</span> Mi vehículo</button>
+    <button class="nav-item" data-page="help"><span class="nav-icon">⌕</span> Centro de ayuda</button>
+    <button class="nav-item" data-page="curiosities"><span class="nav-icon">✳</span> Curiosidades</button>
+  </nav>
+
+  <div class="side-label">TUS HERRAMIENTAS</div>
+  <nav>
+    <a class="nav-item" href="Garaje.html"><span class="nav-icon">▣</span> Mi Garaje</a>
+    <a class="nav-item" href="fallos.html"><span class="nav-icon">⌁</span> Diagnóstico OBD</a>
+    <a class="nav-item" href="calculadora.html"><span class="nav-icon">◫</span> Calculadora</a>
+    <a class="nav-item" href="index.html"><span class="nav-icon">↗</span> AutoCifra.es</a>
+  </nav>
+
+  <div class="sidebar-note">
+    <strong>Tu vehículo. Tu información.</strong>
+    <p>Guarda tus coches y motos en Mi Garaje y recupéralos aquí cuando vuelvas.</p>
+    <a class="small-link" href="Garaje.html">Descubrir Mi Garaje →</a>
+  </div>
+</aside>
+
+<div class="main">
+<header class="topbar">
+  <div class="topbar-left"><span class="topbar-label" id="breadcrumb">CENTRO DEL MOTOR / INICIO</span></div>
+  <a href="Garaje.html">Mi cuenta ↗</a>
+</header>
+
+<main class="content">
+
+<section class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-content">
+      <div class="eyebrow">EL MOTOR, EXPLICADO DE OTRA FORMA</div>
+      <h1>Entiende lo que<br>conduces.</h1>
+      <p>Resuelve dudas sobre tu coche o moto, aprende mecánica y descubre lo que hay detrás de cada motor.</p>
+      <div class="actions">
+        <button class="btn btn-orange" data-go="help">Buscar una respuesta →</button>
+        <button class="btn btn-dark" data-go="curiosities">Explorar curiosidades</button>
+      </div>
+    </div>
+    <div class="hero-art"><span>🏎️</span></div>
+  </div>
+
+  <div class="search-panel">
+    <div class="eyebrow">¿QUÉ QUIERES SABER?</div>
+    <div class="search-wrap" style="margin-top:12px">
+      <input id="globalSearch" placeholder="Ej. ¿Por qué pierde potencia mi coche?">
+      <button class="btn btn-orange" id="globalSearchButton">Buscar</button>
+    </div>
+  </div>
+
+  <div class="feature-strip">
+    <article class="feature-main">
+      <div>
+        <div class="eyebrow">CENTRO DE AYUDA</div>
+        <h2>Cuando tu coche tiene una pregunta, empieza aquí.</h2>
+        <p>Testigos, síntomas, mantenimiento, sistemas mecánicos y dudas habituales. Información organizada para ayudarte a entender qué ocurre.</p>
+      </div>
+      <div><button class="btn btn-orange" data-go="help">Entrar en el centro de ayuda →</button></div>
+    </article>
+    <article class="feature-side">
+      <div>
+        <div class="big-icon">⚙️</div>
+        <div class="eyebrow">CULTURA DEL MOTOR</div>
+        <h3>Hay mucho más bajo el capó.</h3>
+        <p>Descubre cómo funcionan los motores, la tecnología y las soluciones que han cambiado el automóvil.</p>
+      </div>
+      <button class="btn btn-outline" data-go="curiosities">Descubrir artículos →</button>
+    </article>
+  </div>
+
+  <div class="section-head">
+    <div><div class="eyebrow">PERSONALIZA TU EXPERIENCIA</div><h2>¿Qué vehículo conduces?</h2><p class="muted">Puedes recuperar uno de tu Garaje o introducirlo manualmente.</p></div>
+  </div>
+  <div class="vehicle-banner">
+    <div><div class="status">TU VEHÍCULO ACTUAL</div><strong id="homeVehicleName">Todavía no has elegido un vehículo</strong><p class="muted" id="homeVehicleDetails">Selecciona uno para consultar información relacionada.</p></div>
+    <button class="btn btn-dark" data-go="vehicle">Elegir vehículo</button>
+  </div>
+</section>
+
+<section class="page" id="page-vehicle">
+  <div class="eyebrow">TU PERFIL DE CONDUCCIÓN</div>
+  <h1>Mi vehículo.</h1>
+  <p class="muted">Utiliza un vehículo de tu cuenta o añade sus datos para personalizar tus consultas.</p>
+
+  <div class="panel">
+    <div class="eyebrow">VEHÍCULOS DE MI GARAJE</div>
+    <h2>Recupera tus vehículos guardados</h2>
+    <div class="notice"><strong>Guárdalo una vez y úsalo siempre.</strong><br>Si te registras y añades tu coche o moto a Mi Garaje, quedará guardado en tu cuenta. En tus próximas visitas podrás seleccionarlo directamente, sin volver a introducir los datos.</div>
+    <div id="accountStatus" class="muted">Comprobando tu sesión...</div>
+    <div id="accountGuest" hidden>
+      <p class="muted">Inicia sesión o crea una cuenta desde Mi Garaje para recuperar tus vehículos.</p>
+      <div class="actions">
+        <a class="btn btn-orange" href="Garaje.html">Iniciar sesión / Registrarme</a>
+      </div>
+      <p class="muted">Desde Mi Garaje también podrás gestionar tus vehículos, gastos y mantenimiento.</p>
+    </div>
+    <div id="accountVehicles" class="vehicle-list"></div>
+  </div>
+
+  <div class="panel">
+    <div class="eyebrow">SIN REGISTRO</div>
+    <h2>Introducir vehículo manualmente</h2>
+    <p class="muted">No necesitas una cuenta para consultar las guías generales.</p>
+    <div class="form-grid">
+      <div class="field"><label for="make">Marca</label><input id="make" placeholder="Ej. Audi"></div>
+      <div class="field"><label for="model">Modelo</label><input id="model" placeholder="Ej. A3"></div>
+      <div class="field"><label for="year">Año</label><input id="year" type="number" min="1950" max="2035" placeholder="2019"></div>
+      <div class="field"><label for="engine">Motor / versión</label><input id="engine" placeholder="Ej. 1.5 TFSI 150 CV"></div>
+      <div class="field"><label for="fuel">Combustible</label>
+        <select id="fuel"><option value="">Seleccionar</option><option>Gasolina</option><option>Diésel</option><option>Híbrido</option><option>Híbrido enchufable</option><option>Eléctrico</option><option>GLP</option><option>GNC</option></select>
+      </div>
+      <div class="field"><label for="vehicleType">Tipo</label><select id="vehicleType"><option>Coche</option><option>Moto</option></select></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-orange" id="saveManual">Utilizar este vehículo</button>
+      <button class="btn btn-dark" id="clearManual">Limpiar</button>
+    </div>
+    <div id="manualMessage" class="message"></div>
+  </div>
+
+  <div class="vehicle-banner">
+    <div><div class="status">SELECCIÓN ACTUAL</div><strong id="vehicleName">Ningún vehículo seleccionado</strong><p class="muted" id="vehicleDetails">Elige uno para continuar.</p></div>
+    <button class="btn btn-orange" data-go="help">Consultar ayudas →</button>
+  </div>
+</section>
+
+<section class="page" id="page-help">
+  <div class="eyebrow">CENTRO DE AYUDA AUTOCIFRA</div>
+  <h1>Vamos al problema.</h1>
+  <p class="muted">Busca por síntoma, componente o duda. Selecciona un tema para ver explicaciones y pasos de comprobación.</p>
+  <div class="search-panel">
+    <div class="search-wrap"><input id="helpSearch" placeholder="Ej. ruido metálico al arrancar..."><button class="btn btn-orange" id="helpSearchButton">Buscar</button></div>
+    <p class="muted" id="helpVehicleLabel">Consultas generales. Selecciona tu vehículo para tenerlo presente.</p>
+  </div>
+  <div class="topic-layout">
+    <aside class="topic-menu">
+      <button class="topic-btn active" data-topic="symptoms">Síntomas y averías</button>
+      <button class="topic-btn" data-topic="dashboard">Testigos</button>
+      <button class="topic-btn" data-topic="maintenance">Mantenimiento</button>
+      <button class="topic-btn" data-topic="mechanics">Mecánica</button>
+      <button class="topic-btn" data-topic="itv">ITV y reformas</button>
+      <button class="topic-btn" data-topic="saving">Consumo y ahorro</button>
+    </aside>
+    <div class="panel topic-results" style="margin-top:0">
+      <div class="eyebrow" id="topicEyebrow">GUÍAS PRÁCTICAS</div>
+      <h2 id="topicTitle">Síntomas y averías</h2>
+      <p class="muted" id="topicIntro">Aprende a interpretar los síntomas de tu vehículo.</p>
+      <div id="guideList"></div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="page-curiosities">
+  <div class="eyebrow">REVISTA AUTOCIFRA</div>
+  <h1>El motor tiene historias.</h1>
+  <p class="muted">Tecnología, ingeniería, competición y curiosidades que merece la pena conocer.</p>
+  <div class="magazine-feature">
+    <div class="magazine-art">🛠️</div>
+    <div class="magazine-copy">
+      <div class="eyebrow">ARTÍCULO DESTACADO · MECÁNICA</div>
+      <h2>¿Qué ocurre realmente dentro de un motor turbo?</h2>
+      <p>Desde los gases de escape hasta el aire que entra en los cilindros: descubre el recorrido de la sobrealimentación.</p>
+      <button class="btn btn-orange" id="featuredArticle">Leer artículo completo →</button>
+    </div>
+  </div>
+  <div class="section-head"><div><div class="eyebrow">EXPLORA Y APRENDE</div><h2>Historias del mundo del motor</h2><p class="muted">Artículos para descubrir algo nuevo.</p></div></div>
+  <div class="search-panel"><div class="search-wrap"><input id="storySearch" placeholder="Buscar motores, tecnología, competición..."><button class="btn btn-dark" id="storySearchButton">Filtrar</button></div></div>
+  <div class="magazine-grid" id="storyGrid"></div>
+  <article class="article" id="articleView" hidden><span class="back" id="backStories">← Volver a los artículos</span><div id="articleContent"></div></article>
+</section>
+
+</main>
+<footer>AutoCifra · Más motor. Más control. Más carretera.</footer>
+</div>
+</div>
+
+<script>
+/* CONFIGURACIÓN DEL PROYECTO SUPABASE */
+const SUPABASE_URL = "https://fcwriuxqiywkjyjpkfvp.supabase.co";
+const SUPABASE_PUBLIC_KEY = "sb_publishable_buxMEbnIal4pEVYeIdNrgA_e31HryJb";
+const STORAGE_KEY = "autocifra_centro_vehicle_v1";
+
+const $ = id => document.getElementById(id);
+let db=null,currentUser=null,savedVehicles=[],selectedVehicle=null;
+
+const pageLabels={
+  home:"CENTRO DEL MOTOR / INICIO",
+  vehicle:"CENTRO DEL MOTOR / MI VEHÍCULO",
+  help:"CENTRO DEL MOTOR / AYUDA",
+  curiosities:"CENTRO DEL MOTOR / CURIOSIDADES"
+};
+
+function goTo(page){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  $("page-"+page).classList.add("active");
+  document.querySelectorAll("[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+  $("breadcrumb").textContent=pageLabels[page];
+  $("sidebar").classList.remove("open");
+  if(page==="help")updateVehicleLabel();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>goTo(b.dataset.page)));
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>goTo(b.dataset.go)));
+$("mobileMenu").addEventListener("click",()=>$("sidebar").classList.toggle("open"));
+
+function vehicleTitle(v){return [v.make,v.model].filter(Boolean).join(" ")||"Vehículo";}
+function vehicleSubtitle(v){return [v.year,v.engine,v.fuel].filter(Boolean).join(" · ");}
+function readStored(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY));}catch(e){return null;}}
+
+function setVehicle(v){
+  selectedVehicle=v;
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(v));}catch(e){}
+  renderVehicle();
+}
+function renderVehicle(){
+  if(!selectedVehicle)return;
+  const name=vehicleTitle(selectedVehicle);
+  const details=vehicleSubtitle(selectedVehicle)||selectedVehicle.vehicle_type||"";
+  $("homeVehicleName").textContent=name;
+  $("homeVehicleDetails").textContent=details;
+  $("vehicleName").textContent=name;
+  $("vehicleDetails").textContent=details;
+  updateVehicleLabel();
+}
+function updateVehicleLabel(){
+  $("helpVehicleLabel").textContent=selectedVehicle
+    ?"Vehículo seleccionado: "+vehicleTitle(selectedVehicle)+" · "+vehicleSubtitle(selectedVehicle)
+    :"Consultas generales. Puedes seleccionar un vehículo desde Mi vehículo.";
+}
+function message(id,text,type){
+  const el=$(id);el.textContent=text;el.className="message "+type;
+}
+function clearMessage(id){$(id).textContent="";$(id).className="message";}
+
+function renderSavedVehicles(){
+  const box=$("accountVehicles");box.replaceChildren();
+  if(!savedVehicles.length){
+    const p=document.createElement("p");p.className="empty";
+    p.textContent="Tu sesión está activa, pero todavía no tienes vehículos guardados en Mi Garaje.";
+    box.append(p);return;
+  }
+  savedVehicles.forEach(v=>{
+    const b=document.createElement("button");b.className="vehicle-option";
+    const strong=document.createElement("strong");strong.textContent=vehicleTitle(v);
+    const small=document.createElement("small");small.textContent=vehicleSubtitle(v)||v.vehicle_type||"Vehículo guardado";
+    b.append(strong,small);
+    b.addEventListener("click",()=>{
+      setVehicle({...v,source:"account"});
+      box.querySelectorAll(".vehicle-option").forEach(x=>x.classList.remove("selected"));
+      b.classList.add("selected");
+    });
+    box.append(b);
+  });
+}
+
+async function loadVehicles(){
+  const status=$("accountStatus");
+  try{
+    const {data,error}=await db.from("ac_vehicles")
+      .select("id,user_id,vehicle_type,make,model,year,power_cv,engine,fuel,image_url,notes,is_public")
+      .eq("user_id",currentUser.id);
+    if(error)throw error;
+
+    savedVehicles=data||[];
+    status.textContent="✓ Sesión detectada. Tus vehículos de Mi Garaje:";
+    renderSavedVehicles();
+
+    const stored=readStored();
+    if(stored?.source==="account"){
+      const match=savedVehicles.find(v=>String(v.id)===String(stored.id));
+      if(match)setVehicle({...match,source:"account"});
+    }
+  }catch(error){
+    console.error("Error consultando ac_vehicles:",error);
+    status.textContent="No se han podido recuperar tus vehículos. Comprueba la tabla y las políticas RLS. Puedes continuar manualmente.";
+    $("accountGuest").hidden=false;
+  }
+}
+
+async function initAccount(){
+  const status=$("accountStatus");
+  try{
+    if(!window.supabase)throw new Error("No se ha cargado la librería de Supabase.");
+    db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLIC_KEY,{
+      auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+    });
+
+    const {data,error}=await db.auth.getSession();
+    if(error)throw error;
+    currentUser=data.session?.user||null;
+
+    if(!currentUser){
+      status.textContent="No has iniciado sesión. Puedes utilizar el formulario manual.";
+      $("accountGuest").hidden=false;
+      return;
+    }
+    status.textContent="Sesión detectada. Cargando tus vehículos...";
+    await loadVehicles();
+
+    db.auth.onAuthStateChange((event,session)=>{
+      if(event==="SIGNED_OUT"){
+        currentUser=null;savedVehicles=[];
+        $("accountVehicles").replaceChildren();
+        $("accountGuest").hidden=false;
+        $("accountStatus").textContent="Has cerrado sesión.";
+      }
+      if(event==="SIGNED_IN"&&session?.user){
+        currentUser=session.user;
+        $("accountGuest").hidden=true;
+        loadVehicles();
+      }
+    });
+  }catch(error){
+    console.error("Supabase:",error);
+    status.textContent="No se ha podido conectar con Supabase. Puedes continuar manualmente.";
+    $("accountGuest").hidden=false;
+  }
+}
+
+$("saveManual").addEventListener("click",()=>{
+  clearMessage("manualMessage");
+  const make=$("make").value.trim(),model=$("model").value.trim(),year=$("year").value.trim();
+  if(!make||!model){message("manualMessage","Introduce al menos la marca y el modelo.","error");return;}
+  if(year&&(Number(year)<1950||Number(year)>2035)){message("manualMessage","Comprueba el año introducido.","error");return;}
+  setVehicle({
+    make,model,year,engine:$("engine").value.trim(),fuel:$("fuel").value,
+    vehicle_type:$("vehicleType").value,source:"manual"
+  });
+  message("manualMessage","Vehículo seleccionado y recordado en este dispositivo.","ok");
+});
+$("clearManual").addEventListener("click",()=>{
+  ["make","model","year","engine","fuel"].forEach(id=>$(id).value="");
+  $("vehicleType").value="Coche";clearMessage("manualMessage");
+  if(selectedVehicle?.source==="manual"){
+    selectedVehicle=null;localStorage.removeItem(STORAGE_KEY);
+    $("homeVehicleName").textContent="Todavía no has elegido un vehículo";
+    $("homeVehicleDetails").textContent="Selecciona uno para consultar información relacionada.";
+    $("vehicleName").textContent="Ningún vehículo seleccionado";
+    $("vehicleDetails").textContent="Elige uno para continuar.";
+    updateVehicleLabel();
+  }
+});
+
+/* CONTENIDO DE AYUDA */
+const topics={
+symptoms:{
+title:"Síntomas y averías",intro:"Orientación para interpretar señales habituales. Un mismo síntoma puede tener varias causas.",
+items:[
+["Vibraciones al ralentí","El motor vibra cuando está detenido.","Puede estar relacionado con soportes, encendido, admisión o funcionamiento irregular. Anota si ocurre en frío, en caliente o al conectar el aire acondicionado."],
+["Pérdida de potencia","El vehículo no responde como antes.","Puede deberse a admisión, alimentación, encendido, sobrealimentación o sistemas anticontaminación. Una lectura de códigos OBD puede ayudar a orientar la revisión."],
+["Ruido metálico al arrancar","Escuchas un ruido que antes no existía.","Importa cuánto dura, de dónde procede y si cambia con las revoluciones. No conviene sustituir piezas sin localizar el origen."],
+["Tirones al acelerar","La entrega de potencia es irregular.","Puede haber causas de encendido, combustible, admisión, transmisión o gestión electrónica. Registra las condiciones en las que sucede."]
+]},
+dashboard:{
+title:"Testigos del salpicadero",intro:"El color y el símbolo ayudan a identificar la urgencia. Consulta el manual de tu vehículo.",
+items:[
+["Presión de aceite","Aviso relacionado con la lubricación del motor.","Si aparece durante la marcha, detente de forma segura y apaga el motor. No continúes circulando con un aviso de presión de aceite activo."],
+["Temperatura del refrigerante","Puede indicar una temperatura excesiva.","Detente de forma segura y deja enfriar el motor. No abras el circuito de refrigeración cuando esté caliente."],
+["Testigo de motor","Puede señalar una anomalía de gestión o emisiones.","La urgencia depende del comportamiento del vehículo y de si parpadea. Si hay tirones, pérdida de potencia o funcionamiento anormal, solicita revisión."]
+]},
+maintenance:{
+title:"Mantenimiento",intro:"Los intervalos exactos dependen del motor, uso y programa del fabricante.",
+items:[
+["Elegir aceite correctamente","No basta con escoger una viscosidad.","Comprueba la homologación exigida por el fabricante, además de la viscosidad y el intervalo de mantenimiento."],
+["Revisar neumáticos","Comprueba presión, desgaste y daños.","Mide la presión en frío y utiliza los valores indicados por el fabricante. Revisa también cortes, deformaciones y profundidad del dibujo."],
+["Sistema de refrigeración","Mantiene la temperatura de funcionamiento.","Revisa el nivel siguiendo el manual. Una pérdida repetida de refrigerante necesita diagnóstico."],
+["Batería","La alimentación eléctrica es esencial para el arranque.","Una batería débil puede producir arranques lentos y fallos eléctricos. Comprueba su estado y el sistema de carga."]
+]},
+mechanics:{
+title:"Mecánica y funcionamiento",intro:"Conceptos para comprender los principales sistemas del vehículo.",
+items:[
+["Cómo funciona un turbo","Utiliza la energía de los gases de escape.","La turbina mueve un compresor que introduce aire a presión en el motor. La gestión del motor coordina la sobrealimentación con el combustible y el encendido."],
+["Qué es el par motor","Es el momento de fuerza generado por el motor.","Se expresa normalmente en newton metro (Nm). La potencia está relacionada con el par y la velocidad de giro."],
+["Qué hace un intercooler","Reduce la temperatura del aire comprimido.","Al enfriar el aire de admisión aumenta su densidad. El resultado depende del diseño y de las condiciones de funcionamiento."],
+["Cómo funciona un embrague","Permite acoplar y desacoplar motor y transmisión.","En una caja manual facilita los cambios de marcha. Otros tipos de transmisión utilizan sistemas distintos."]
+]},
+itv:{
+title:"ITV y reformas",intro:"La normativa y documentación exigibles dependen de la reforma concreta.",
+items:[
+["Preparar la ITV","Revisa elementos básicos antes de acudir.","Comprueba alumbrado, neumáticos, limpiaparabrisas, cinturones, matrícula y posibles avisos del vehículo."],
+["Cambios en el escape","No todas las modificaciones tienen los mismos requisitos.","La homologación y documentación dependen del componente y de la reforma. Comprueba la normativa aplicable antes de instalarlo."],
+["Cambios de suspensión","Pueden considerarse reformas de importancia.","No des por válida una modificación solo porque la pieza se venda como compatible. Verifica los requisitos de homologación e ITV."]
+]},
+saving:{
+title:"Consumo y ahorro",intro:"Factores de conducción y mantenimiento que pueden influir en el gasto.",
+items:[
+["Presión de neumáticos","Una presión inadecuada afecta a la rodadura.","Comprueba periódicamente las presiones recomendadas en frío. No utilices una cifra genérica para todos los coches."],
+["Conducción anticipativa","Leer el tráfico ayuda a evitar aceleraciones innecesarias.","Mantener una velocidad adecuada y anticipar frenadas puede reducir el consumo en determinadas condiciones."],
+["Trayectos cortos","El motor puede pasar buena parte del recorrido frío.","En trayectos muy cortos el consumo medio puede aumentar. Agrupar desplazamientos puede ayudar a reducir recorridos innecesarios."]
+]}
+};
+
+function renderTopic(topic){
+  document.querySelectorAll(".topic-btn").forEach(b=>b.classList.toggle("active",b.dataset.topic===topic));
+  const data=topics[topic];
+  $("topicTitle").textContent=data.title;$("topicIntro").textContent=data.intro;
+  const list=$("guideList");list.replaceChildren();
+  data.items.forEach(item=>{
+    const article=document.createElement("article");article.className="guide";
+    const tag=document.createElement("div");tag.className="tag";tag.textContent="GUÍA AUTOCIFRA";
+    const h=document.createElement("h3");h.textContent=item[0];
+    const p=document.createElement("p");p.textContent=item[1];
+    const button=document.createElement("button");button.className="btn btn-outline";
+    button.style.marginTop="12px";button.textContent="Ver explicación";
+    const detail=document.createElement("div");detail.className="guide-detail";detail.hidden=true;detail.textContent=item[2];
+    button.addEventListener("click",()=>{detail.hidden=!detail.hidden;button.textContent=detail.hidden?"Ver explicación":"Ocultar explicación";});
+    article.append(tag,h,p,button,detail);list.append(article);
+  });
+}
+document.querySelectorAll("[data-topic]").forEach(b=>b.addEventListener("click",()=>renderTopic(b.dataset.topic)));
+
+function searchHelp(){
+  const q=$("helpSearch").value.trim().toLowerCase();
+  if(!q){renderTopic("symptoms");return;}
+  const results=[];
+  Object.values(topics).forEach(topic=>topic.items.forEach(item=>{if(item.join(" ").toLowerCase().includes(q))results.push(item);}));
+  $("topicTitle").textContent="Resultados de búsqueda";
+  $("topicIntro").textContent="Resultados para: "+q;
+  document.querySelectorAll(".topic-btn").forEach(b=>b.classList.remove("active"));
+  const list=$("guideList");list.replaceChildren();
+  if(!results.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="No encontramos coincidencias. Prueba con otras palabras o elige una categoría.";list.append(empty);return;}
+  results.forEach(item=>{
+    const div=document.createElement("article");div.className="guide";
+    const h=document.createElement("h3");h.textContent=item[0];
+    const p=document.createElement("p");p.textContent=item[1];
+    const detail=document.createElement("div");detail.className="guide-detail";detail.textContent=item[2];
+    div.append(h,p,detail);list.append(div);
+  });
+}
+$("helpSearchButton").addEventListener("click",searchHelp);
+$("helpSearch").addEventListener("keydown",e=>{if(e.key==="Enter")searchHelp();});
+$("globalSearchButton").addEventListener("click",()=>{$("helpSearch").value=$("globalSearch").value;goTo("help");searchHelp();});
+$("globalSearch").addEventListener("keydown",e=>{if(e.key==="Enter")$("globalSearchButton").click();});
+
+/* CURIOSIDADES */
+const stories=[
+{tag:"MECÁNICA",icon:"🌀",title:"Qué ocurre realmente dentro de un motor turbo",summary:"El recorrido del aire y los gases de escape en un sistema de sobrealimentación.",lead:"Un turbocompresor aprovecha parte de la energía de los gases de escape para comprimir el aire que entra en el motor.",body:["El conjunto tiene dos partes principales unidas por un eje: la turbina y el compresor. Los gases de escape hacen girar la turbina, que transmite ese movimiento al compresor.","El compresor aumenta la presión del aire de admisión. Al comprimirlo también aumenta su temperatura, por lo que muchos sistemas utilizan un intercooler para enfriarlo antes de entrar en el motor.","La presión de sobrealimentación, la temperatura, la gestión electrónica y el diseño del motor determinan cómo se entrega la potencia. Un turbo no significa automáticamente que cualquier modificación vaya a ser segura o compatible."]},
+{tag:"INGENIERÍA",icon:"⚙️",title:"Potencia y par: dos cifras que no significan lo mismo",summary:"Por qué un motor puede tener mucho par y otra potencia máxima.",lead:"El par motor mide el momento de fuerza, mientras que la potencia expresa la rapidez con la que se realiza trabajo.",body:["El par se expresa habitualmente en newton metro. Describe la capacidad de producir un momento de giro en el eje del motor.","La potencia depende del par y de la velocidad de giro. Por eso un motor que mantiene el par a revoluciones elevadas puede desarrollar una potencia considerable.","Al comparar motores conviene observar la curva completa, no solo la cifra máxima anunciada. También importan la transmisión, el peso y el uso previsto."]},
+{tag:"TECNOLOGÍA",icon:"🔋",title:"Cómo recuperan energía los coches híbridos",summary:"La frenada regenerativa convierte parte de la energía cinética en electricidad.",lead:"En determinadas condiciones, el motor eléctrico puede trabajar como generador durante la deceleración.",body:["Cuando el vehículo reduce velocidad, el motor eléctrico puede generar electricidad en lugar de consumirla. Esa energía se envía al sistema de almacenamiento.","La recuperación depende de la velocidad, el estado de carga, la temperatura de la batería y la estrategia de control del vehículo.","No toda la energía se recupera: existen pérdidas y, cuando hace falta, el sistema combina la regeneración con los frenos convencionales."]},
+{tag:"NEUMÁTICOS",icon:"🛞",title:"La presión de los neumáticos cambia más cosas de las que parece",summary:"Afecta al desgaste, la resistencia a la rodadura y el comportamiento.",lead:"El neumático es el único elemento del vehículo que está en contacto directo con el asfalto.",body:["La presión modifica la deformación de la carcasa y la distribución de carga en la zona de contacto. Una presión inadecuada puede afectar al desgaste y a la respuesta del vehículo.","La presión correcta depende del vehículo, la medida del neumático y la carga. Deben utilizarse los valores del fabricante, normalmente indicados en una etiqueta del vehículo o en el manual.","Las comprobaciones se realizan con los neumáticos fríos. Una inspección visual también permite detectar cortes, deformaciones o daños."]},
+{tag:"TRANSMISIÓN",icon:"🔩",title:"Qué diferencia hay entre una caja manual y una de doble embrague",summary:"Dos formas distintas de gestionar la conexión entre motor y ruedas.",lead:"Una caja de doble embrague utiliza dos embragues para gestionar grupos de relaciones diferentes.",body:["En una caja manual el conductor selecciona la marcha y acciona el embrague. En una automática de doble embrague, la electrónica y los actuadores realizan la selección.","En muchas cajas de doble embrague, una relación puede estar preparada mientras la otra transmite el movimiento. Esto permite cambios rápidos en determinadas condiciones.","Su funcionamiento, mantenimiento y comportamiento varían según fabricante, modelo y generación. No todas las cajas automáticas son iguales."]},
+{tag:"MOTOS",icon:"🏍️",title:"Por qué un motor de cuatro cilindros puede girar tan alto",summary:"Arquitectura, equilibrado y diseño influyen en el régimen de giro.",lead:"La capacidad de alcanzar revoluciones elevadas depende de muchos factores de ingeniería, no solo del número de cilindros.",body:["Influyen la carrera del pistón, la masa de las piezas móviles, el diseño de la distribución, la lubricación y la refrigeración.","Una arquitectura de varios cilindros puede permitir determinadas características de suavidad y entrega, pero también implica más piezas y complejidad.","El régimen máximo seguro está definido por el diseño y la calibración del motor. No debe modificarse sin valorar sus límites mecánicos."]}
+];
+
+function openStory(story){
+  $("storyGrid").hidden=true;$("articleView").hidden=false;
+  const box=$("articleContent");box.replaceChildren();
+  const tag=document.createElement("div");tag.className="eyebrow";tag.textContent=story.tag;
+  const h=document.createElement("h2");h.textContent=story.title;
+  const lead=document.createElement("p");lead.className="article-lead";lead.textContent=story.lead;
+  box.append(tag,h,lead);
+  story.body.forEach(text=>{const p=document.createElement("p");p.textContent=text;box.append(p);});
+  const note=document.createElement("p");note.className="muted";note.textContent="Contenido divulgativo. Para intervenciones, ajustes o especificaciones concretas, consulta la documentación técnica del fabricante.";
+  box.append(note);$("articleView").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function renderStories(list=stories){
+  const grid=$("storyGrid");grid.replaceChildren();$("articleView").hidden=true;grid.hidden=false;
+  if(!list.length){const p=document.createElement("p");p.className="empty";p.textContent="No hay artículos que coincidan con la búsqueda.";grid.append(p);return;}
+  list.forEach(story=>{
+    const card=document.createElement("article");card.className="story";
+    const art=document.createElement("div");art.className="story-art";art.textContent=story.icon;
+    const copy=document.createElement("div");
+    const tag=document.createElement("div");tag.className="tag";tag.textContent=story.tag;
+    const h=document.createElement("h3");h.textContent=story.title;
+    const p=document.createElement("p");p.textContent=story.summary;
+    const b=document.createElement("button");b.textContent="Leer artículo →";b.addEventListener("click",()=>openStory(story));
+    copy.append(tag,h,p,b);card.append(art,copy);grid.append(card);
+  });
+}
+function searchStories(){
+  const q=$("storySearch").value.trim().toLowerCase();
+  renderStories(stories.filter(s=>(s.tag+" "+s.title+" "+s.summary+" "+s.body.join(" ")).toLowerCase().includes(q)));
+}
+$("storySearchButton").addEventListener("click",searchStories);
+$("storySearch").addEventListener("keydown",e=>{if(e.key==="Enter")searchStories();});
+$("featuredArticle").addEventListener("click",()=>openStory(stories[0]));
+$("backStories").addEventListener("click",()=>{$("articleView").hidden=true;$("storyGrid").hidden=false;});
+
+/* INICIALIZACIÓN */
+const stored=readStored();
+if(stored){selectedVehicle=stored;renderVehicle();}
+renderTopic("symptoms");
+renderStories();
+initAccount();
+</script>
+</body>
+</html>
+
